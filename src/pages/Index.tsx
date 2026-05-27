@@ -42,7 +42,7 @@ export default function Index() {
             The Experience Machines
           </h1>
           <p data-ev-id="ev_d042b59cbc" className="text-3xl md:text-4xl lg:text-5xl font-light text-[#1A3A47] leading-tight mb-8 text-balance">
-            The <span data-ev-id="ev_2100e1cd28" className="font-semibold">Moral Imagination and Hope Laboratory.</span> Most philosophy is done analytically, we take seriously the idea that philosophy may also be typological. 
+            <span data-ev-id="ev_2100e1cd28" className="font-semibold">Most philosophy is done analytically,</span> we take seriously the idea that philosophy may also be typological. 
           </p>
           <p data-ev-id="ev_879bbc7189" className="text-lg md:text-xl text-[#2C5565] mb-10 max-w-2xl mx-auto">
             MIHLab is an experimental pedagogical tool for philosophy educators. The idea is that there are two ways of knowing, analytic and typological. Analytically, one can learn philosophical concepts such as "what is justice?" through understanding abstract properties, designations, labels, crisp definitions and precise language, etc. However, another way to come to know and understand philosophical concepts such as "what is justice?" is through types, where we become acquainted with a just person, and accordingly come to understand what justice is, or we become acquainted with stories of a just person and come to understand what justice is. A philosophical laboratory where we invite the public into virtual worlds to explore philosophy typologically with us.
