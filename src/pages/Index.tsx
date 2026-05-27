@@ -42,7 +42,7 @@ export default function Index() {
             The Experience Machines
           </h1>
           <p data-ev-id="ev_d042b59cbc" className="text-3xl md:text-4xl lg:text-5xl font-light text-[#1A3A47] leading-tight mb-8 text-balance">
-            The <span data-ev-id="ev_2100e1cd28" className="font-semibold">Moral Imagination and Hope Laboratory</span> Most philosophy is done analytically, we take seriously the idea that philosophy may also be typological. 
+            The <span data-ev-id="ev_2100e1cd28" className="font-semibold">Moral Imagination and Hope Laboratory.</span> Most philosophy is done analytically, we take seriously the idea that philosophy may also be typological. 
           </p>
           <p data-ev-id="ev_879bbc7189" className="text-lg md:text-xl text-[#2C5565] mb-10 max-w-2xl mx-auto">
             A philosophical laboratory where we invite the public into virtual worlds to explore these issues with us.
