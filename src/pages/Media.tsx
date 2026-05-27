@@ -14,6 +14,9 @@ interface MediaItem {
   tags: string[];
 }
 
+const SUBSTACK_URL = 'https://substack.com/@mihlab'
+const TWITCH_CHANNEL = 'https://www.twitch.tv/mihlab'
+
 const gameReviews = [
 {
   title: "The Last of Us Part II",
@@ -61,9 +64,6 @@ const events = [
   date: "Quarterly",
   type: "Public Event"
 }];
-
-const SUBSTACK_URL = 'https://mihlphilosophy.substack.com'
-const TWITCH_CHANNEL = 'mihlphilosophy'
 
 function NotionMediaSection() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
