@@ -641,6 +641,39 @@ export default function Media() {
         </div>
       </section>
 
+      {/* Events */}
+      <section data-ev-id="ev_3c7be7cbd7" className="py-16 bg-gradient-to-b from-[#5DBCD2] to-[#4A9EB5]">
+        <div data-ev-id="ev_2690315741" className="max-w-4xl mx-auto px-6">
+          <div data-ev-id="ev_0cce55db36" className="flex items-center justify-center gap-3 mb-8">
+            <Calendar className="w-8 h-8 text-[#1A3A47]" />
+            <h2 data-ev-id="ev_9164f4814e" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
+              Events
+            </h2>
+          </div>
+          <p data-ev-id="ev_e6cc211413" className="text-center text-[#2C5565] mb-10 max-w-xl mx-auto">
+            Conferences, workshops, and gatherings related to art and identity
+          </p>
+          
+          <div data-ev-id="ev_feed6990cb" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {events.map((event, index) =>
+            <div data-ev-id="ev_6390c469b9"
+            key={index}
+            className="bg-white/80 backdrop-blur-sm p-6 rounded-lg text-center">
+
+                <span data-ev-id="ev_eac531e034" className="inline-block px-3 py-1 bg-[#E8F4F8] text-[#3AA8C4] text-xs font-medium rounded-full mb-4">
+                  {event.type}
+                </span>
+                <h3 data-ev-id="ev_932cd4b759" className="text-lg font-semibold text-[#1A3A47] mb-2">
+                  {event.title}
+                </h3>
+                <p data-ev-id="ev_e3b7600da8" className="text-sm text-[#4A6B78]">
+                  {event.date}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
     </Layout>);
 
 }
