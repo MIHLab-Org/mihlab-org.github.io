@@ -17,54 +17,6 @@ interface MediaItem {
 const SUBSTACK_URL = 'https://substack.com/@mihlab'
 const TWITCH_CHANNEL = 'https://www.twitch.tv/mihlab'
 
-const gameReviews = [
-{
-  title: "The Last of Us Part II",
-  description: "An exploration of moral complexity through player choice and consequence.",
-  tags: ["Narrative Ethics", "Player Agency"]
-},
-{
-  title: "Undertale",
-  description: "How pacifist gameplay challenges traditional gaming morality.",
-  tags: ["Non-Violence", "Empathy"]
-},
-{
-  title: "Spec Ops: The Line",
-  description: "Confronting the player with the weight of virtual violence.",
-  tags: ["War Ethics", "Moral Discomfort"]
-}];
-
-
-const bookReviews = [
-{
-  title: "Games: Agency as Art",
-  author: "C. Thi Nguyen",
-  description: "A philosophical examination of games as a unique art form."
-},
-{
-  title: "The Art of Game Design",
-  author: "Jesse Schell",
-  description: "Understanding design choices through an ethical lens."
-}];
-
-
-const events = [
-{
-  title: "Philosophy & Games Symposium",
-  date: "Spring 2025",
-  type: "Conference"
-},
-{
-  title: "Art & Ethics Workshop Series",
-  date: "Monthly",
-  type: "Workshop"
-},
-{
-  title: "Public Philosophy Night",
-  date: "Quarterly",
-  type: "Public Event"
-}];
-
 function NotionMediaSection() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
