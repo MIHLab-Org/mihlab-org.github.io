@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { Layout } from '@/components/Layout';
 import { ArrowRight, Sparkles, Gamepad2, Music, Palette } from 'lucide-react';
-import heroSpaceStation from '@/assets/uploads/red-ship-hanger.jpg';
+import heroSpaceStation from '@/assets/uploads/ship-hanger.jpg';
 import futuristicCity from '@/assets/uploads/futuristic-city.jpg';
 
 const researchAreas = [
