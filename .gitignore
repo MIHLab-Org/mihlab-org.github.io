@@ -25,3 +25,4 @@ dist-ssr
 # Local env (Supabase keys)
 .env.local
 .env
+*:Zone.Identifier
