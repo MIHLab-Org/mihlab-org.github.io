@@ -210,7 +210,7 @@ function viteCustomErrorOverlay(): Plugin {
 // https://vite.dev/config/
 export default defineConfig(() => {
 	return {
-		base: '/MIHLab.github.io/',   // ← add this line
+		base: '/MIHLab.github.io/',
 		customLogger: {
 			...defaultLogger,
 			info(msg: string) {
