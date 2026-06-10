@@ -1,5 +1,6 @@
 import { Layout } from '@/components/Layout';
 import { Users, GraduationCap, Microscope, Heart, ArrowRight } from 'lucide-react';
+import stationEarth from '@/assets/uploads/station-earth.jpg';
 
 const opportunities = [
 {
@@ -48,43 +49,49 @@ export default function Participate() {
   return (
     <Layout>
       {/* Hero */}
-      <section data-ev-id="ev_13fd53e604" className="bg-gradient-to-b from-[#8ED4E6] via-[#5DBCD2] to-[#4A9EB5] py-20">
-        <div data-ev-id="ev_40e2274e02" className="max-w-4xl mx-auto px-6 text-center">
-          <h1 data-ev-id="ev_6d24b59d4a" className="text-4xl md:text-5xl font-semibold text-[#1A3A47] mb-6">
+      <section data-ev-id="ev_06ab37e3f5" className="relative py-32 overflow-hidden">
+        <div data-ev-id="ev_5cdaf97cd2"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${stationEarth})` }} />
+
+        <div data-ev-id="ev_4c87abbd7f" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/80 via-[#0a2a3a]/70 to-[#1a3a47]/90" />
+        
+        <div data-ev-id="ev_38f1502145" className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          <h1 data-ev-id="ev_68803723c9" className="text-4xl md:text-5xl font-semibold text-white mb-6">
             Participate
           </h1>
-          <p data-ev-id="ev_6e431ef3b3" className="text-xl text-[#2C5565] max-w-2xl mx-auto">
+          <p data-ev-id="ev_8511258634" className="text-xl text-[#7DD3E8] max-w-2xl mx-auto">
             We are always looking for curious minds to join us in exploring how art shapes who we become
           </p>
         </div>
       </section>
 
       {/* Opportunities */}
-      <section data-ev-id="ev_d8a981d6e9" className="py-20 bg-gradient-to-b from-[#4A9EB5] to-[#5DBCD2]">
-        <div data-ev-id="ev_04d4aab52d" className="max-w-6xl mx-auto px-6">
-          <h2 data-ev-id="ev_86f63311fe" className="text-2xl md:text-3xl font-semibold text-[#1A3A47] text-center mb-12">
+      <section data-ev-id="ev_58a701fabb" className="py-20 bg-gradient-to-b from-[#1a3a47] to-[#0a2a3a]">
+        <div data-ev-id="ev_20f5591561" className="max-w-6xl mx-auto px-6">
+          <h2 data-ev-id="ev_d4f91879a3" className="text-2xl md:text-3xl font-semibold text-white text-center mb-12">
             Opportunities
           </h2>
           
-          <div data-ev-id="ev_0bf0961a83" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div data-ev-id="ev_591b89e140" className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {opportunities.map((opp, index) =>
-            <div data-ev-id="ev_298aa95481"
+            <div data-ev-id="ev_0336bdb04b"
             key={index}
-            className="bg-white/80 backdrop-blur-sm p-8 rounded-lg">
+            className="bg-white/10 backdrop-blur-sm p-8 rounded-lg border border-white/20">
 
-                <opp.icon className="w-10 h-10 text-[#3AA8C4] mb-4" />
-                <h3 data-ev-id="ev_d5d8b4e32c" className="text-xl font-semibold text-[#1A3A47] mb-3">
+                <opp.icon className="w-10 h-10 text-[#7DD3E8] mb-4" />
+                <h3 data-ev-id="ev_382c479736" className="text-xl font-semibold text-white mb-3">
                   {opp.title}
                 </h3>
-                <p data-ev-id="ev_d06966eb99" className="text-[#4A6B78] mb-6">
+                <p data-ev-id="ev_72fa384373" className="text-white/70 mb-6">
                   {opp.description}
                 </p>
-                <div data-ev-id="ev_e801bfbf0e">
-                  <h4 data-ev-id="ev_c539ad97c5" className="text-sm font-semibold text-[#2C5565] mb-3">What we're looking for:</h4>
-                  <ul data-ev-id="ev_4192c3c10a" className="flex flex-col gap-2">
+                <div data-ev-id="ev_88121f0172">
+                  <h4 data-ev-id="ev_938184d50c" className="text-sm font-semibold text-[#7DD3E8] mb-3">What we're looking for:</h4>
+                  <ul data-ev-id="ev_16d97ebb6a" className="flex flex-col gap-2">
                     {opp.requirements.map((req, i) =>
-                  <li data-ev-id="ev_c90049fc64" key={i} className="flex items-start gap-2 text-sm text-[#4A6B78]">
-                        <span data-ev-id="ev_c9da74f040" className="w-1.5 h-1.5 bg-[#3AA8C4] rounded-full mt-1.5 flex-shrink-0" />
+                  <li data-ev-id="ev_ff2372a341" key={i} className="flex items-start gap-2 text-sm text-white/60">
+                        <span data-ev-id="ev_d9d49440d3" className="w-1.5 h-1.5 bg-[#7DD3E8] rounded-full mt-1.5 flex-shrink-0" />
                         {req}
                       </li>
                   )}
@@ -97,45 +104,45 @@ export default function Participate() {
       </section>
 
       {/* How to Apply */}
-      <section data-ev-id="ev_24c8701168" className="py-20 bg-[#5DBCD2]">
-        <div data-ev-id="ev_237bff81f8" className="max-w-4xl mx-auto px-6">
-          <h2 data-ev-id="ev_ebaa25f096" className="text-2xl md:text-3xl font-semibold text-[#1A3A47] text-center mb-12">
+      <section data-ev-id="ev_02bab8ace8" className="py-20 bg-[#0a2a3a]">
+        <div data-ev-id="ev_340c536177" className="max-w-4xl mx-auto px-6">
+          <h2 data-ev-id="ev_edd42f64fa" className="text-2xl md:text-3xl font-semibold text-white text-center mb-12">
             How to Get Involved
           </h2>
           
-          <div data-ev-id="ev_7a6266808c" className="bg-white/80 backdrop-blur-sm p-8 rounded-lg">
-            <div data-ev-id="ev_b98f00d133" className="flex flex-col gap-6">
-              <div data-ev-id="ev_8133a4ba3b" className="flex items-start gap-4">
-                <div data-ev-id="ev_677b4b2a14" className="w-8 h-8 bg-[#3AA8C4] text-white rounded-full flex items-center justify-center flex-shrink-0 font-semibold">
+          <div data-ev-id="ev_91f0be57cf" className="bg-white/10 backdrop-blur-sm p-8 rounded-lg border border-white/20">
+            <div data-ev-id="ev_e7300bd78b" className="flex flex-col gap-6">
+              <div data-ev-id="ev_b062a0decb" className="flex items-start gap-4">
+                <div data-ev-id="ev_ee8285b826" className="w-8 h-8 bg-[#7DD3E8] text-[#0a2a3a] rounded-full flex items-center justify-center flex-shrink-0 font-semibold">
                   1
                 </div>
-                <div data-ev-id="ev_4a810acecb">
-                  <h3 data-ev-id="ev_ae7fdb452d" className="font-semibold text-[#1A3A47] mb-1">Reach Out</h3>
-                  <p data-ev-id="ev_6c35869dcc" className="text-sm text-[#4A6B78]">
+                <div data-ev-id="ev_2e5791777b">
+                  <h3 data-ev-id="ev_13372c36fb" className="font-semibold text-white mb-1">Reach Out</h3>
+                  <p data-ev-id="ev_b8986aab60" className="text-sm text-white/70">
                     Send us an email introducing yourself and your interests. Tell us why you're curious about the intersection of art and ethics.
                   </p>
                 </div>
               </div>
               
-              <div data-ev-id="ev_c356a017e9" className="flex items-start gap-4">
-                <div data-ev-id="ev_d948aeeebd" className="w-8 h-8 bg-[#3AA8C4] text-white rounded-full flex items-center justify-center flex-shrink-0 font-semibold">
+              <div data-ev-id="ev_9bada61f1c" className="flex items-start gap-4">
+                <div data-ev-id="ev_e69945d7a1" className="w-8 h-8 bg-[#7DD3E8] text-[#0a2a3a] rounded-full flex items-center justify-center flex-shrink-0 font-semibold">
                   2
                 </div>
-                <div data-ev-id="ev_bc3825c77e">
-                  <h3 data-ev-id="ev_211dea3c29" className="font-semibold text-[#1A3A47] mb-1">Share Your Work</h3>
-                  <p data-ev-id="ev_fcac5b6081" className="text-sm text-[#4A6B78]">
+                <div data-ev-id="ev_cc0982abcd">
+                  <h3 data-ev-id="ev_e86768a248" className="font-semibold text-white mb-1">Share Your Work</h3>
+                  <p data-ev-id="ev_f44b326c96" className="text-sm text-white/70">
                     Include any relevant work, projects, or ideas you've been exploring. We value diverse perspectives and creative approaches.
                   </p>
                 </div>
               </div>
               
-              <div data-ev-id="ev_91f8314b93" className="flex items-start gap-4">
-                <div data-ev-id="ev_436c0616bf" className="w-8 h-8 bg-[#3AA8C4] text-white rounded-full flex items-center justify-center flex-shrink-0 font-semibold">
+              <div data-ev-id="ev_3d4eb0b7e6" className="flex items-start gap-4">
+                <div data-ev-id="ev_d84bf7a41e" className="w-8 h-8 bg-[#7DD3E8] text-[#0a2a3a] rounded-full flex items-center justify-center flex-shrink-0 font-semibold">
                   3
                 </div>
-                <div data-ev-id="ev_1f9110f8d4">
-                  <h3 data-ev-id="ev_69978d8725" className="font-semibold text-[#1A3A47] mb-1">Connect</h3>
-                  <p data-ev-id="ev_24132a580d" className="text-sm text-[#4A6B78]">
+                <div data-ev-id="ev_50551bc952">
+                  <h3 data-ev-id="ev_be0f9ea5ca" className="font-semibold text-white mb-1">Connect</h3>
+                  <p data-ev-id="ev_fa324ee0ca" className="text-sm text-white/70">
                     We'll schedule a conversation to discuss potential collaboration and how your interests align with our ongoing work.
                   </p>
                 </div>
@@ -146,17 +153,17 @@ export default function Participate() {
       </section>
 
       {/* CTA */}
-      <section data-ev-id="ev_0286640699" className="py-20 bg-gradient-to-b from-[#5DBCD2] to-[#4A9EB5]">
-        <div data-ev-id="ev_6fe24c6409" className="max-w-4xl mx-auto px-6 text-center">
-          <h2 data-ev-id="ev_eda39bdb28" className="text-2xl md:text-3xl font-semibold text-[#1A3A47] mb-4">
+      <section data-ev-id="ev_ffa4029342" className="py-20 bg-gradient-to-b from-[#0a2a3a] to-[#1a3a47]">
+        <div data-ev-id="ev_1d50418d91" className="max-w-4xl mx-auto px-6 text-center">
+          <h2 data-ev-id="ev_9e7510a3e5" className="text-2xl md:text-3xl font-semibold text-white mb-4">
             Ready to Join?
           </h2>
-          <p data-ev-id="ev_13a6c98463" className="text-[#2C5565] mb-8 max-w-xl mx-auto">
+          <p data-ev-id="ev_bff1716ba4" className="text-white/70 mb-8 max-w-xl mx-auto">
             We'd love to hear from you. Reach out and let's explore these questions together.
           </p>
-          <a data-ev-id="ev_fe3c1c91c5"
+          <a data-ev-id="ev_4c1036b74a"
           href="/contact"
-          className="inline-flex items-center gap-2 px-8 py-3 bg-[#1A3A47] text-white font-medium rounded-full hover:bg-[#2C5565] transition-colors duration-300">
+          className="inline-flex items-center gap-2 px-8 py-3 bg-[#7DD3E8] text-[#0a2a3a] font-medium rounded-full hover:bg-[#5DBCD2] transition-colors duration-300">
 
             Contact Us
             <ArrowRight size={18} />

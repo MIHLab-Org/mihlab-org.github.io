@@ -8,9 +8,9 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div data-ev-id="ev_b9a37e6829" className="min-h-screen flex flex-col">
+    <div data-ev-id="ev_b9a37e6829" className="min-h-screen flex flex-col bg-[#0a1929]">
       <Header />
-      <main data-ev-id="ev_30be924e2b" className="flex-1 pt-20">
+      <main data-ev-id="ev_30be924e2b" className="flex-1 pt-16">
         {children}
       </main>
       <Footer />

@@ -1,5 +1,6 @@
 import { Layout } from '@/components/Layout';
 import { Sparkles, Gamepad2, Music, Palette, BookOpen, FileText } from 'lucide-react';
+import fleetImage from '@/assets/uploads/fleet-ringed-planet.jpg';
 
 const researchAreas = [
 {
@@ -53,43 +54,49 @@ export default function Research() {
   return (
     <Layout>
       {/* Hero */}
-      <section data-ev-id="ev_764aaf55ad" className="bg-gradient-to-b from-[#8ED4E6] via-[#5DBCD2] to-[#4A9EB5] py-20">
-        <div data-ev-id="ev_2e5ab7ab69" className="max-w-4xl mx-auto px-6 text-center">
-          <h1 data-ev-id="ev_ad5be06792" className="text-4xl md:text-5xl font-semibold text-[#1A3A47] mb-6">
+      <section data-ev-id="ev_7c4f516d32" className="relative py-32 overflow-hidden">
+        <div data-ev-id="ev_699d4ae8a5"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${fleetImage})` }} />
+
+        <div data-ev-id="ev_cdcb3294fa" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/80 via-[#0a2a3a]/70 to-[#1a3a47]/90" />
+        
+        <div data-ev-id="ev_06d2a23655" className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          <h1 data-ev-id="ev_25fab94ecb" className="text-4xl md:text-5xl font-semibold text-white mb-6">
             Research
           </h1>
-          <p data-ev-id="ev_c53d569548" className="text-xl text-[#2C5565] max-w-2xl mx-auto">
+          <p data-ev-id="ev_d896bd0b14" className="text-xl text-[#7DD3E8] max-w-2xl mx-auto">
             Modeling Moral Attachments in Art — exploring how creative works shape our ethical understanding
           </p>
         </div>
       </section>
 
       {/* Research Areas */}
-      <section data-ev-id="ev_43a7ab872a" className="py-20 bg-gradient-to-b from-[#4A9EB5] to-[#5DBCD2]">
-        <div data-ev-id="ev_e534461756" className="max-w-7xl mx-auto px-6">
-          <h2 data-ev-id="ev_43a87ebd8b" className="text-2xl md:text-3xl font-semibold text-[#1A3A47] text-center mb-12">
+      <section data-ev-id="ev_aa4bba921f" className="py-20 bg-gradient-to-b from-[#1a3a47] to-[#0a2a3a]">
+        <div data-ev-id="ev_a3a3a842ab" className="max-w-7xl mx-auto px-6">
+          <h2 data-ev-id="ev_a4600d6bd7" className="text-2xl md:text-3xl font-semibold text-white text-center mb-12">
             Research Areas
           </h2>
           
-          <div data-ev-id="ev_fca2e6352f" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div data-ev-id="ev_7af6181b97" className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {researchAreas.map((area, index) =>
-            <div data-ev-id="ev_bb588fc117"
+            <div data-ev-id="ev_6ad7a2a80b"
             key={index}
-            className="bg-white/80 backdrop-blur-sm p-8 rounded-lg">
+            className="bg-white/10 backdrop-blur-sm p-8 rounded-lg border border-white/20">
 
-                <area.icon className="w-10 h-10 text-[#3AA8C4] mb-4" />
-                <h3 data-ev-id="ev_6b51d79000" className="text-xl font-semibold text-[#1A3A47] mb-3">
+                <area.icon className="w-10 h-10 text-[#7DD3E8] mb-4" />
+                <h3 data-ev-id="ev_674b8b72be" className="text-xl font-semibold text-white mb-3">
                   {area.title}
                 </h3>
-                <p data-ev-id="ev_313b18620a" className="text-[#4A6B78] mb-6">
+                <p data-ev-id="ev_3a1908d917" className="text-white/70 mb-6">
                   {area.description}
                 </p>
-                <div data-ev-id="ev_e15b438c8f">
-                  <h4 data-ev-id="ev_8702658df3" className="text-sm font-semibold text-[#2C5565] mb-2">Key Topics:</h4>
-                  <ul data-ev-id="ev_baf7978fe4" className="flex flex-col gap-2">
+                <div data-ev-id="ev_98f94865f2">
+                  <h4 data-ev-id="ev_27b970c2bc" className="text-sm font-semibold text-[#7DD3E8] mb-2">Key Topics:</h4>
+                  <ul data-ev-id="ev_dd7c02ce26" className="flex flex-col gap-2">
                     {area.topics.map((topic, i) =>
-                  <li data-ev-id="ev_98bc0cef50" key={i} className="flex items-center gap-2 text-sm text-[#4A6B78]">
-                        <span data-ev-id="ev_95f915a584" className="w-1.5 h-1.5 bg-[#3AA8C4] rounded-full" />
+                  <li data-ev-id="ev_f7a9183c67" key={i} className="flex items-center gap-2 text-sm text-white/60">
+                        <span data-ev-id="ev_8762be5918" className="w-1.5 h-1.5 bg-[#7DD3E8] rounded-full" />
                         {topic}
                       </li>
                   )}
@@ -102,30 +109,30 @@ export default function Research() {
       </section>
 
       {/* Selected Publications */}
-      <section data-ev-id="ev_e9509862d0" className="py-20 bg-[#5DBCD2]">
-        <div data-ev-id="ev_cc6b7f39c1" className="max-w-4xl mx-auto px-6">
-          <div data-ev-id="ev_d83242eb46" className="flex items-center justify-center gap-3 mb-12">
-            <BookOpen className="w-8 h-8 text-[#1A3A47]" />
-            <h2 data-ev-id="ev_226dc03af2" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
+      <section data-ev-id="ev_96e36302d0" className="py-20 bg-[#0a2a3a]">
+        <div data-ev-id="ev_fbf1cf7687" className="max-w-4xl mx-auto px-6">
+          <div data-ev-id="ev_697bef97fe" className="flex items-center justify-center gap-3 mb-12">
+            <BookOpen className="w-8 h-8 text-[#7DD3E8]" />
+            <h2 data-ev-id="ev_6da8fcd2c9" className="text-2xl md:text-3xl font-semibold text-white">
               Selected Publications
             </h2>
           </div>
           
-          <div data-ev-id="ev_697bef97fe" className="flex flex-col gap-4">
+          <div data-ev-id="ev_6334430ec0" className="flex flex-col gap-4">
             {publications.map((pub, index) =>
-            <div data-ev-id="ev_fcb3a22bd3"
+            <div data-ev-id="ev_dc17e988d7"
             key={index}
-            className="bg-white/80 backdrop-blur-sm p-6 rounded-lg flex items-start gap-4">
+            className="bg-white/10 backdrop-blur-sm p-6 rounded-lg border border-white/20 flex items-start gap-4">
 
-                <FileText className="w-6 h-6 text-[#3AA8C4] flex-shrink-0 mt-1" />
-                <div data-ev-id="ev_8450868ba1">
-                  <h3 data-ev-id="ev_0a61e5c7af" className="text-lg font-semibold text-[#1A3A47]">
+                <FileText className="w-6 h-6 text-[#7DD3E8] flex-shrink-0 mt-1" />
+                <div data-ev-id="ev_fd909ab070">
+                  <h3 data-ev-id="ev_0255a94654" className="text-lg font-semibold text-white">
                     {pub.title}
                   </h3>
-                  <p data-ev-id="ev_191988bd24" className="text-sm text-[#4A6B78]">
+                  <p data-ev-id="ev_b20cac9cb4" className="text-sm text-white/60">
                     {pub.authors} • {pub.year}
                   </p>
-                  <span data-ev-id="ev_aa256f1b2f" className="inline-block mt-2 px-3 py-1 bg-[#E8F4F8] text-[#3AA8C4] text-xs font-medium rounded-full">
+                  <span data-ev-id="ev_c14b43af5f" className="inline-block mt-2 px-3 py-1 bg-[#7DD3E8]/20 text-[#7DD3E8] text-xs font-medium rounded-full">
                     {pub.type}
                   </span>
                 </div>

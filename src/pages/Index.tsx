@@ -1,6 +1,8 @@
 import { Link } from 'react-router';
 import { Layout } from '@/components/Layout';
 import { ArrowRight, Sparkles, Gamepad2, Music, Palette } from 'lucide-react';
+import heroSpaceStation from '@/assets/uploads/hero-space-station.jpg';
+import futuristicCity from '@/assets/uploads/futuristic-city.jpg';
 
 const researchAreas = [
 {
@@ -29,27 +31,28 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero Section */}
-      <section data-ev-id="ev_269f1ff726" className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-b from-[#8ED4E6] via-[#5DBCD2] to-[#4A9EB5]">
-        {/* Decorative background */}
-        <div data-ev-id="ev_3ee6a1410d" className="absolute inset-0 overflow-hidden">
-          <div data-ev-id="ev_908966b9c6" className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#4A9EB5]/50 to-transparent" />
-          <div data-ev-id="ev_0334cb3e22" className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-          <div data-ev-id="ev_b30d5587aa" className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
-        </div>
+      <section data-ev-id="ev_be6056e56b" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div data-ev-id="ev_8c23d5743f"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroSpaceStation})` }} />
 
-        <div data-ev-id="ev_739f504cbd" className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <h1 data-ev-id="ev_e9dbea47ed" className="text-lg md:text-xl font-medium text-[#1A3A47]/80 mb-4">
-            The Moral Imagination and Hope Laboratory
+        {/* Overlay for text readability */}
+        <div data-ev-id="ev_9de03f00ac" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/70 via-[#0a2a3a]/50 to-[#1a4a5a]/80" />
+        
+        <div data-ev-id="ev_68fd800613" className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          <h1 data-ev-id="ev_610f62f454" className="text-lg md:text-xl font-medium text-[#7DD3E8] mb-4 tracking-wider">
+            THE EXPERIENCE MACHINES
           </h1>
-          <p data-ev-id="ev_d042b59cbc" className="text-3xl md:text-4xl lg:text-5xl font-light text-[#1A3A47] leading-tight mb-8 text-balance">
-            <span data-ev-id="ev_2100e1cd28" className="font-semibold">Most philosophy is done analytically,</span> we take seriously the idea that philosophy may also be typological. 
+          <p data-ev-id="ev_879bbc7189" className="text-3xl md:text-4xl lg:text-5xl font-light text-white leading-tight mb-8 text-balance">
+            The <span data-ev-id="ev_c59043b1e3" className="font-semibold text-[#7DD3E8]">Moral Imagination and Hope Laboratory</span> explores how art shapes who we become.
           </p>
-          <p data-ev-id="ev_879bbc7189" className="text-lg md:text-xl text-[#2C5565] mb-10 max-w-2xl mx-auto">
-            MIHLab is an experimental pedagogical tool for philosophy educators. The idea is that there are two ways of knowing, analytic and typological. Analytically, one can learn philosophical concepts such as "what is justice?" through understanding abstract properties, designations, labels, crisp definitions and precise language, etc. However, another way to come to know and understand philosophical concepts such as "what is justice?" is through types, where we become acquainted with a just person, and accordingly come to understand what justice is, or we become acquainted with stories of a just person and come to understand what justice is. A philosophical laboratory where we invite the public into virtual worlds to explore philosophy typologically with us.
+          <p data-ev-id="ev_b7260388ad" className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto">
+            A philosophical laboratory where we invite the public into virtual worlds to explore questions of ethics, identity, and meaning.
           </p>
           <Link
             to="/research"
-            className="inline-flex items-center gap-2 px-8 py-3 border-2 border-[#1A3A47] text-[#1A3A47] font-medium rounded-full hover:bg-[#1A3A47] hover:text-white transition-all duration-300">
+            className="inline-flex items-center gap-2 px-8 py-3 border-2 border-[#7DD3E8] text-[#7DD3E8] font-medium rounded-full hover:bg-[#7DD3E8] hover:text-[#0a2a3a] transition-all duration-300">
 
             LEARN MORE
             <ArrowRight size={18} />
@@ -58,26 +61,33 @@ export default function Index() {
       </section>
 
       {/* Research Areas Section */}
-      <section data-ev-id="ev_062523a928" className="py-20 bg-gradient-to-b from-[#4A9EB5] to-[#5DBCD2]">
-        <div data-ev-id="ev_c79e4db1c3" className="max-w-7xl mx-auto px-6">
-          <h2 data-ev-id="ev_3d1fe74664" className="text-2xl md:text-3xl font-semibold text-[#1A3A47] text-center mb-4">
+      <section data-ev-id="ev_cbf0652f28" className="relative py-24 overflow-hidden">
+        {/* Background Image */}
+        <div data-ev-id="ev_bba4417994"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${futuristicCity})` }} />
+
+        <div data-ev-id="ev_ba57e616cb" className="absolute inset-0 bg-[#1a3a47]/85" />
+        
+        <div data-ev-id="ev_ff1e00a19d" className="relative z-10 max-w-7xl mx-auto px-6">
+          <h2 data-ev-id="ev_5f9a514b61" className="text-2xl md:text-3xl font-semibold text-white text-center mb-4">
             Philosophy for the Real World
           </h2>
-          <p data-ev-id="ev_4f47b5b8a3" className="text-[#2C5565] text-center mb-12 max-w-2xl mx-auto">
+          <p data-ev-id="ev_8938b192c9" className="text-[#7DD3E8] text-center mb-12 max-w-2xl mx-auto">
             Exploring the intersection of art, ethics, and human experience
           </p>
           
-          <div data-ev-id="ev_18275a40dc" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div data-ev-id="ev_5394ecbba3" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {researchAreas.map((area, index) =>
-            <div data-ev-id="ev_0bf564cfeb"
+            <div data-ev-id="ev_d5084c2ddb"
             key={index}
-            className="bg-white/80 backdrop-blur-sm p-6 rounded-lg hover:bg-white transition-colors duration-300">
+            className="bg-white/10 backdrop-blur-sm p-6 rounded-lg border border-white/20 hover:bg-white/20 transition-colors duration-300">
 
-                <area.icon className="w-8 h-8 text-[#3AA8C4] mb-4" />
-                <h3 data-ev-id="ev_dcc8908198" className="text-lg font-semibold text-[#1A3A47] mb-3">
+                <area.icon className="w-8 h-8 text-[#7DD3E8] mb-4" />
+                <h3 data-ev-id="ev_a0bd547efd" className="text-lg font-semibold text-white mb-3">
                   {area.title}
                 </h3>
-                <p data-ev-id="ev_7f9c4b78c8" className="text-sm text-[#4A6B78] leading-relaxed">
+                <p data-ev-id="ev_19d9d2bf27" className="text-sm text-white/70 leading-relaxed">
                   {area.description}
                 </p>
               </div>
@@ -87,27 +97,27 @@ export default function Index() {
       </section>
 
       {/* What We Share Section */}
-      <section data-ev-id="ev_876667220e" className="py-20 bg-[#5DBCD2]">
-        <div data-ev-id="ev_881b3269eb" className="max-w-4xl mx-auto px-6">
-          <h2 data-ev-id="ev_6ab12bd974" className="text-2xl md:text-3xl font-semibold text-[#1A3A47] text-center mb-12">
+      <section data-ev-id="ev_ad27935b3d" className="py-20 bg-gradient-to-b from-[#1a3a47] to-[#0a2a3a]">
+        <div data-ev-id="ev_bc0a99e408" className="max-w-4xl mx-auto px-6">
+          <h2 data-ev-id="ev_97fc2ac790" className="text-2xl md:text-3xl font-semibold text-white text-center mb-12">
             What We Share
           </h2>
-          <div data-ev-id="ev_70bc56e2dd" className="bg-white/80 backdrop-blur-sm rounded-lg p-8">
-            <ul data-ev-id="ev_a3125e4943" className="flex flex-col gap-4 text-[#2C5565]">
-              <li data-ev-id="ev_448ba3cd2e" className="flex items-start gap-3">
-                <span data-ev-id="ev_130057ca93" className="w-2 h-2 mt-2 bg-[#3AA8C4] rounded-full flex-shrink-0" />
+          <div data-ev-id="ev_9c17fa9e58" className="bg-white/10 backdrop-blur-sm rounded-lg p-8 border border-white/20">
+            <ul data-ev-id="ev_39a534076c" className="flex flex-col gap-4 text-white/80">
+              <li data-ev-id="ev_c076972965" className="flex items-start gap-3">
+                <span data-ev-id="ev_901a800e36" className="w-2 h-2 mt-2 bg-[#7DD3E8] rounded-full flex-shrink-0" />
                 Links to papers (past or present) on music, identity, games and ethics
               </li>
-              <li data-ev-id="ev_575fd49e5f" className="flex items-start gap-3">
-                <span data-ev-id="ev_adeef57244" className="w-2 h-2 mt-2 bg-[#3AA8C4] rounded-full flex-shrink-0" />
+              <li data-ev-id="ev_49a84c1598" className="flex items-start gap-3">
+                <span data-ev-id="ev_7fdc70c850" className="w-2 h-2 mt-2 bg-[#7DD3E8] rounded-full flex-shrink-0" />
                 Reviews of games with interesting approaches to ethical play
               </li>
-              <li data-ev-id="ev_54279c7868" className="flex items-start gap-3">
-                <span data-ev-id="ev_08746307bb" className="w-2 h-2 mt-2 bg-[#3AA8C4] rounded-full flex-shrink-0" />
+              <li data-ev-id="ev_a22583bb48" className="flex items-start gap-3">
+                <span data-ev-id="ev_96b96c45a0" className="w-2 h-2 mt-2 bg-[#7DD3E8] rounded-full flex-shrink-0" />
                 Reviews of books on games, music and identity
               </li>
-              <li data-ev-id="ev_ed30bfb5b2" className="flex items-start gap-3">
-                <span data-ev-id="ev_a96c47486f" className="w-2 h-2 mt-2 bg-[#3AA8C4] rounded-full flex-shrink-0" />
+              <li data-ev-id="ev_7a91e7d040" className="flex items-start gap-3">
+                <span data-ev-id="ev_65b1d975d7" className="w-2 h-2 mt-2 bg-[#7DD3E8] rounded-full flex-shrink-0" />
                 Announcements of events (conferences, workshops etc.) related to art and identity
               </li>
             </ul>
@@ -116,17 +126,17 @@ export default function Index() {
       </section>
 
       {/* CTA Section */}
-      <section data-ev-id="ev_095797998e" className="py-20 bg-gradient-to-b from-[#5DBCD2] to-[#4A9EB5]">
-        <div data-ev-id="ev_dd782fd717" className="max-w-4xl mx-auto px-6 text-center">
-          <h2 data-ev-id="ev_89057bf212" className="text-2xl md:text-3xl font-semibold text-[#1A3A47] mb-4">
+      <section data-ev-id="ev_0e164ea3b6" className="py-20 bg-[#0a2a3a]">
+        <div data-ev-id="ev_05fd112db7" className="max-w-4xl mx-auto px-6 text-center">
+          <h2 data-ev-id="ev_1bda6e60da" className="text-2xl md:text-3xl font-semibold text-white mb-4">
             Join Us
           </h2>
-          <p data-ev-id="ev_eeab43adcd" className="text-[#2C5565] mb-8 max-w-xl mx-auto">
+          <p data-ev-id="ev_71028a881b" className="text-white/70 mb-8 max-w-xl mx-auto">
             We are always looking for collaborators, researchers, and curious minds to explore these questions with us.
           </p>
           <Link
             to="/participate"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-[#1A3A47] text-white font-medium rounded-full hover:bg-[#2C5565] transition-colors duration-300">
+            className="inline-flex items-center gap-2 px-8 py-3 bg-[#7DD3E8] text-[#0a2a3a] font-medium rounded-full hover:bg-[#5DBCD2] transition-colors duration-300">
 
             Get Involved
             <ArrowRight size={18} />

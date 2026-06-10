@@ -1,7 +1,8 @@
 import { Layout } from '@/components/Layout';
-import { Gamepad2, BookOpen, Calendar, Play, FileText, Video, Loader2, RefreshCw, ExternalLink, Radio } from 'lucide-react';
+import { Gamepad2, BookOpen, Calendar, Play, FileText, Video, Loader2, ExternalLink, Radio } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import fleetMoonImage from '@/assets/uploads/fleet-moon.jpg';
 
 interface MediaItem {
   id: string;
@@ -96,7 +97,6 @@ function SubstackSection() {
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('substack-feed');
-
       if (fnError) throw fnError;
       setPosts(data?.posts ?? []);
     } catch (err) {
@@ -123,8 +123,8 @@ function SubstackSection() {
   if (loading) {
     return (
       <div data-ev-id="ev_df495b895d" className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 text-[#3AA8C4] animate-spin" />
-        <span data-ev-id="ev_8a917cdee5" className="ml-3 text-[#2C5565]">Loading Substack posts...</span>
+        <Loader2 className="w-8 h-8 text-[#7DD3E8] animate-spin" />
+        <span data-ev-id="ev_8a917cdee5" className="ml-3 text-[#a0c4d4]">Loading Substack posts...</span>
       </div>);
 
   }
@@ -132,7 +132,7 @@ function SubstackSection() {
   if (error || posts.length === 0) {
     return (
       <div data-ev-id="ev_8f60fa82fc" className="text-center py-12">
-        <p data-ev-id="ev_53987f0961" className="text-[#4A6B78] mb-4">{error || 'No posts available yet.'}</p>
+        <p data-ev-id="ev_53987f0961" className="text-[#a0c4d4] mb-4">{error || 'No posts available yet.'}</p>
         <a data-ev-id="ev_3fb55bed05"
         href="https://mihlab.substack.com"
         target="_blank"
@@ -154,24 +154,21 @@ function SubstackSection() {
       href={post.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="bg-white/80 backdrop-blur-sm p-6 rounded-lg hover:bg-white transition-colors group">
+      className="bg-[#112240] border border-[#7DD3E8]/20 p-6 rounded-lg hover:border-[#7DD3E8]/40 transition-colors group">
 
           <div data-ev-id="ev_da60c3943b" className="flex items-start justify-between mb-3">
             <div data-ev-id="ev_eac2f746d9" className="w-10 h-10 bg-[#FF6719]/10 rounded-lg flex items-center justify-center">
               <FileText className="w-5 h-5 text-[#FF6719]" />
             </div>
-            <span data-ev-id="ev_6fdb90b02c" className="text-xs text-[#6B8A99]">{formatDate(post.pubDate)}</span>
+            <span data-ev-id="ev_6fdb90b02c" className="text-xs text-[#6b8a99]">{formatDate(post.pubDate)}</span>
           </div>
-          
-          <h3 data-ev-id="ev_75ed79d68a" className="text-lg font-semibold text-[#1A3A47] mb-2 group-hover:text-[#3AA8C4] transition-colors line-clamp-2">
+          <h3 data-ev-id="ev_68c3a636e4" className="text-lg font-semibold text-white mb-2 group-hover:text-[#7DD3E8] transition-colors line-clamp-2">
             {post.title}
           </h3>
-          
-          <p data-ev-id="ev_cc55366fe1" className="text-sm text-[#4A6B78] mb-4 line-clamp-3">
+          <p data-ev-id="ev_e9dede205f" className="text-sm text-[#a0c4d4] mb-4 line-clamp-3">
             {post.description}
           </p>
-          
-          <span data-ev-id="ev_e4381caf4e" className="inline-flex items-center gap-1 text-sm text-[#FF6719] font-medium">
+          <span data-ev-id="ev_63de0e2dfc" className="inline-flex items-center gap-1 text-sm text-[#FF6719] font-medium">
             Read on Substack
             <ExternalLink className="w-3 h-3" />
           </span>
@@ -200,7 +197,6 @@ function YouTubeSection() {
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('youtube-videos');
-
       if (fnError) throw fnError;
       setVideos(data?.videos ?? []);
     } catch (err) {
@@ -226,18 +222,18 @@ function YouTubeSection() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_9049e1cb29" className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 text-[#3AA8C4] animate-spin" />
-        <span data-ev-id="ev_b1bf4ef0e2" className="ml-3 text-[#2C5565]">Loading YouTube videos...</span>
+      <div data-ev-id="ev_273204ff4c" className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 text-[#7DD3E8] animate-spin" />
+        <span data-ev-id="ev_6b2c288fb0" className="ml-3 text-[#a0c4d4]">Loading YouTube videos...</span>
       </div>);
 
   }
 
   if (error || videos.length === 0) {
     return (
-      <div data-ev-id="ev_2c3759bc32" className="text-center py-12">
-        <p data-ev-id="ev_087ae098aa" className="text-[#4A6B78] mb-4">{error || 'No videos available yet.'}</p>
-        <a data-ev-id="ev_b255f0abad"
+      <div data-ev-id="ev_b32f74777a" className="text-center py-12">
+        <p data-ev-id="ev_0b4dd8550a" className="text-[#a0c4d4] mb-4">{error || 'No videos available yet.'}</p>
+        <a data-ev-id="ev_e67818247c"
         href="https://www.youtube.com/@mihlab-workshop"
         target="_blank"
         rel="noopener noreferrer"
@@ -251,15 +247,15 @@ function YouTubeSection() {
   }
 
   return (
-    <div data-ev-id="ev_651bbd43a0" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div data-ev-id="ev_fc1b1bc25d" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {videos.map((video) =>
-      <div data-ev-id="ev_bed4f7eef6"
+      <div data-ev-id="ev_deeaa15cb2"
       key={video.id}
-      className="bg-white/80 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white transition-colors">
+      className="bg-[#112240] border border-[#7DD3E8]/20 rounded-lg overflow-hidden hover:border-[#7DD3E8]/40 transition-colors">
 
           {playingId === video.id ?
-        <div data-ev-id="ev_916c500a20" className="aspect-video">
-              <iframe data-ev-id="ev_2fd3340707"
+        <div data-ev-id="ev_14bc75fa76" className="aspect-video">
+              <iframe data-ev-id="ev_07eed90a29"
           src={`https://www.youtube.com/embed/${video.id}?autoplay=1`}
           className="w-full h-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -268,30 +264,27 @@ function YouTubeSection() {
 
             </div> :
 
-        <button data-ev-id="ev_e8971326e7"
+        <button data-ev-id="ev_81513c0d7f"
         onClick={() => setPlayingId(video.id)}
-        className="relative w-full aspect-video bg-[#1A3A47]/10 group">
+        className="relative w-full aspect-video bg-[#0a1929] group">
 
               {video.thumbnail &&
-          <img data-ev-id="ev_02888bdd14"
+          <img data-ev-id="ev_15dcac4806"
           src={video.thumbnail}
           alt={video.title}
           className="w-full h-full object-cover" />
 
           }
-              <div data-ev-id="ev_927fb83704" className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                <div data-ev-id="ev_cf817c8793" className="w-16 h-16 bg-[#FF0000] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div data-ev-id="ev_8ebe8082f3" className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/50 transition-colors">
+                <div data-ev-id="ev_7697eed60a" className="w-16 h-16 bg-[#FF0000] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Play className="w-8 h-8 text-white ml-1" fill="white" />
                 </div>
               </div>
             </button>
         }
-          
-          <div data-ev-id="ev_f5e3cfd6a1" className="p-4">
-            <div data-ev-id="ev_bc749c2fff" className="flex items-center justify-between mb-2">
-              <span data-ev-id="ev_f44fd82357" className="text-xs text-[#6B8A99]">{formatDate(video.publishedAt)}</span>
-            </div>
-            <h3 data-ev-id="ev_89bd8070f2" className="text-base font-semibold text-[#1A3A47] line-clamp-2">
+          <div data-ev-id="ev_1408d6b1b6" className="p-4">
+            <span data-ev-id="ev_ddde6b5804" className="text-xs text-[#6b8a99]">{formatDate(video.publishedAt)}</span>
+            <h3 data-ev-id="ev_b86502557c" className="text-base font-semibold text-white line-clamp-2 mt-1">
               {video.title}
             </h3>
           </div>
@@ -304,81 +297,31 @@ function YouTubeSection() {
 // Twitch Embed Section
 function TwitchSection() {
   const channelName = 'mihlab';
-  const [embedLoaded, setEmbedLoaded] = useState(false);
-  const [embedError, setEmbedError] = useState(false);
-
-  // Get parent domains - Twitch requires exact domain match
-  const parentDomain = typeof window !== 'undefined' ? window.location.hostname : '';
-
-  // Show fallback card if embed fails or domain issues
-  if (embedError || !parentDomain) {
-    return (
-      <div data-ev-id="ev_19c97b7a2d" className="max-w-4xl mx-auto">
-        <div data-ev-id="ev_61b9f38bc3" className="bg-white/80 backdrop-blur-sm rounded-lg p-8 text-center">
-          <div data-ev-id="ev_9f008e2c5e" className="w-20 h-20 bg-[#9146FF]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Radio className="w-10 h-10 text-[#9146FF]" />
-          </div>
-          <h3 data-ev-id="ev_d17f194b4f" className="text-2xl font-semibold text-[#1A3A47] mb-3">Watch us Live on Twitch</h3>
-          <p data-ev-id="ev_9dcf456fad" className="text-[#4A6B78] mb-6 max-w-md mx-auto">Join our live workshops, philosophical discussions, and community events</p>
-          <a data-ev-id="ev_0f3d18d6e5"
-          href={`https://www.twitch.tv/${channelName}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-[#9146FF] text-white rounded-lg hover:bg-[#7c3aed] transition-colors font-medium text-lg">
-
-            <Radio className="w-5 h-5" />
-            Open Twitch Channel
-            <ExternalLink className="w-5 h-5" />
-          </a>
-        </div>
-      </div>);
-
-  }
 
   return (
-    <div data-ev-id="ev_824db0490c" className="max-w-4xl mx-auto">
-      <div data-ev-id="ev_28087dfe09" className="bg-white/80 backdrop-blur-sm rounded-lg overflow-hidden">
-        <div data-ev-id="ev_f34322b968" className="aspect-video relative">
-          {!embedLoaded &&
-          <div data-ev-id="ev_195a4d1b4d" className="absolute inset-0 flex items-center justify-center bg-[#1A3A47]/10">
-              <Loader2 className="w-8 h-8 text-[#9146FF] animate-spin" />
-            </div>
-          }
-          <iframe data-ev-id="ev_36625c61b2"
-          src={`https://player.twitch.tv/?channel=${channelName}&parent=${parentDomain}&muted=true`}
-          className="w-full h-full"
-          allowFullScreen
-          title="MIHLab Twitch Stream"
-          onLoad={() => setEmbedLoaded(true)}
-          onError={() => setEmbedError(true)} />
-
+    <div data-ev-id="ev_3622f1baf8" className="max-w-4xl mx-auto">
+      <div data-ev-id="ev_aeb9930281" className="bg-[#112240] border border-[#7DD3E8]/20 rounded-lg p-8 text-center">
+        <div data-ev-id="ev_d4ceeb52af" className="w-20 h-20 bg-[#9146FF]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Radio className="w-10 h-10 text-[#9146FF]" />
         </div>
-        <div data-ev-id="ev_dc4626389d" className="p-4 flex items-center justify-between">
-          <div data-ev-id="ev_95dc45aac8" className="flex items-center gap-3">
-            <div data-ev-id="ev_719faf01b6" className="w-10 h-10 bg-[#9146FF]/10 rounded-lg flex items-center justify-center">
-              <Radio className="w-5 h-5 text-[#9146FF]" />
-            </div>
-            <div data-ev-id="ev_d1c399bb2c">
-              <p data-ev-id="ev_eca75841ae" className="font-semibold text-[#1A3A47]">MIHLab on Twitch</p>
-              <p data-ev-id="ev_e0975b4e13" className="text-sm text-[#4A6B78]">Live workshops & discussions</p>
-            </div>
-          </div>
-          <a data-ev-id="ev_be7779fb8d"
-          href={`https://www.twitch.tv/${channelName}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#9146FF] text-white rounded-lg hover:bg-[#7c3aed] transition-colors text-sm font-medium">
+        <h3 data-ev-id="ev_efee21945a" className="text-2xl font-semibold text-white mb-3">Watch us Live on Twitch</h3>
+        <p data-ev-id="ev_0860db7d47" className="text-[#a0c4d4] mb-6 max-w-md mx-auto">Join our live workshops, philosophical discussions, and community events</p>
+        <a data-ev-id="ev_ad9484460f"
+        href={`https://www.twitch.tv/${channelName}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 px-8 py-4 bg-[#9146FF] text-white rounded-lg hover:bg-[#7c3aed] transition-colors font-medium text-lg">
 
-            Follow on Twitch
-            <ExternalLink className="w-4 h-4" />
-          </a>
-        </div>
+          <Radio className="w-5 h-5" />
+          Open Twitch Channel
+          <ExternalLink className="w-5 h-5" />
+        </a>
       </div>
     </div>);
 
 }
 
-// Notion Media Section (existing)
+// Notion Media Section
 function NotionMediaSection() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -396,7 +339,6 @@ function NotionMediaSection() {
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('notion-media');
-
       if (fnError) throw fnError;
       setMediaItems(data?.items ?? []);
     } catch (err) {
@@ -421,51 +363,45 @@ function NotionMediaSection() {
 
   if (loading) {
     return (
-      <div data-ev-id="ev_1b497e291f" className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 text-[#3AA8C4] animate-spin" />
-        <span data-ev-id="ev_9e3af29e6f" className="ml-3 text-[#2C5565]">Loading content from Notion...</span>
+      <div data-ev-id="ev_f13f785922" className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 text-[#7DD3E8] animate-spin" />
+        <span data-ev-id="ev_8cad75b9df" className="ml-3 text-[#a0c4d4]">Loading content from Notion...</span>
       </div>);
 
   }
 
   if (error || mediaItems.length === 0) {
-    return null; // Hide section if no Notion content
+    return null;
   }
 
   return (
-    <div data-ev-id="ev_d80b8d9874" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div data-ev-id="ev_2bacb8451e" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {mediaItems.map((item) =>
-      <a data-ev-id="ev_d2a4f6f9e5"
+      <a data-ev-id="ev_b8fabd273c"
       key={item.id}
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="bg-white/80 backdrop-blur-sm p-6 rounded-lg hover:bg-white transition-colors group">
+      className="bg-[#112240] border border-[#7DD3E8]/20 p-6 rounded-lg hover:border-[#7DD3E8]/40 transition-colors group">
 
-          <div data-ev-id="ev_77f138ccf5" className="flex items-start justify-between mb-3">
-            <div data-ev-id="ev_61510b544e" className="w-10 h-10 bg-[#E8F4F8] rounded-lg flex items-center justify-center text-[#3AA8C4]">
-              <FileText className="w-5 h-5" />
+          <div data-ev-id="ev_0fe7507ae3" className="flex items-start justify-between mb-3">
+            <div data-ev-id="ev_b1521f7d00" className="w-10 h-10 bg-[#7DD3E8]/10 rounded-lg flex items-center justify-center">
+              <FileText className="w-5 h-5 text-[#7DD3E8]" />
             </div>
-            <span data-ev-id="ev_4d2309eb97" className="text-xs text-[#6B8A99]">{formatDate(item.date)}</span>
+            <span data-ev-id="ev_3ddffa8f1d" className="text-xs text-[#6b8a99]">{formatDate(item.date)}</span>
           </div>
-          
-          <h3 data-ev-id="ev_a4b2d1b9ea" className="text-lg font-semibold text-[#1A3A47] mb-2 group-hover:text-[#3AA8C4] transition-colors">
+          <h3 data-ev-id="ev_b342971b59" className="text-lg font-semibold text-white mb-2 group-hover:text-[#7DD3E8] transition-colors">
             {item.title}
           </h3>
-          
           {item.description &&
-        <p data-ev-id="ev_c5cd47f5e6" className="text-sm text-[#4A6B78] mb-4 line-clamp-3">
+        <p data-ev-id="ev_38d150661e" className="text-sm text-[#a0c4d4] mb-4 line-clamp-3">
               {item.description}
             </p>
         }
-          
           {item.tags.length > 0 &&
-        <div data-ev-id="ev_029c342db6" className="flex flex-wrap gap-2">
+        <div data-ev-id="ev_9cabbd7693" className="flex flex-wrap gap-2">
               {item.tags.map((tag, i) =>
-          <span data-ev-id="ev_6ad6a640ce"
-          key={i}
-          className="px-2 py-1 bg-[#E8F4F8] text-[#3AA8C4] text-xs font-medium rounded">
-
+          <span data-ev-id="ev_27c5970017" key={i} className="px-2 py-1 bg-[#7DD3E8]/10 text-[#7DD3E8] text-xs font-medium rounded">
                   {tag}
                 </span>
           )}
@@ -481,121 +417,96 @@ export default function Media() {
   return (
     <Layout>
       {/* Hero */}
-      <section data-ev-id="ev_210c912df3" className="bg-gradient-to-b from-[#8ED4E6] via-[#5DBCD2] to-[#4A9EB5] py-20">
-        <div data-ev-id="ev_5041c22085" className="max-w-4xl mx-auto px-6 text-center">
-          <h1 data-ev-id="ev_899d0f9155" className="text-4xl md:text-5xl font-semibold text-[#1A3A47] mb-6">
-            Media
-          </h1>
-          <p data-ev-id="ev_b3d399e57a" className="text-xl text-[#2C5565] max-w-2xl mx-auto">
+      <section data-ev-id="ev_f5fbe455c6" className="relative min-h-[50vh] flex items-center justify-center overflow-hidden">
+        <div data-ev-id="ev_dc1e2f2034" className="absolute inset-0">
+          <img data-ev-id="ev_4c2214f284" src={fleetMoonImage} alt="" className="w-full h-full object-cover" />
+          <div data-ev-id="ev_7e497999ce" className="absolute inset-0 bg-gradient-to-b from-[#0a1929]/80 via-[#0a1929]/60 to-[#0a1929]" />
+        </div>
+        <div data-ev-id="ev_5204322b1d" className="relative z-10 max-w-4xl mx-auto px-6 text-center py-20">
+          <h1 data-ev-id="ev_71c9593ed6" className="text-4xl md:text-5xl font-semibold text-white mb-6">Media</h1>
+          <p data-ev-id="ev_d0ac3d8c87" className="text-xl text-[#a0c4d4] max-w-2xl mx-auto">
             Reviews, papers, streams, and announcements from the lab
           </p>
         </div>
       </section>
 
       {/* Twitch Live Stream */}
-      <section data-ev-id="ev_67f8fae050" className="py-16 bg-gradient-to-b from-[#4A9EB5] to-[#5DBCD2]">
-        <div data-ev-id="ev_41c304887d" className="max-w-6xl mx-auto px-6">
-          <div data-ev-id="ev_2b336657e7" className="flex items-center justify-center gap-3 mb-8">
-            <Radio className="w-8 h-8 text-[#1A3A47]" />
-            <h2 data-ev-id="ev_adcbc657c0" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
-              Live Stream
-            </h2>
+      <section data-ev-id="ev_18f2a43b04" className="py-16 bg-[#0a1929]">
+        <div data-ev-id="ev_2b71cdf8fb" className="max-w-6xl mx-auto px-6">
+          <div data-ev-id="ev_180d214937" className="flex items-center justify-center gap-3 mb-8">
+            <Radio className="w-8 h-8 text-[#7DD3E8]" />
+            <h2 data-ev-id="ev_3a98cea7b4" className="text-2xl md:text-3xl font-semibold text-white">Live Stream</h2>
           </div>
-          <p data-ev-id="ev_4b909fd3b6" className="text-center text-[#2C5565] mb-10 max-w-xl mx-auto">
+          <p data-ev-id="ev_9600c122f9" className="text-center text-[#a0c4d4] mb-10 max-w-xl mx-auto">
             Catch our live workshops and philosophical discussions
           </p>
-          
           <TwitchSection />
         </div>
       </section>
 
       {/* YouTube Videos */}
-      <section data-ev-id="ev_3eab9f4799" className="py-16 bg-[#5DBCD2]">
-        <div data-ev-id="ev_ecb5707872" className="max-w-6xl mx-auto px-6">
-          <div data-ev-id="ev_117e6e470c" className="flex items-center justify-center gap-3 mb-8">
-            <Video className="w-8 h-8 text-[#1A3A47]" />
-            <h2 data-ev-id="ev_7c2bb8ffa0" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
-              Latest Videos
-            </h2>
+      <section data-ev-id="ev_4e0bb7861f" className="py-16 bg-[#112240]">
+        <div data-ev-id="ev_104efa7cbc" className="max-w-6xl mx-auto px-6">
+          <div data-ev-id="ev_33f78ba330" className="flex items-center justify-center gap-3 mb-8">
+            <Video className="w-8 h-8 text-[#7DD3E8]" />
+            <h2 data-ev-id="ev_ac7e81c908" className="text-2xl md:text-3xl font-semibold text-white">Latest Videos</h2>
           </div>
-          <p data-ev-id="ev_1d5b277656" className="text-center text-[#2C5565] mb-10 max-w-xl mx-auto">
+          <p data-ev-id="ev_8cdce6e69c" className="text-center text-[#a0c4d4] mb-10 max-w-xl mx-auto">
             Recorded sessions and video essays from our workshop
           </p>
-          
           <YouTubeSection />
         </div>
       </section>
 
       {/* Substack Posts */}
-      <section data-ev-id="ev_4c8bc3c512" className="py-16 bg-gradient-to-b from-[#5DBCD2] to-[#4A9EB5]">
-        <div data-ev-id="ev_a9707d0df4" className="max-w-6xl mx-auto px-6">
-          <div data-ev-id="ev_eb63d01428" className="flex items-center justify-center gap-3 mb-8">
-            <FileText className="w-8 h-8 text-[#1A3A47]" />
-            <h2 data-ev-id="ev_e4246a83e5" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
-              Latest from Substack
-            </h2>
+      <section data-ev-id="ev_0c3df897e1" className="py-16 bg-[#0a1929]">
+        <div data-ev-id="ev_5d320fe5dc" className="max-w-6xl mx-auto px-6">
+          <div data-ev-id="ev_4fa92178ec" className="flex items-center justify-center gap-3 mb-8">
+            <FileText className="w-8 h-8 text-[#7DD3E8]" />
+            <h2 data-ev-id="ev_e12cb8fcb7" className="text-2xl md:text-3xl font-semibold text-white">Latest from Substack</h2>
           </div>
-          <p data-ev-id="ev_cecc0e6f37" className="text-center text-[#2C5565] mb-10 max-w-xl mx-auto">
+          <p data-ev-id="ev_58558952ce" className="text-center text-[#a0c4d4] mb-10 max-w-xl mx-auto">
             Essays, reflections, and updates from our newsletter
           </p>
-          
           <SubstackSection />
         </div>
       </section>
 
       {/* Notion Content Feed */}
-      <section data-ev-id="ev_e667a77b68" className="py-16 bg-[#4A9EB5]">
-        <div data-ev-id="ev_a66ccd2358" className="max-w-6xl mx-auto px-6">
-          <div data-ev-id="ev_07a506ca4e" className="flex items-center justify-center gap-3 mb-8">
-            <FileText className="w-8 h-8 text-[#1A3A47]" />
-            <h2 data-ev-id="ev_28e6fb2ba2" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
-              Additional Resources
-            </h2>
+      <section data-ev-id="ev_3eab9f4799" className="py-16 bg-[#112240]">
+        <div data-ev-id="ev_ecb5707872" className="max-w-6xl mx-auto px-6">
+          <div data-ev-id="ev_117e6e470c" className="flex items-center justify-center gap-3 mb-8">
+            <FileText className="w-8 h-8 text-[#7DD3E8]" />
+            <h2 data-ev-id="ev_7c2bb8ffa0" className="text-2xl md:text-3xl font-semibold text-white">Additional Resources</h2>
           </div>
-          <p data-ev-id="ev_405d579828" className="text-center text-[#2C5565] mb-10 max-w-xl mx-auto">
+          <p data-ev-id="ev_e184852e1f" className="text-center text-[#a0c4d4] mb-10 max-w-xl mx-auto">
             Curated content from our research database
           </p>
-          
           <NotionMediaSection />
         </div>
       </section>
 
       {/* Game Reviews */}
-      <section data-ev-id="ev_bdc7e5b54d" className="py-16 bg-gradient-to-b from-[#4A9EB5] to-[#5DBCD2]">
-        <div data-ev-id="ev_e7122ddeab" className="max-w-6xl mx-auto px-6">
-          <div data-ev-id="ev_4c8cbc86c1" className="flex items-center justify-center gap-3 mb-8">
-            <Gamepad2 className="w-8 h-8 text-[#1A3A47]" />
-            <h2 data-ev-id="ev_533c9b1747" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
-              Game Reviews
-            </h2>
+      <section data-ev-id="ev_3b174f1f47" className="py-16 bg-[#0a1929]">
+        <div data-ev-id="ev_56a93244a2" className="max-w-6xl mx-auto px-6">
+          <div data-ev-id="ev_2558fada1c" className="flex items-center justify-center gap-3 mb-8">
+            <Gamepad2 className="w-8 h-8 text-[#7DD3E8]" />
+            <h2 data-ev-id="ev_dd258665dd" className="text-2xl md:text-3xl font-semibold text-white">Game Reviews</h2>
           </div>
-          <p data-ev-id="ev_062d73528c" className="text-center text-[#2C5565] mb-10 max-w-xl mx-auto">
+          <p data-ev-id="ev_da9a2171fa" className="text-center text-[#a0c4d4] mb-10 max-w-xl mx-auto">
             Games with interesting approaches to ethical play
           </p>
-          
-          <div data-ev-id="ev_bd4c3ab3e3" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div data-ev-id="ev_c3c572b5e0" className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {gameReviews.map((game, index) =>
-            <div data-ev-id="ev_924c2ef9d1"
-            key={index}
-            className="bg-white/80 backdrop-blur-sm p-6 rounded-lg hover:bg-white transition-colors">
-
-                <div data-ev-id="ev_64b0b5e7b4" className="w-12 h-12 bg-[#E8F4F8] rounded-lg flex items-center justify-center mb-4">
-                  <Play className="w-6 h-6 text-[#3AA8C4]" />
+            <div data-ev-id="ev_608c7f980a" key={index} className="bg-[#112240] border border-[#7DD3E8]/20 p-6 rounded-lg hover:border-[#7DD3E8]/40 transition-colors">
+                <div data-ev-id="ev_8add3321a7" className="w-12 h-12 bg-[#7DD3E8]/10 rounded-lg flex items-center justify-center mb-4">
+                  <Play className="w-6 h-6 text-[#7DD3E8]" />
                 </div>
-                <h3 data-ev-id="ev_a6fb2205c3" className="text-lg font-semibold text-[#1A3A47] mb-2">
-                  {game.title}
-                </h3>
-                <p data-ev-id="ev_b0eff55038" className="text-sm text-[#4A6B78] mb-4">
-                  {game.description}
-                </p>
-                <div data-ev-id="ev_a2f09e653e" className="flex flex-wrap gap-2">
+                <h3 data-ev-id="ev_9b9615a2d9" className="text-lg font-semibold text-white mb-2">{game.title}</h3>
+                <p data-ev-id="ev_7b94db41bb" className="text-sm text-[#a0c4d4] mb-4">{game.description}</p>
+                <div data-ev-id="ev_7ed12bbc8e" className="flex flex-wrap gap-2">
                   {game.tags.map((tag, i) =>
-                <span data-ev-id="ev_c4a1efbf61"
-                key={i}
-                className="px-2 py-1 bg-[#E8F4F8] text-[#3AA8C4] text-xs font-medium rounded">
-
-                      {tag}
-                    </span>
+                <span data-ev-id="ev_6b7ad43303" key={i} className="px-2 py-1 bg-[#7DD3E8]/10 text-[#7DD3E8] text-xs font-medium rounded">{tag}</span>
                 )}
                 </div>
               </div>
@@ -605,35 +516,23 @@ export default function Media() {
       </section>
 
       {/* Book Reviews */}
-      <section data-ev-id="ev_8b14844c4e" className="py-16 bg-[#5DBCD2]">
-        <div data-ev-id="ev_d6f958fa21" className="max-w-4xl mx-auto px-6">
-          <div data-ev-id="ev_26201449bb" className="flex items-center justify-center gap-3 mb-8">
-            <BookOpen className="w-8 h-8 text-[#1A3A47]" />
-            <h2 data-ev-id="ev_1916eb74fa" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
-              Book Reviews
-            </h2>
+      <section data-ev-id="ev_2c3a599ddb" className="py-16 bg-[#112240]">
+        <div data-ev-id="ev_bdf4383a54" className="max-w-4xl mx-auto px-6">
+          <div data-ev-id="ev_d65b31f71a" className="flex items-center justify-center gap-3 mb-8">
+            <BookOpen className="w-8 h-8 text-[#7DD3E8]" />
+            <h2 data-ev-id="ev_8966eb01ea" className="text-2xl md:text-3xl font-semibold text-white">Book Reviews</h2>
           </div>
-          <p data-ev-id="ev_71729c82c4" className="text-center text-[#2C5565] mb-10 max-w-xl mx-auto">
+          <p data-ev-id="ev_fc6aaabe59" className="text-center text-[#a0c4d4] mb-10 max-w-xl mx-auto">
             Books on games, music, and identity
           </p>
-          
-          <div data-ev-id="ev_cb6c17db66" className="flex flex-col gap-4">
+          <div data-ev-id="ev_9476111108" className="flex flex-col gap-4">
             {bookReviews.map((book, index) =>
-            <div data-ev-id="ev_a656a8915d"
-            key={index}
-            className="bg-white/80 backdrop-blur-sm p-6 rounded-lg flex items-start gap-4">
-
-                <FileText className="w-6 h-6 text-[#3AA8C4] flex-shrink-0 mt-1" />
-                <div data-ev-id="ev_45e1c21faa">
-                  <h3 data-ev-id="ev_e5de93154a" className="text-lg font-semibold text-[#1A3A47]">
-                    {book.title}
-                  </h3>
-                  <p data-ev-id="ev_702f0a7dbc" className="text-sm text-[#3AA8C4] font-medium">
-                    by {book.author}
-                  </p>
-                  <p data-ev-id="ev_b83bfe6987" className="text-sm text-[#4A6B78] mt-2">
-                    {book.description}
-                  </p>
+            <div data-ev-id="ev_d147236c49" key={index} className="bg-[#0a1929] border border-[#7DD3E8]/20 p-6 rounded-lg flex items-start gap-4 hover:border-[#7DD3E8]/40 transition-colors">
+                <FileText className="w-6 h-6 text-[#7DD3E8] flex-shrink-0 mt-1" />
+                <div data-ev-id="ev_345fbe9173">
+                  <h3 data-ev-id="ev_736f3a963b" className="text-lg font-semibold text-white">{book.title}</h3>
+                  <p data-ev-id="ev_adb76bc53b" className="text-sm text-[#7DD3E8] font-medium">by {book.author}</p>
+                  <p data-ev-id="ev_93d5964573" className="text-sm text-[#a0c4d4] mt-2">{book.description}</p>
                 </div>
               </div>
             )}
@@ -642,33 +541,21 @@ export default function Media() {
       </section>
 
       {/* Events */}
-      <section data-ev-id="ev_3c7be7cbd7" className="py-16 bg-gradient-to-b from-[#5DBCD2] to-[#4A9EB5]">
-        <div data-ev-id="ev_2690315741" className="max-w-4xl mx-auto px-6">
-          <div data-ev-id="ev_0cce55db36" className="flex items-center justify-center gap-3 mb-8">
-            <Calendar className="w-8 h-8 text-[#1A3A47]" />
-            <h2 data-ev-id="ev_9164f4814e" className="text-2xl md:text-3xl font-semibold text-[#1A3A47]">
-              Events
-            </h2>
+      <section data-ev-id="ev_036f5af520" className="py-16 bg-[#0a1929]">
+        <div data-ev-id="ev_e06536ec6c" className="max-w-4xl mx-auto px-6">
+          <div data-ev-id="ev_7be87f533b" className="flex items-center justify-center gap-3 mb-8">
+            <Calendar className="w-8 h-8 text-[#7DD3E8]" />
+            <h2 data-ev-id="ev_a381939c7c" className="text-2xl md:text-3xl font-semibold text-white">Events</h2>
           </div>
-          <p data-ev-id="ev_e6cc211413" className="text-center text-[#2C5565] mb-10 max-w-xl mx-auto">
+          <p data-ev-id="ev_14430fd7a9" className="text-center text-[#a0c4d4] mb-10 max-w-xl mx-auto">
             Conferences, workshops, and gatherings related to art and identity
           </p>
-          
-          <div data-ev-id="ev_feed6990cb" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div data-ev-id="ev_523ffae638" className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {events.map((event, index) =>
-            <div data-ev-id="ev_6390c469b9"
-            key={index}
-            className="bg-white/80 backdrop-blur-sm p-6 rounded-lg text-center">
-
-                <span data-ev-id="ev_eac531e034" className="inline-block px-3 py-1 bg-[#E8F4F8] text-[#3AA8C4] text-xs font-medium rounded-full mb-4">
-                  {event.type}
-                </span>
-                <h3 data-ev-id="ev_932cd4b759" className="text-lg font-semibold text-[#1A3A47] mb-2">
-                  {event.title}
-                </h3>
-                <p data-ev-id="ev_e3b7600da8" className="text-sm text-[#4A6B78]">
-                  {event.date}
-                </p>
+            <div data-ev-id="ev_3c54204dda" key={index} className="bg-[#112240] border border-[#7DD3E8]/20 p-6 rounded-lg text-center hover:border-[#7DD3E8]/40 transition-colors">
+                <span data-ev-id="ev_fc2a3ce547" className="inline-block px-3 py-1 bg-[#7DD3E8]/10 text-[#7DD3E8] text-xs font-medium rounded-full mb-4">{event.type}</span>
+                <h3 data-ev-id="ev_82e5692b37" className="text-lg font-semibold text-white mb-2">{event.title}</h3>
+                <p data-ev-id="ev_d7695dce48" className="text-sm text-[#a0c4d4]">{event.date}</p>
               </div>
             )}
           </div>
