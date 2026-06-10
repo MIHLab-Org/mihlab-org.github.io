@@ -1,6 +1,0 @@
----
-title: SCHF Group
-page-layout: full
----
-
-[This page under development]

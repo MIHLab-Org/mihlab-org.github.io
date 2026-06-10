@@ -1,6 +1,0 @@
----
-title: "Teaching Portfolio"
-sidebar: portfolio
----
-
-<!-- Merge of schf-org.github.io/portfolio.github.io and 2026-teacing-portfolio.netlify.app -->

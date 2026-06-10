@@ -1,8 +1,0 @@
----
-title: "Introduction to Philosophy"
-sidebar: intro
----
-
-A primary objective of this course is to teach students how to construct good arguments and how to assess the arguments of others.
-
-<!-- Shared syllabus content. Section-specific info in sections/tth.qmd and sections/mw.qmd -->

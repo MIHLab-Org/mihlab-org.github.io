@@ -1,6 +1,0 @@
----
-title: "Résumé / CV"
-sidebar: portfolio
----
-
-<!-- Migrate from portfolio/resume-cv.html -->

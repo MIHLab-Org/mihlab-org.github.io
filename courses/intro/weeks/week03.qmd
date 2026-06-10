@@ -1,6 +1,0 @@
----
-title: "Week 03 — [Title TBD]"
-sidebar: phil-mind
----
-
-<!-- Migrate from portfolio site week03/notes.html -->

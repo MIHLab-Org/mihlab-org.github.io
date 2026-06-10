@@ -1,6 +1,0 @@
----
-title: "Summary"
-sidebar: portfolio
----
-
-<!-- Migrate from portfolio/summary -->

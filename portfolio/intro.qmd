@@ -1,6 +1,0 @@
----
-title: "Introduction"
-sidebar: portfolio
----
-
-<!-- Migrate from portfolio/intro.html -->
