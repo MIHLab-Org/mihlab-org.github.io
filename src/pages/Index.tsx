@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { Layout } from '@/components/Layout';
 import { ArrowRight, Sparkles, Gamepad2, Music, Palette } from 'lucide-react';
-import heroSpaceStation from '@/assets/uploads/ship-hanger.jpg';
+import heroSpaceStation from '@/assets/uploads/red-ship-hanger.jpg';
 import futuristicCity from '@/assets/uploads/futuristic-city.jpg';
 
 const researchAreas = [
@@ -39,13 +39,12 @@ export default function Index() {
 
         {/* Overlay for text readability */}
         <div data-ev-id="ev_9de03f00ac" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/70 via-[#0a2a3a]/50 to-[#1a4a5a]/80" />
-
         <div data-ev-id="ev_68fd800613" className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1 data-ev-id="ev_610f62f454" className="text-lg md:text-xl font-medium text-[#7DD3E8] mb-4 tracking-wider">
             THE EXPERIENCE MACHINES
           </h1>
           <p data-ev-id="ev_879bbc7189" className="text-3xl md:text-4xl lg:text-5xl font-light text-white leading-tight mb-8 text-balance">
-            The <span data-ev-id="ev_c59043b1e3" className="font-semibold text-[#7DD3E8]">Moral Imagination and Hope Laboratory</span> explores how art may shape who we become.
+            The <span data-ev-id="ev_c59043b1e3" className="font-semibold text-[#7DD3E8]">Moral Imagination and Hope Laboratory</span> explores how art shapes who we become.
           </p>
           <p data-ev-id="ev_b7260388ad" className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto">
             A philosophical laboratory where we invite the public into virtual worlds to explore questions of ethics, identity, and meaning.
@@ -68,7 +67,6 @@ export default function Index() {
         style={{ backgroundImage: `url(${futuristicCity})` }} />
 
         <div data-ev-id="ev_ba57e616cb" className="absolute inset-0 bg-[#1a3a47]/85" />
-
         <div data-ev-id="ev_ff1e00a19d" className="relative z-10 max-w-7xl mx-auto px-6">
           <h2 data-ev-id="ev_5f9a514b61" className="text-2xl md:text-3xl font-semibold text-white text-center mb-4">
             Philosophy for the Real World
@@ -76,7 +74,6 @@ export default function Index() {
           <p data-ev-id="ev_8938b192c9" className="text-[#7DD3E8] text-center mb-12 max-w-2xl mx-auto">
             Exploring the intersection of art, ethics, and human experience
           </p>
-
           <div data-ev-id="ev_5394ecbba3" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {researchAreas.map((area, index) =>
             <div data-ev-id="ev_d5084c2ddb"
@@ -144,5 +141,6 @@ export default function Index() {
         </div>
       </section>
     </Layout>);
-
 }
+}
+
