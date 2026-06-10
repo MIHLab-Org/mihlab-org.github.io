@@ -142,5 +142,4 @@ export default function Index() {
       </section>
     </Layout>);
 }
-}
 
