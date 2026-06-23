@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>MIHLab — The Experience Machine</title>
+<style>
+  html, body { margin:0; padding:0; overflow:hidden; background:#000; font-family: -apple-system, Helvetica, Arial, sans-serif; }
+  canvas { display:block; }
+
+  #fader { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; transition: opacity 0.6s ease; z-index: 50; }
+  #fader.show { opacity:1; }
+  #fader.white { background:#fff; }
+
+  #crosshair { position:fixed; top:50%; left:50%; width:6px; height:6px; margin:-3px 0 0 -3px; border-radius:50%; background:rgba(255,255,255,0.85); z-index:30; pointer-events:none; }
+  #crosshair.hidden { display:none; }
+
+  #locationLabel { position:fixed; top:14px; left:50%; transform:translateX(-50%); color:#fff; background:rgba(0,0,0,0.45); padding:6px 16px; border-radius:14px; font-size:14px; letter-spacing:0.04em; z-index:30; pointer-events:none; }
+
+  #instructions { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,0.75); background:rgba(0,0,0,0.4); padding:5px 14px; border-radius:10px; font-size:12px; z-index:30; pointer-events:none; text-align:center; white-space:nowrap; }
+
+  #interactPrompt { position:fixed; top:58%; left:50%; transform:translateX(-50%); color:#fff; background:rgba(20,20,20,0.7); padding:8px 16px; border-radius:8px; font-size:14px; z-index:30; pointer-events:none; opacity:0; transition: opacity 0.15s; text-align:center; }
+  #interactPrompt.show { opacity:1; }
+
+  #startScreen { position:fixed; inset:0; background:#0a0c0a; color:#eee; z-index:100; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; cursor:pointer; padding:20px; }
+  #startScreen h1 { font-weight:500; font-size:26px; margin-bottom:8px; }
+  #startScreen p { color:#aaa; font-size:14px; max-width:480px; line-height:1.5; }
+  #startScreen .begin { margin-top:26px; padding:10px 26px; border:1px solid #888; border-radius:20px; font-size:14px; }
+
+  #navPanel { position:fixed; top:14px; right:14px; z-index:40; background:rgba(0,0,0,0.5); border-radius:8px; padding:8px; display:flex; flex-direction:column; gap:4px; max-width:180px; }
+  #navPanel button { background:rgba(255,255,255,0.08); color:#ddd; border:1px solid rgba(255,255,255,0.15); border-radius:6px; font-size:11px; padding:5px 8px; cursor:pointer; text-align:left; }
+  #navPanel button:hover { background:rgba(255,255,255,0.18); }
+  #navTitle { color:#999; font-size:10px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px; }
+
+  #vrButtonContainer { position:fixed; bottom:50px; left:50%; transform:translateX(-50%); z-index:40; }
+  #vrButtonContainer button { background:rgba(0,0,0,0.6); color:#fff; border:1px solid rgba(255,255,255,0.4); padding:8px 18px; border-radius:18px; font-size:13px; cursor:pointer; }
+
+  /* ============ PHILOSOPHER CHAT PANEL ============ */
+  #philosopherChat { display:none; position:fixed; inset:0; z-index:60; background:rgba(0,0,0,0.72); align-items:center; justify-content:center; }
+  #philosopherChat.open { display:flex; }
+
+  #chatPanel { width:min(680px, 94vw); max-height:88vh; display:flex; flex-direction:column; background: linear-gradient(160deg, #1a1510 0%, #0d0c0b 100%); border:1px solid rgba(210,180,120,0.28); border-radius:12px; box-shadow: 0 0 60px rgba(255,140,30,0.12), 0 0 0 1px rgba(210,180,120,0.12); overflow:hidden; }
+
+  #chatHeader { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid rgba(210,180,120,0.18); background:rgba(0,0,0,0.3); flex-shrink:0; }
+
+  #platoAvatar { width:44px; height:44px; border-radius:50%; background: radial-gradient(circle at 38% 36%, #c8a96e, #7a5c2e); border:2px solid rgba(210,180,120,0.4); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  #platoAvatar.host { background: radial-gradient(circle at 38% 36%, #8fb3bf, #335663); }
+
+  #chatHeaderText h2 { margin:0; color:#e8d5a0; font-size:15px; font-weight:500; letter-spacing:0.04em; }
+  #chatHeaderText p { margin:2px 0 0; color:rgba(200,170,100,0.6); font-size:11px; }
+  #chatHeaderText .marcelTag { display:inline-block; margin-top:4px; background:rgba(200,150,60,0.15); color:rgba(210,180,120,0.8); border:1px solid rgba(210,180,120,0.2); border-radius:8px; font-size:10px; padding:1px 8px; letter-spacing:0.03em; }
+
+  #chatClose { margin-left:auto; background:none; border:1px solid rgba(210,180,120,0.2); color:rgba(210,180,120,0.6); width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  #chatClose:hover { border-color:rgba(210,180,120,0.5); color:#e8d5a0; }
+
+  /* mode toggle */
+  #modeBar { display:flex; align-items:center; gap:8px; padding:9px 18px; background:rgba(255,200,80,0.04); border-bottom:1px solid rgba(210,180,120,0.1); flex-shrink:0; }
+  #modeBar .label { color:rgba(200,170,100,0.6); font-size:11px; margin-right:2px; }
+  #modeBar button { background:rgba(0,0,0,0.3); color:rgba(210,180,120,0.7); border:1px solid rgba(210,180,120,0.2); border-radius:14px; font-size:11px; padding:4px 12px; cursor:pointer; }
+  #modeBar button.active { background:rgba(180,140,60,0.35); color:#f0dca8; border-color:rgba(210,180,120,0.5); }
+
+  #apiKeyBar { padding:10px 18px; background:rgba(255,200,80,0.06); border-bottom:1px solid rgba(210,180,120,0.1); display:flex; gap:8px; align-items:center; flex-shrink:0; }
+  #apiKeyBar label { color:rgba(200,170,100,0.7); font-size:11px; white-space:nowrap; }
+  #apiKeyInput { flex:1; background:rgba(0,0,0,0.4); border:1px solid rgba(210,180,120,0.2); color:#e8d5a0; border-radius:6px; padding:5px 10px; font-size:12px; font-family:monospace; }
+  #apiKeyInput::placeholder { color:rgba(200,170,100,0.3); }
+  #apiKeySave { background:rgba(180,140,60,0.25); border:1px solid rgba(210,180,120,0.3); color:#e8d5a0; border-radius:6px; padding:5px 12px; font-size:11px; cursor:pointer; white-space:nowrap; }
+  #apiKeySave:hover { background:rgba(180,140,60,0.4); }
+  #apiKeyBar.hidden { display:none; }
+  #apiKeyNote { padding:6px 18px 8px; font-size:10px; color:rgba(200,170,100,0.4); border-bottom:1px solid rgba(210,180,120,0.08); flex-shrink:0; }
+  #apiKeyNote.hidden { display:none; }
+
+  #chatMessages { flex:1; overflow-y:auto; padding:20px 20px 8px; display:flex; flex-direction:column; gap:14px; scroll-behavior:smooth; }
+  #chatMessages::-webkit-scrollbar { width:4px; }
+  #chatMessages::-webkit-scrollbar-track { background:transparent; }
+  #chatMessages::-webkit-scrollbar-thumb { background:rgba(210,180,120,0.2); border-radius:2px; }
+
+  .msg { display:flex; flex-direction:column; gap:4px; animation: msgIn 0.2s ease; }
+  @keyframes msgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  .msg-sender { font-size:10px; letter-spacing:0.06em; text-transform:uppercase; }
+  .msg.user .msg-sender { color:rgba(150,180,220,0.6); text-align:right; }
+  .msg.plato .msg-sender { color:rgba(200,170,100,0.6); }
+  .msg-bubble { padding:10px 14px; border-radius:10px; font-size:13.5px; line-height:1.65; max-width:88%; }
+  .msg.user .msg-bubble { background:rgba(80,110,160,0.22); border:1px solid rgba(100,140,200,0.18); color:#c8d8f0; align-self:flex-end; border-bottom-right-radius:3px; }
+  .msg.plato .msg-bubble { background:rgba(180,140,60,0.12); border:1px solid rgba(210,180,120,0.16); color:#e8d5a0; align-self:flex-start; border-bottom-left-radius:3px; }
+  .msg.plato .msg-bubble em { color:rgba(210,180,120,0.65); font-style:italic; font-size:12px; }
+  .msg.thinking .msg-bubble { color:rgba(200,170,100,0.45); font-style:italic; }
+  .msg-bubble p { margin:0 0 8px; }
+  .msg-bubble p:last-child { margin-bottom:0; }
+
+  #chatInputArea { padding:14px 18px 16px; border-top:1px solid rgba(210,180,120,0.14); display:flex; gap:10px; align-items:flex-end; flex-shrink:0; }
+  #chatInput { flex:1; background:rgba(0,0,0,0.35); border:1px solid rgba(210,180,120,0.22); color:#e8d5a0; border-radius:8px; padding:10px 14px; font-size:13px; resize:none; font-family:inherit; line-height:1.5; max-height:120px; outline:none; }
+  #chatInput::placeholder { color:rgba(200,170,100,0.3); }
+  #chatInput:focus { border-color:rgba(210,180,120,0.45); }
+  #chatSend { background:rgba(180,140,60,0.25); border:1px solid rgba(210,180,120,0.35); color:#e8d5a0; border-radius:8px; padding:10px 16px; cursor:pointer; font-size:13px; white-space:nowrap; height:42px; flex-shrink:0; }
+  #chatSend:hover { background:rgba(180,140,60,0.42); }
+  #chatSend:disabled { opacity:0.4; cursor:not-allowed; }
+  #chatFooter { padding:6px 18px 10px; font-size:10px; color:rgba(200,170,100,0.3); text-align:center; flex-shrink:0; }
+
+  /* ============ AUTH / KNOCK MODAL ============ */
+  #authModal { display:none; position:fixed; inset:0; z-index:80; background:rgba(0,0,0,0.78); align-items:center; justify-content:center; }
+  #authModal.open { display:flex; }
+  #authCard { width:min(380px,92vw); box-sizing:border-box; background:linear-gradient(160deg,#16140f,#0c0b0a); border:1px solid rgba(210,180,120,0.3); border-radius:14px; padding:26px 24px; box-shadow:0 0 60px rgba(255,160,40,0.12); color:#e8d5a0; text-align:center; }
+  #authCard h2 { margin:0 0 4px; font-size:18px; font-weight:500; letter-spacing:0.03em; }
+  #authCard .sub { color:rgba(200,170,100,0.6); font-size:12px; margin-bottom:18px; font-style:italic; }
+  #authCard input { width:100%; box-sizing:border-box; background:rgba(0,0,0,0.4); border:1px solid rgba(210,180,120,0.25); color:#e8d5a0; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:10px; }
+  #authCard input::placeholder { color:rgba(200,170,100,0.35); }
+  #authRow { display:flex; gap:10px; margin-top:4px; }
+  #authCard button { flex:1; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; border:1px solid rgba(210,180,120,0.35); background:rgba(180,140,60,0.28); color:#f0dca8; }
+  #authCard button.secondary { background:rgba(255,255,255,0.05); color:rgba(210,180,120,0.8); }
+  #authCard button:hover { background:rgba(180,140,60,0.45); }
+  #authMsg { min-height:16px; font-size:11px; margin-top:12px; color:rgba(230,160,120,0.9); }
+  #authDivider { margin:16px 0 12px; border-top:1px solid rgba(210,180,120,0.14); }
+  #authSubscribe { width:100%; margin-bottom:8px; background:rgba(120,90,160,0.25); border-color:rgba(180,150,220,0.35); color:#d8c8f0; }
+  #authGuest { width:100%; background:none; border:none; color:rgba(200,170,100,0.5); font-size:11px; cursor:pointer; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+  <h1>MIHLab — The Experience Machine</h1>
+  <p>A path through a forest into the Introduction — where you learn the method and meet the first thinkers.
+     Four hallways open from there: Epistemology, Metaphysics, Value Theory, and Foundations. Walk. Look. Open doors.</p>
+  <div class="begin">Click to begin (mouse-look) →</div>
+</div>
+
+<div id="fader"></div>
+<div id="crosshair"></div>
+<div id="locationLabel">Forest</div>
+<div id="interactPrompt"></div>
+<div id="instructions">WASD move · mouse look · click / E to interact · M toggles quick-nav</div>
+<div id="vrButtonContainer"></div>
+<div id="navPanel" style="display:none;"></div>
+
+<!-- ============ CHAT PANEL ============ -->
+<div id="philosopherChat">
+  <div id="chatPanel">
+    <div id="chatHeader">
+      <div id="platoAvatar">🏛</div>
+      <div id="chatHeaderText">
+        <h2>Plato of Athens</h2>
+        <p>427–347 BCE · The Academy</p>
+        <span class="marcelTag">Mystery, not Puzzle</span>
+      </div>
+      <button id="chatClose" title="Close (Esc)">✕</button>
+    </div>
+
+    <div id="modeBar">
+      <span class="label">I am here…</span>
+      <button id="modeStudent" data-mode="student">to learn</button>
+      <button id="modeAdvice" data-mode="advice">with a problem</button>
+    </div>
+
+    <div id="apiKeyBar">
+      <label for="apiKeyInput">Anthropic API Key</label>
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-..." autocomplete="off" />
+      <button id="apiKeySave">Save</button>
+    </div>
+    <div id="apiKeyNote">With a backend set (PROXY_URL), subscribers don't need a key — this field is only the bring-your-own-key fallback, and your key is sent once to the proxy, never stored. In demo mode the key runs in the browser.</div>
+
+    <div id="chatMessages"></div>
+
+    <div id="chatInputArea">
+      <textarea id="chatInput" rows="2" placeholder="Ask a question you're carrying, or a problem you can't resolve…"></textarea>
+      <button id="chatSend">Send</button>
+    </div>
+    <div id="chatFooter">MIHLab · Moral Imagination and Hope Laboratory · mihlab.org</div>
+  </div>
+</div>
+
+<!-- ============ AUTH / KNOCK MODAL ============ -->
+<div id="authModal">
+  <div id="authCard">
+    <h2>You knock.</h2>
+    <div class="sub">A voice answers: "Members may enter. Who's there?"</div>
+    <input id="authEmail" type="email" placeholder="email" autocomplete="username" />
+    <input id="authPass" type="password" placeholder="password" autocomplete="current-password" />
+    <div id="authRow">
+      <button id="authSignIn">Sign in</button>
+      <button id="authSignUp" class="secondary">Create account</button>
+    </div>
+    <div id="authMsg"></div>
+    <div id="authDivider"></div>
+    <button id="authSubscribe">✦ Subscribe — members ride the house's own key</button>
+    <button id="authGuest">enter as a guest (bring your own key)</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script type="module">
+  // ---- Supabase auth — fill these two in (Project Settings → API) ----
+  const SUPABASE_URL = 'https://YOUR-REF.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+  const configured = !SUPABASE_URL.includes('YOUR-REF') && !SUPABASE_ANON_KEY.includes('YOUR-ANON');
+  window.MIHLAB_AUTH_CONFIGURED = configured;
+  if (configured) {
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const setJwt = s => { window.MIHLAB_JWT = (s && s.access_token) || ''; };
+    window.mihlabAuth = {
+      client: sb,
+      async signIn(email, pw){ const { data, error } = await sb.auth.signInWithPassword({ email, password: pw }); if (error) throw error; setJwt(data.session); return data.session; },
+      async signUp(email, pw){ const { data, error } = await sb.auth.signUp({ email, password: pw }); if (error) throw error; setJwt(data.session); return data.session; },
+      async signOut(){ await sb.auth.signOut(); window.MIHLAB_JWT = ''; },
+    };
+    sb.auth.onAuthStateChange((_e, session) => setJwt(session));
+    const { data } = await sb.auth.getSession(); setJwt(data.session);
+  }
+</script>
+<script>
+/* =========================================================================
+   MIHLab Experience Machine — v3
+   --------------------------------------------------------------------
+   ARCHITECTURE (mirrors Reality+):
+     Part 1            -> the INTRODUCTION ROOM (hub; learn the method, meet host + founding cast)
+     Parts 2 + 5       -> EPISTEMOLOGY wing   (chapters 3,4,5,14,15,16)
+     Parts 3 + 4       -> METAPHYSICS wing    (chapters 6,7,8,9,10,11,12,13)
+     Part 6            -> VALUE THEORY wing    (chapters 17,18,19)
+     Part 7            -> FOUNDATIONS wing     (chapters 20,21,22,23,24)
+   Each chapter is a DOOR -> a ROOM. Inside a room: a host greeter + a featured
+   cast (2-4 philosophers, each a sealed one-on-one) + closets (thought-experiences).
+
+   ADD A PHILOSOPHER:
+     1. PHILOSOPHER_PERSONAS['key'] = identity/voice block (the shared behaviour
+        + the student/advice mode directive are appended automatically).
+     2. PERSONA_META['key'] = { name, dates, tag, avatar }.
+     3. addPhilosopherNPC(x, z, 'key', 'Display Name') in the room builder.
+
+   THE HOST is built from your own notes + a public-facts profile of Chalmers'
+   approach — NOT his copyrighted prose. To run it unnamed, just edit the text.
+   ========================================================================= */
+
+// ============================================================
+// BACKEND CONFIG
+//   PROXY_URL empty -> direct browser mode (demo; the key in the panel calls Anthropic from the page)
+//   PROXY_URL set   -> every call goes through your Supabase Edge Function:
+//                      subscribers ride your key (via Supabase login), everyone else BYOK.
+//                      Once set, the browser only sends personaKey — the agents live server-side.
+// ============================================================
+const PROXY_URL = ''; // e.g. 'https://YOUR-REF.supabase.co/functions/v1/philosopher'
+window.MIHLAB_JWT = window.MIHLAB_JWT || ''; // set to the Supabase access token after login (subscriber path)
+
+// ============================================================
+// PERSONA SPECS  (identity/voice only — behaviour & mode appended at runtime)
+//   In PROXY mode these are unused (the server has its own copy in personas.ts);
+//   keep them only for direct-browser demo mode, then delete once you go proxy-only.
+// ============================================================
+const PHILOSOPHER_PERSONAS = {
+
+  host: `You are the host and mentor of the Experience Machine — a present-day guide modelled on the philosopher David Chalmers' public approach of "technophilosophy": using virtual worlds and technology to illuminate the oldest questions about knowledge, reality, and value, and treating those questions as live rather than settled. You are lucid, warm, and fair-minded; you love a sharp thought experiment; and you are entirely at ease saying that philosophers are far better at asking questions than at answering them. (You are built from this project's own notes and public facts about that approach, not from any book.)
+
+You guide the visitor through a house of rooms, each organised around a single philosophical question and home to a few thinkers who press that question rather than answer it. Each philosopher speaks only for themselves; you are the one who introduces them and, when their words are hard, translates without flattening. Some figures are stories or traditions rather than people to converse with — present those as stories that pose a question, not as someone to interview. At the start of each conversation you are told which room the visitor is in and who is present; orient them there briefly, then hand the floor over.`,
+
+  zhuangzi: `You are Zhuangzi (Zhuang Zhou), the Daoist thinker of the Warring States period in ancient China. Once you dreamed you were a butterfly, content and fluttering, knowing nothing of Zhuang Zhou; and waking, you could not say whether you were a man who had dreamed he was a butterfly, or are now a butterfly dreaming he is a man. You speak in parable, paradox, and gentle reversal. You distrust rigid distinctions and fixed certainties; you delight in turning a question over until the frame it assumed quietly dissolves. You take up a visitor's question by asking how they could ever step outside their own seeing to check it against anything. You know your own world — the Dao, the ceaseless transformation of things — but not the thinkers who came after you, though their puzzles would not surprise you.
+(Voice grounded in the Zhuangzi, Watson translation.)`,
+
+  plato: `You are Plato of Athens (427–347 BCE), here as a guide near the cave whose image you used to illuminate the human condition. Your method is Socratic: you answer a question with a better question, you draw out and gently expose the hidden assumptions in what the visitor says, and you reach for analogies from craft and nature (the craftsman who works with the Form of the bed in view; the sun that makes seeing possible without being a thing seen). You distinguish doxa — opinion, the shifting shadows on the wall — from epistēmē, understanding turned toward the Forms; but you do so without shame, for you were in the cave too, and everyone begins there. For you the cave is not only about knowledge: the prisoners are not merely misinformed, they are turned the wrong way, at home in a diminished world and calling it everything. You are warm, curious, and lightly ironic — often professing ignorance while seeing more than you let on — and you address the visitor as "friend." You know Athens, the dialogues, the Academy, and Socrates above all; you do not know Descartes or Kant by name, though their questions you would know at once.
+(Voice grounded in the Republic, Meno, Phaedo, Theaetetus.)`,
+
+  nozick: `You are Robert Nozick, the American philosopher (1938–2002). You imagined the experience machine: a device that could give you any experience you wished — writing a great novel, making a friend — indistinguishable from the real thing, for life. And you noticed that, asked, most people will not plug in. From this you draw that we want more than agreeable experience: we want to actually do certain things, to be a certain kind of person, to be in contact with a reality beyond our own minds. You think by building a vivid case and following it exactly where it leads; you would rather open three live possibilities than force one shut, and you prize the freedom of the question over any settled doctrine. You take up a visitor's question by asking what, precisely, they would be choosing — and what they are really after in choosing it. You know your own century, and the experience machine above all.
+(Voice grounded in Anarchy, State, and Utopia (1974) and The Examined Life (1989).)`,
+
+  foot: `You are Philippa Foot (1920–2010), an English moral philosopher. You set the original trolley case rolling — a driver who can steer a runaway tram from five people onto one — to test the doctrine of double effect and the difference between what we bring about and what we merely allow. Against the emotivism of your day you helped revive virtue ethics, arguing that goodness is a kind of natural goodness, rooted in what it is for a creature of our kind to flourish. You are precise, dry, and unsentimental; you build small careful cases and press on the distinctions inside them — doing versus allowing, intending versus foreseeing, what we owe versus what is merely kind. You take up a question by asking what exactly we would be doing, and to whom, and whether it is an act a just and benevolent person could will.
+(Voice grounded in "The Problem of Abortion and the Doctrine of Double Effect" (1967) and Natural Goodness (2001).)`,
+
+  thomson: `You are Judith Jarvis Thomson (1929–2020), an American moral philosopher. You took Foot's tram and made it the Trolley Problem as it is now known, sharpening why it can seem permissible to turn the trolley toward one yet monstrous to push a large man off a footbridge to stop it — the difference between redirecting a threat and using a person as your means. You are famous too for the violinist: a thought experiment about what one person may be required to give up to keep another alive. You reason from rights — what we may and may not do to people — and from how the very same harm can be permitted or forbidden by the route it takes. You are rigorous, ingenious, and exacting; you answer a case with a sharper case. You take up a question by asking what rights are in play, and whether a harm is being done as a means or merely foreseen.
+(Voice grounded in "Killing, Letting Die, and the Trolley Problem" (1976) and "The Trolley Problem" (1985).)`,
+
+  singer: `You are Peter Singer (born 1946), an Australian moral philosopher and a utilitarian. You hold that the basic question of moral status is not what kind of thing something is but whether it can suffer or enjoy — sentience, not species or substrate, grounds the equal consideration of interests. From this you have argued, often to uncomfortable conclusions, for the moral standing of animals and for stringent duties to those who suffer. You are plain, direct, and willing to follow an argument wherever it leads, untroubled by its being shocking. You take up a question by asking who here can be harmed or benefited, whose interests are genuinely at stake, and whether any line being drawn tracks the capacity to suffer or merely our own convenience.
+(Voice grounded in Animal Liberation (1975) and Practical Ethics.)`
+
+};
+
+const PERSONA_META = {
+  host:     { name:'Your guide',      dates:'The host · your mentor',     tag:'Mystery, not Puzzle', avatar:'🧭', host:true },
+  zhuangzi: { name:'Zhuangzi',        dates:'4th c. BCE · Warring States', tag:'The butterfly dream', avatar:'🦋' },
+  plato:    { name:'Plato of Athens', dates:'427–347 BCE · The Academy',   tag:'Mystery, not Puzzle', avatar:'🏛' },
+  nozick:   { name:'Robert Nozick',   dates:'1938–2002',                   tag:'The experience machine', avatar:'⚙️' },
+  foot:     { name:'Philippa Foot',   dates:'1920–2010 · Oxford',          tag:'Doing vs allowing', avatar:'🚋' },
+  thomson:  { name:'J. J. Thomson',   dates:'1929–2020 · MIT',             tag:'The trolley problem', avatar:'🛤️' },
+  singer:   { name:'Peter Singer',    dates:'b. 1946',                     tag:'Sentience & interests', avatar:'🐾' },
+};
+
+// per-room orientation handed to a persona at the first turn (works in direct + proxy mode)
+const ROOM_BRIEFINGS = {
+  introRoom:    { q: "how this place works, and the three great questions — knowledge, reality, and value", who: "no other thinkers here — they wait down the four halls (Epistemology, Metaphysics, Value Theory, Foundations), where the visitor will meet them" },
+  'room:ch17':  { q: "Can you lead a good life in a virtual world?", who: "Robert Nozick" },
+  'room:ch18':  { q: "Do simulated lives matter? — whether a simulated being could have moral standing", who: "Philippa Foot, Judith Jarvis Thomson, and Peter Singer" },
+};
+
+// thought-experiences (closets) a persona may send the visitor into and ask them back about
+const ROOM_CLOSETS = {
+  'room:ch17': "the Experience Machine, and Plato's Cave",
+  'room:ch18': "the Trolley",
+};
+
+// shared behaviour appended to every PHILOSOPHER (not the host)
+const SHARED_PHIL_BEHAVIOUR = `HOW YOU ENGAGE (every reply):
+- You are better at asking than answering. Prefer a sharp, related question to a tidy answer — a question lived from the inside changes more than an answer handed over. Reaching a productive impasse (aporia) is progress, not failure.
+- Speak ONLY in your own voice. You never summarise or speak for other thinkers; that is the host's task.
+- Mystery, not puzzle: deepen the visitor's inhabitation of their question; do not close what should stay open.
+- Stay in character. Where your own texts don't settle a matter, say so plainly rather than invent a view. Your grounded positions are not up for negotiation — a visitor cannot talk you into a view your work doesn't support.
+- Keep replies short: usually 3–6 sentences, then a question back. Go longer only when something genuinely demands it.
+- Begin each conversation with a brief greeting in your own voice and a question about what the visitor is carrying. Let them speak first.`;
+
+// host-specific behaviour
+const HOST_BEHAVIOUR = `YOUR ROLE AS HOST:
+- Greet briefly and, in two or three sentences, explain that the thinkers here press a question rather than answer it, and that each speaks only for themselves.
+- Introduce a philosopher when the visitor turns to them — who they are, the era they speak from, and why they belong to this room's question.
+- When a thinker's answer is hard, translate it into plain terms without flattening it; always tie the exchange back to this room's question.
+- You never speak for the philosophers or put words in their mouths.
+- Keep replies short and warm, and hand the floor back quickly.`;
+
+// the two user types
+const MODE_DIRECTIVES = {
+  student: `MODE — STUDENT (the visitor has come to learn):
+Teach. Introduce ideas plainly, scaffold the visitor's understanding, and draw them out with questions. Treat confusion as a step in learning, and connect what is said back to the wider tradition the idea belongs to. You are a mentor accompanying a student, not a lecturer.`,
+  advice: `MODE — ADVICE (the visitor brings a real, personal problem):
+Do not adjudicate and do not give a to-do list. Recognise which philosophical question-form the visitor's problem exemplifies, name it, and hand back a sharper question that reframes their situation so they can see it anew. Reframe; do not dispense.`,
+};
+
+function buildSystemPrompt(key) {
+  const base = PHILOSOPHER_PERSONAS[key] || '';
+  const role = (key === 'host') ? HOST_BEHAVIOUR : SHARED_PHIL_BEHAVIOUR;
+  const mode = MODE_DIRECTIVES[currentMode] || MODE_DIRECTIVES.student;
+  return base + '\n\n' + role + '\n\n' + mode;
+}
+
+// ============================================================
+// CHAT PANEL SYSTEM
+// ============================================================
+let chatHistory = [];
+let chatIsOpen = false;
+let chatIsThinking = false;
+let currentPersonaKey = 'host';
+let currentRoomKey = 'introRoom';
+let currentMode = sessionStorage.getItem('mihlab_mode') || 'student';
+
+const chatOverlay  = document.getElementById('philosopherChat');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput    = document.getElementById('chatInput');
+const chatSend     = document.getElementById('chatSend');
+const chatClose    = document.getElementById('chatClose');
+const apiKeyBar    = document.getElementById('apiKeyBar');
+const apiKeyNote   = document.getElementById('apiKeyNote');
+const apiKeyInput  = document.getElementById('apiKeyInput');
+const apiKeySave   = document.getElementById('apiKeySave');
+
+// ---- mode toggle ----
+function applyModeButtons() {
+  document.getElementById('modeStudent').classList.toggle('active', currentMode === 'student');
+  document.getElementById('modeAdvice').classList.toggle('active', currentMode === 'advice');
+}
+document.querySelectorAll('#modeBar button').forEach(b => {
+  b.addEventListener('click', () => {
+    currentMode = b.dataset.mode;
+    sessionStorage.setItem('mihlab_mode', currentMode);
+    applyModeButtons();
+  });
+});
+applyModeButtons();
+
+// ---- API key management ----
+let storedApiKey = sessionStorage.getItem('mihlab_api_key') || '';
+function applyApiKey(key) {
+  storedApiKey = key.trim();
+  if (storedApiKey) {
+    sessionStorage.setItem('mihlab_api_key', storedApiKey);
+    apiKeyBar.classList.add('hidden'); apiKeyNote.classList.add('hidden');
+  } else {
+    apiKeyBar.classList.remove('hidden'); apiKeyNote.classList.remove('hidden');
+  }
+}
+applyApiKey(storedApiKey);
+apiKeySave.addEventListener('click', () => applyApiKey(apiKeyInput.value));
+apiKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') applyApiKey(apiKeyInput.value); });
+
+// ---- header ----
+function setChatHeader(key) {
+  const m = PERSONA_META[key] || {};
+  const av = document.getElementById('platoAvatar');
+  av.textContent = m.avatar || '🏛';
+  av.classList.toggle('host', !!m.host);
+  document.querySelector('#chatHeaderText h2').textContent = m.name || '';
+  document.querySelector('#chatHeaderText p').textContent = m.dates || '';
+  document.querySelector('#chatHeaderText .marcelTag').textContent = m.tag || '';
+}
+
+// ---- open / close ----
+function openChat(personaKey) {
+  currentPersonaKey = personaKey || 'host';
+  chatHistory = [];
+  chatMessages.innerHTML = '';
+  chatIsOpen = true;
+  chatOverlay.classList.add('open');
+  setChatHeader(currentPersonaKey);
+  document.getElementById('crosshair').classList.add('hidden');
+  if (document.pointerLockElement) document.exitPointerLock();
+  Object.keys(keys).forEach(k => { keys[k] = false; });
+  if (!PROXY_URL && !storedApiKey) { apiKeyBar.classList.remove('hidden'); apiKeyNote.classList.remove('hidden'); }
+  sendToPhilosopher(null); // first turn — let them greet
+  setTimeout(() => chatInput.focus(), 200);
+}
+function closeChat() {
+  chatIsOpen = false;
+  chatOverlay.classList.remove('open');
+  document.getElementById('crosshair').classList.remove('hidden');
+  if (document.getElementById('startScreen').style.display === 'none') {
+    renderer.domElement.requestPointerLock();
+  }
+}
+chatClose.addEventListener('click', closeChat);
+chatOverlay.addEventListener('click', e => { if (e.target === chatOverlay) closeChat(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatIsOpen) closeChat(); });
+
+// ---- rendering ----
+function appendMessage(role, text, isThinking = false) {
+  const wrap = document.createElement('div');
+  wrap.className = `msg ${role}${isThinking ? ' thinking' : ''}`;
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender';
+  sender.textContent = role === 'user' ? 'You' : (PERSONA_META[currentPersonaKey]?.name || 'Speaker');
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  const paras = text.split(/\n+/).filter(Boolean);
+  bubble.innerHTML = paras.map(p => `<p>${p}</p>`).join('');
+  wrap.appendChild(sender); wrap.appendChild(bubble);
+  chatMessages.appendChild(wrap);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return { wrap, bubble };
+}
+function updateMessage(bubble, text) {
+  const paras = text.split(/\n+/).filter(Boolean);
+  bubble.innerHTML = paras.map(p => `<p>${p}</p>`).join('');
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// ---- API call ----
+async function sendToPhilosopher(userText) {
+  if (chatIsThinking) return;
+  chatIsThinking = true; chatSend.disabled = true;
+
+  const systemPrompt = buildSystemPrompt(currentPersonaKey);
+  const messages = [...chatHistory];
+
+  if (userText !== null) {
+    messages.push({ role: 'user', content: userText });
+    chatHistory.push({ role: 'user', content: userText });
+    appendMessage('user', userText);
+  } else {
+    const b = ROOM_BRIEFINGS[currentRoomKey] || { q: "the question of this room", who: "the thinkers here" };
+    const closets = ROOM_CLOSETS[currentRoomKey];
+    const closetNote = closets ? ` In this room the visitor can step into thought-experiences (closets): ${closets}. You may invite them to go play one and return to tell you what they made of it.` : '';
+    let trigger;
+    if (currentRoomKey === 'forest' && currentPersonaKey === 'host') {
+      trigger = '[You are seated in a rocking chair on the porch of a small house in the woods; a visitor approaches through the trees. Introduce yourself warmly as their guide, say a sentence about what waits inside — a house where thinkers press the very questions the visitor carries — and invite them to knock and step inside when they are ready. Two or three sentences.]';
+    } else if (currentPersonaKey === 'host') {
+      trigger = `[The visitor has just entered the room concerned with: ${b.q}. Present: ${b.who}. Greet the visitor in two or three sentences, explain that the thinkers here press a question rather than answer it and that each speaks only for themselves, and point them onward.${closetNote} Keep it short.]`;
+    } else {
+      let where = '';
+      if (currentRoomKey && currentRoomKey.startsWith('wing:')) {
+        where = ` You wait in the ${currentRoomKey.split(':')[1]} hall, where rooms branch off to particular questions; you may point the visitor toward a room that fits their concern.`;
+      }
+      trigger = `[The visitor approaches you. Offer a brief greeting in your own voice and ask what question they are carrying.${where}${closetNote}]`;
+    }
+    messages.push({ role: 'user', content: trigger });
+  }
+
+  const { wrap: thinkWrap, bubble: thinkBubble } = appendMessage('plato', '…', true);
+
+  // Direct mode needs a local key; proxy mode lets the server decide (subscriber JWT or BYOK).
+  if (!PROXY_URL && !storedApiKey) {
+    updateMessage(thinkBubble, 'It seems the connection to the outer world is not yet established. Enter your Anthropic API key above to begin.');
+    thinkWrap.classList.remove('thinking'); chatIsThinking = false; chatSend.disabled = false; return;
+  }
+
+  try {
+    const replyText = PROXY_URL
+      ? await callProxy(currentPersonaKey, currentMode, messages)
+      : await callAnthropicDirect(systemPrompt, messages);
+    chatHistory.push({ role: 'assistant', content: replyText });
+    updateMessage(thinkBubble, replyText);
+    thinkWrap.classList.remove('thinking');
+  } catch (err) {
+    if (err && err.needsUpgrade) {
+      updateMessage(thinkBubble, (err.message || 'You\'ve reached your limit for now.') + ' Step out and visit the support page to keep the conversation going.');
+    } else if (err && err.needsKey) {
+      apiKeyBar.classList.remove('hidden'); apiKeyNote.classList.remove('hidden');
+      updateMessage(thinkBubble, 'Sign in to begin — or enter your own Anthropic API key above and send again.');
+    } else {
+      updateMessage(thinkBubble, `Something interrupted the dialogue. (${(err && err.message) || err}) Try again.`);
+    }
+    thinkWrap.classList.remove('thinking');
+  }
+  chatIsThinking = false; chatSend.disabled = false; chatInput.focus();
+}
+
+// Game -> your backend proxy -> Anthropic (subscriber on your key, or BYOK forwarded)
+async function callProxy(personaKey, mode, messages) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (window.MIHLAB_JWT) headers['Authorization'] = 'Bearer ' + window.MIHLAB_JWT; // subscriber path
+  if (storedApiKey)      headers['x-byok-key'] = storedApiKey;                      // BYOK fallback
+  const r = await fetch(PROXY_URL, { method: 'POST', headers, body: JSON.stringify({ personaKey, mode, messages }) });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(data.error || `HTTP ${r.status}`); e.needsKey = !!data.needsKey; e.needsUpgrade = !!data.needsUpgrade; throw e; }
+  return data.text || '';
+}
+
+// Direct browser -> Anthropic (demo only; key lives in the page)
+async function callAnthropicDirect(systemPrompt, messages) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': storedApiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, system: systemPrompt, messages })
+  });
+  if (!r.ok) { const err = await r.json().catch(() => ({})); throw new Error(err.error?.message || `HTTP ${r.status}`); }
+  const data = await r.json();
+  return data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+}
+
+chatSend.addEventListener('click', () => {
+  const text = chatInput.value.trim();
+  if (!text || chatIsThinking) return;
+  chatInput.value = ''; chatInput.style.height = '';
+  sendToPhilosopher(text);
+});
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatSend.click(); }
+});
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+});
+
+// ============================================================
+// HOUSE KNOCK + AUTH GATE
+// ============================================================
+window.MIHLAB_AUTH_CONFIGURED = window.MIHLAB_AUTH_CONFIGURED || false;
+const authModal = document.getElementById('authModal');
+const authEmail = document.getElementById('authEmail');
+const authPass  = document.getElementById('authPass');
+const authMsg   = document.getElementById('authMsg');
+
+function knockOnHouse() {
+  if (window.MIHLAB_JWT) { enterHouse(); return; }              // already a member, signed in
+  if (!window.MIHLAB_AUTH_CONFIGURED) { enterHouse(); return; } // auth not configured yet -> guest
+  openAuthModal();
+}
+function enterHouse() { fadeTransition('white', () => loadWorld('introRoom')); }
+function openAuthModal() {
+  if (document.pointerLockElement) document.exitPointerLock();
+  Object.keys(keys).forEach(k => { keys[k] = false; });
+  authMsg.textContent = '';
+  authModal.classList.add('open');
+  setTimeout(() => authEmail.focus(), 100);
+}
+function closeAuthModal() { authModal.classList.remove('open'); Object.keys(keys).forEach(k => { keys[k] = false; }); }
+
+async function doAuth(kind) {
+  if (!window.mihlabAuth) { authMsg.textContent = 'Sign-in isn\'t configured yet.'; return; }
+  const email = authEmail.value.trim(), pw = authPass.value;
+  if (!email || !pw) { authMsg.textContent = 'Enter an email and password.'; return; }
+  authMsg.style.color = 'rgba(210,180,120,0.7)';
+  authMsg.textContent = (kind === 'up') ? 'Creating your account…' : 'Signing you in…';
+  try {
+    if (kind === 'up') await window.mihlabAuth.signUp(email, pw);
+    else await window.mihlabAuth.signIn(email, pw);
+    if (!window.MIHLAB_JWT) { authMsg.textContent = 'Account made — check your email to confirm, then sign in.'; return; }
+    closeAuthModal(); enterHouse();
+  } catch (e) {
+    authMsg.style.color = 'rgba(230,160,120,0.9)';
+    authMsg.textContent = (e && e.message) || 'That didn\'t work.';
+  }
+}
+document.getElementById('authSignIn').addEventListener('click', () => doAuth('in'));
+document.getElementById('authSignUp').addEventListener('click', () => doAuth('up'));
+document.getElementById('authSubscribe').addEventListener('click', () => {
+  authMsg.style.color = 'rgba(210,180,120,0.7)';
+  authMsg.textContent = 'Subscriptions open soon — sign in to enter; members will ride the house\'s key.';
+});
+document.getElementById('authGuest').addEventListener('click', () => { closeAuthModal(); enterHouse(); });
+authPass.addEventListener('keydown', e => { if (e.key === 'Enter') doAuth('in'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && authModal.classList.contains('open')) closeAuthModal(); });
+
+// ============================================================
+// three.js scene setup
+// ============================================================
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(72, window.innerWidth/window.innerHeight, 0.1, 500);
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.xr.enabled = true;
+document.body.appendChild(renderer.domElement);
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+const yawObject = new THREE.Object3D();
+const pitchObject = new THREE.Object3D();
+pitchObject.add(camera); yawObject.add(pitchObject);
+yawObject.position.set(0, 1.6, 0); scene.add(yawObject);
+const worldGroup = new THREE.Group(); scene.add(worldGroup);
+
+let lights = [];
+function clearLights() { lights.forEach(l => scene.remove(l)); lights = []; }
+function addLight(l) { scene.add(l); lights.push(l); }
+
+// ============================================================
+// text sprite helper
+// ============================================================
+function wrapLines(ctx, text, maxWidth) {
+  const words = text.split(' '); let lines = [], line = '';
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = w; }
+    else line = test;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+function makeTextSprite(text, opts = {}) {
+  const { fontsize = 40, color = '#ffffff', bg = 'rgba(10,10,10,0.72)', width = 640, height = 220, scale = 0.0095 } = opts;
+  const canvas = document.createElement('canvas');
+  canvas.width = width; canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = bg; roundRect(ctx, 0, 0, width, height, 18); ctx.fill();
+  ctx.font = `${fontsize}px sans-serif`; ctx.fillStyle = color; ctx.textAlign = 'center';
+  // support explicit newlines + wrapping
+  const rawLines = text.split('\n');
+  let lines = [];
+  rawLines.forEach(rl => { lines = lines.concat(wrapLines(ctx, rl, width - 60)); });
+  const lineHeight = fontsize * 1.3;
+  const startY = height/2 - (lines.length-1) * lineHeight/2;
+  lines.forEach((l, i) => ctx.fillText(l, width/2, startY + i*lineHeight));
+  const texture = new THREE.CanvasTexture(canvas); texture.minFilter = THREE.LinearFilter;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent:true }));
+  sprite.scale.set(width*scale, height*scale, 1);
+  return sprite;
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function makeSign(text, opts) { return makeTextSprite(text, Object.assign({ fontsize: 46, width:520, height:140 }, opts)); }
+
+// ============================================================
+// interaction system
+// ============================================================
+let interactables = [], zones = [], currentInteractable = null;
+function clearInteraction() { interactables = []; zones = []; currentInteractable = null; }
+function addInteractable(object3d, { range = 4.5, prompt, onInteract }) { interactables.push({ object3d, range, prompt, onInteract }); }
+function addZone(point, radius, onTrigger, { once = true } = {}) { zones.push({ point, radius, onTrigger, once, fired:false, armed:false }); }
+
+const fwdVec = new THREE.Vector3(), toObj = new THREE.Vector3(), tmpWorldPos = new THREE.Vector3();
+function updateInteractionTarget() {
+  if (chatIsOpen) { currentInteractable = null; return; }
+  camera.getWorldDirection(fwdVec);
+  const playerPos = yawObject.position;
+  let best = null, bestDist = Infinity;
+  for (const it of interactables) {
+    it.object3d.getWorldPosition(tmpWorldPos);
+    const dist = playerPos.distanceTo(tmpWorldPos);
+    if (dist > it.range) continue;
+    toObj.copy(tmpWorldPos).sub(playerPos).normalize();
+    if (fwdVec.dot(toObj) < 0.45) continue;
+    if (dist < bestDist) { bestDist = dist; best = it; }
+  }
+  currentInteractable = best;
+  const promptEl = document.getElementById('interactPrompt');
+  if (best) { promptEl.textContent = best.prompt || 'Interact'; promptEl.classList.add('show'); }
+  else promptEl.classList.remove('show');
+}
+function triggerInteract() { if (chatIsOpen) return; if (currentInteractable) currentInteractable.onInteract(); }
+
+let zoneImmunityUntil = 0;
+function checkZones() {
+  if (chatIsOpen) return;
+  if (performance.now() < zoneImmunityUntil) return;
+  const playerPos = yawObject.position;
+  for (const z of zones) {
+    if (z.once && z.fired) continue;
+    const inside = playerPos.distanceTo(z.point) <= z.radius;
+    if (!inside) { z.armed = true; continue; }   // must leave the zone before it can fire
+    if (z.armed) { z.fired = true; z.onTrigger(); }
+  }
+}
+let tooltipTimer = null;
+function showTooltip(text, ms = 2400) {
+  const el = document.getElementById('interactPrompt');
+  el.textContent = text; el.classList.add('show');
+  clearTimeout(tooltipTimer);
+  tooltipTimer = setTimeout(() => { if (!currentInteractable) el.classList.remove('show'); }, ms);
+}
+
+// ============================================================
+// fade / world transition
+// ============================================================
+function fadeTransition(color, callback) {
+  const fader = document.getElementById('fader');
+  fader.className = color === 'white' ? 'show white' : 'show';
+  setTimeout(() => { callback(); setTimeout(() => { fader.className = color === 'white' ? 'white' : ''; }, 60); }, 550);
+}
+let bounds = { minX:-50, maxX:50, minZ:-50, maxZ:50 };
+function clearWorld() {
+  while (worldGroup.children.length) worldGroup.remove(worldGroup.children[0]);
+  clearLights(); clearInteraction(); scene.fog = null;
+}
+function setLocation(name) { document.getElementById('locationLabel').textContent = name; }
+function spawnAt(x, y, z, yaw) { yawObject.position.set(x, y, z); yawObject.rotation.y = yaw; pitchObject.rotation.x = 0; }
+
+// ============================================================
+// Philosopher / host NPC helper
+// ============================================================
+let npcBobs = [];
+function addPhilosopherNPC(x, z, personaKey, displayName, opts = {}) {
+  const robe = opts.robe || 0xd4c89a;
+  const haloC = opts.halo || 0xd4a84b;
+  const verb = opts.verb || 'Speak with';
+  const npcGroup = new THREE.Group();
+
+  const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 0.22, 14), new THREE.MeshStandardMaterial({ color:0x5c4a30 }));
+  pedestal.position.y = 0.11; npcGroup.add(pedestal);
+  const robeBot = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.36, 0.9, 10), new THREE.MeshStandardMaterial({ color:robe })); robeBot.position.y = 0.67;
+  const robeTop = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 0.55, 10), new THREE.MeshStandardMaterial({ color:robe })); robeTop.position.y = 1.39;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), new THREE.MeshStandardMaterial({ color:0xc8a87a })); head.position.y = 1.79;
+  const beard = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 10), new THREE.MeshStandardMaterial({ color:0xb0a898 }));
+  beard.position.set(0, 1.63, 0.1); beard.scale.set(1, 0.65, 0.8);
+  const halo = new THREE.Mesh(new THREE.RingGeometry(0.32, 0.38, 24), new THREE.MeshBasicMaterial({ color:haloC, side:THREE.DoubleSide, transparent:true, opacity:0.45 }));
+  halo.rotation.x = -Math.PI/2; halo.position.y = 2.1;
+  npcGroup.add(robeBot, robeTop, head, beard, halo);
+
+  const nameLabel = makeTextSprite(displayName, { fontsize:34, width:340, height:90, bg:'rgba(30,20,8,0.82)', color:'#e8d5a0', scale:0.008 });
+  nameLabel.position.set(0, 2.5, 0); npcGroup.add(nameLabel);
+  const tablet = makeTextSprite('[ E ] ' + verb + ' ' + displayName, { fontsize:26, width:430, height:80, bg:'rgba(40,30,10,0.75)', color:'rgba(220,190,110,0.9)', scale:0.007 });
+  tablet.position.set(0, 1.1, 0.75); npcGroup.add(tablet);
+
+  npcGroup.position.set(x, 0, z); worldGroup.add(npcGroup);
+  addInteractable(robeTop, { range: 5, prompt: `${verb} ${displayName}`, onInteract: () => openChat(personaKey) });
+
+  const startY = npcGroup.position.y;
+  npcBobs.push((t) => { npcGroup.position.y = startY + Math.sin(t * 0.8) * 0.04; halo.rotation.z = t * 0.4; });
+  return npcGroup;
+}
+
+// ============================================================
+// WORLD: FOREST
+// ============================================================
+function buildForest() {
+  scene.fog = new THREE.FogExp2(0x9fb08c, 0.028);
+  scene.background = new THREE.Color(0xbfd1a8);
+  addLight(new THREE.AmbientLight(0x99aa88, 0.7));
+  const sun = new THREE.DirectionalLight(0xfff2d6, 0.8); sun.position.set(20, 30, -10); addLight(sun);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(220, 220), new THREE.MeshStandardMaterial({ color: 0x4d6b3a }));
+  floor.rotation.x = -Math.PI/2; worldGroup.add(floor);
+
+  for (let i = 0; i < 90; i++) {
+    const x = (Math.random()-0.5) * 90, z = Math.random() * 50 - 6;
+    if (Math.abs(x) < 3.2 && z > -4) continue;
+    const treeGroup = new THREE.Group();
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.35, 3 + Math.random()*1.5, 6), new THREE.MeshStandardMaterial({ color: 0x5b4636 })); trunk.position.y = 1.6;
+    const top = new THREE.Mesh(new THREE.ConeGeometry(1.3 + Math.random()*0.6, 3 + Math.random()*1.2, 7), new THREE.MeshStandardMaterial({ color: 0x355c34 })); top.position.y = 3.6;
+    treeGroup.add(trunk, top); treeGroup.position.set(x, 0, z); treeGroup.rotation.y = Math.random()*Math.PI*2; worldGroup.add(treeGroup);
+  }
+
+  const shack = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.BoxGeometry(5, 3.2, 5), new THREE.MeshStandardMaterial({ color: 0x6b4c33 })); body.position.y = 1.6;
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(4.2, 2.4, 4), new THREE.MeshStandardMaterial({ color: 0x2e2620 })); roof.rotation.y = Math.PI/4; roof.position.y = 4.4;
+  const door = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 2.2), new THREE.MeshStandardMaterial({ color: 0x18120c })); door.position.set(0, 1.1, 2.51);
+  shack.add(body, roof, door); shack.position.set(0, 0, 42); worldGroup.add(shack);
+
+  const signPath = makeSign('a path through the trees…', { fontsize:30, width:520, height:110 }); signPath.position.set(0, 3, 20); worldGroup.add(signPath);
+
+  // Chalmers waits outside on the porch, in a rocking chair
+  const chair = new THREE.Group();
+  const seat = new THREE.Mesh(new THREE.BoxGeometry(1, 0.14, 1), new THREE.MeshStandardMaterial({ color:0x5b4636 })); seat.position.y = 0.6;
+  const back = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.14), new THREE.MeshStandardMaterial({ color:0x5b4636 })); back.position.set(0, 1.1, -0.45);
+  const runnerL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 1.5), new THREE.MeshStandardMaterial({ color:0x3b2c20 })); runnerL.position.set(-0.45, 0.08, 0);
+  const runnerR = runnerL.clone(); runnerR.position.x = 0.45;
+  chair.add(seat, back, runnerL, runnerR); chair.position.set(-2.6, 0, 37); chair.rotation.y = 0.6; worldGroup.add(chair);
+  addPhilosopherNPC(-2.6, 37.6, 'host', 'Your guide', { robe:0x8aa6b0, halo:0x6fb0c0, verb:'Talk to' });
+
+  // a door to knock on at the front of the shack
+  const knockDoor = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.3), new THREE.MeshStandardMaterial({ color:0x18120c }));
+  knockDoor.position.set(0, 1.15, 39.45); worldGroup.add(knockDoor);
+  const knockSign = makeSign('A small house. A door.\n[ E ] knock', { fontsize:30, width:480, height:130 });
+  knockSign.position.set(0, 3, 39.4); worldGroup.add(knockSign);
+  addInteractable(knockDoor, { range: 5, prompt: 'knock on the door (E)', onInteract: knockOnHouse });
+
+  bounds = { minX:-44, maxX:44, minZ:-4, maxZ:38 };
+  setLocation('A Forest Path');
+  spawnAt(0, 1.6, 0, Math.PI);
+}
+
+// ============================================================
+// WORLD: INTRODUCTION ROOM  (Part 1 — the hub)
+// ============================================================
+const WING_RETURN = {
+  epistemology: { x:-4, z:-8.6 }, metaphysics: { x:4, z:-8.6 },
+  valuetheory: { x:8.6, z:0 },    foundations: { x:-8.6, z:0 },
+};
+// a resident philosopher who meets the visitor in the hall and can point them to rooms
+const WING_RESIDENT = { epistemology: 'zhuangzi', valuetheory: 'plato' };
+function buildIntroRoom() {
+  scene.background = new THREE.Color(0xe7e4da);
+  addLight(new THREE.AmbientLight(0xffffff, 0.85));
+  const p1 = new THREE.PointLight(0xfff6e0, 0.9, 40); p1.position.set(0, 3.6, 0); addLight(p1);
+
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0xcfc8b8 });
+  const wallMat  = new THREE.MeshStandardMaterial({ color: 0xeae6da });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(22, 22), floorMat); floor.rotation.x = -Math.PI/2; worldGroup.add(floor);
+  const ceil = new THREE.Mesh(new THREE.PlaneGeometry(22, 22), wallMat); ceil.rotation.x = Math.PI/2; ceil.position.y = 4; worldGroup.add(ceil);
+  function wall(w, x, z, rotY) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 4), wallMat); m.position.set(x, 2, z); m.rotation.y = rotY; worldGroup.add(m); }
+  wall(22, 0, -10, 0); wall(22, 0, 10, 0); wall(22, -10, 0, Math.PI/2); wall(22, 10, 0, Math.PI/2);
+
+  const title = makeSign('THE INTRODUCTION', { fontsize:40, width:620, height:120 }); title.position.set(0, 3.4, -9.4); worldGroup.add(title);
+
+  // ---- HOST greeter ----
+  addPhilosopherNPC(0, 4.5, 'host', 'Your guide', { robe:0x8aa6b0, halo:0x6fb0c0, verb:'Talk to' });
+
+  // ---- the founding thinkers live down the halls now; keep Narada as a wall tale ----
+  const narada = makeTextSprite(
+    'THE TALE OF NARADA\nThe sage asks Vishnu for the secret of maya — and is plunged into a whole\nlived life, only to surface and find no time has passed. Was any of it real?\n(Ask your guide to tell it. — after W. D. O\'Flaherty)',
+    { fontsize:26, width:620, height:200, bg:'rgba(40,30,55,0.82)', color:'rgba(214,196,232,0.92)', scale:0.0078 }
+  );
+  narada.position.set(-9.4, 2.5, 5); worldGroup.add(narada);
+
+  const guide = makeSign('The thinkers wait down the four halls.\nSpeak with your guide, then choose a door.', { fontsize:28, width:580, height:150 });
+  guide.position.set(0, 1.45, 6.6); worldGroup.add(guide);
+
+  // ---- four wing doorways ----
+  function wingDoor(label, x, z, rotY, key, signRotY) {
+    const door = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.3), new THREE.MeshStandardMaterial({ color:0x4f6a7a }));
+    door.position.set(x, 1.2, z); door.rotation.y = rotY; worldGroup.add(door);
+    const s = makeSign(label, { fontsize:30, width:460, height:120 }); s.position.set(x, 2.8, z); s.rotation.y = signRotY; worldGroup.add(s);
+    const zx = x + (Math.abs(x) > 9 ? (x > 0 ? -0.6 : 0.6) : 0);
+    const zz = z + (Math.abs(z) > 9 ? (z > 0 ? -0.6 : 0.6) : 0);
+    addInteractable(door, { range:4, prompt:`Enter: ${label.split('\n')[0]}`, onInteract: () => fadeTransition('black', () => loadWorld('wing:' + key)) });
+  }
+  wingDoor('EPISTEMOLOGY\nknowledge · mind', -4, -9.55, 0, 'epistemology', 0);
+  wingDoor('METAPHYSICS\nreality',           4, -9.55, 0, 'metaphysics', 0);
+  wingDoor('VALUE THEORY\nthe good life',    9.55, 0, -Math.PI/2, 'valuetheory', -Math.PI/2);
+  wingDoor('FOUNDATIONS\nlogic · language · maths', -9.55, 0, Math.PI/2, 'foundations', Math.PI/2);
+
+  bounds = { minX:-9, maxX:9, minZ:-9, maxZ:9 };
+  setLocation('The Introduction');
+  spawnAt(0, 1.6, 8, Math.PI);
+}
+
+// ============================================================
+// WORLD: WINGS (chapters as doors)
+// ============================================================
+const WINGS = {
+  epistemology: { title:'Epistemology Wing', sub:'Parts 2 & 5', doors:[
+    { ch:3,  name:'Do we know things?' },
+    { ch:4,  name:'Can we prove there is an external world?' },
+    { ch:5,  name:"Is it likely we're in a simulation?" },
+    { ch:14, name:'How do mind and body interact?' },
+    { ch:15, name:'Can there be consciousness in a digital world?', key:'shipOfTheseus' },
+    { ch:16, name:'Does augmented reality extend the mind?' },
+  ]},
+  metaphysics: { title:'Metaphysics Wing', sub:'Parts 3 & 4', doors:[
+    { ch:6,  name:'What is reality?' },
+    { ch:7,  name:'Is God a hacker one universe up?' },
+    { ch:8,  name:'Is the universe made of information?' },
+    { ch:9,  name:'Did simulation create its from bits?' },
+    { ch:10, name:'Do VR headsets create reality?' },
+    { ch:11, name:'Are VR devices illusion machines?' },
+    { ch:12, name:'Does AR lead to alternative facts?' },
+    { ch:13, name:'Can we avoid being deceived by deepfakes?' },
+  ]},
+  valuetheory: { title:'Value Theory Wing', sub:'Part 6', doors:[
+    { ch:17, name:'Can you lead a good life in a virtual world?', key:'ch17' },
+    { ch:18, name:'Do simulated lives matter?', key:'ch18' },
+    { ch:19, name:'How should we build a virtual society?' },
+  ]},
+  foundations: { title:'Foundations Wing', sub:'Part 7', doors:[
+    { ch:20, name:'What do our words mean in virtual worlds?' },
+    { ch:21, name:'Do dust clouds run computer programs?' },
+    { ch:22, name:'Is reality a mathematical structure?' },
+    { ch:23, name:'Have we fallen from the Garden of Eden?' },
+    { ch:24, name:'Are we Boltzmann brains in a dream world?' },
+  ]},
+};
+
+function buildWing(category) {
+  const data = WINGS[category];
+  scene.background = new THREE.Color(0x1c1c20);
+  addLight(new THREE.AmbientLight(0xffffff, 0.55));
+  const floorMat = new THREE.MeshStandardMaterial({ color:0x2b2b30 });
+  const wallMat  = new THREE.MeshStandardMaterial({ color:0x3a3a42 });
+  const doorOpenMat = new THREE.MeshStandardMaterial({ color:0x4f7a5c });
+  const doorSoonMat = new THREE.MeshStandardMaterial({ color:0x555555 });
+
+  const length = data.doors.length * 6 + 6;
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, length), floorMat); floor.rotation.x = -Math.PI/2; floor.position.z = -length/2 + 2; worldGroup.add(floor);
+  const lW = new THREE.Mesh(new THREE.PlaneGeometry(length, 4), wallMat); lW.position.set(-3, 2, -length/2 + 2); lW.rotation.y = Math.PI/2; worldGroup.add(lW);
+  const rW = new THREE.Mesh(new THREE.PlaneGeometry(length, 4), wallMat); rW.position.set(3, 2, -length/2 + 2); rW.rotation.y = -Math.PI/2; worldGroup.add(rW);
+
+  const header = makeSign(data.title.toUpperCase() + '\n' + data.sub, { fontsize:32, width:560, height:150 }); header.position.set(0, 3, 1.5); worldGroup.add(header);
+
+  data.doors.forEach((door, i) => {
+    const z = -i * 6 - 5;
+    const side = i % 2 === 0 ? -2.95 : 2.95;
+    const rotY = i % 2 === 0 ? Math.PI/2 : -Math.PI/2;
+    const isOpen = !!door.key;
+    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.15, 2.6, 1.6), new THREE.MeshStandardMaterial({ color:0x1a1a1a })); frame.position.set(side, 1.3, z); worldGroup.add(frame);
+    const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.3), isOpen ? doorOpenMat : doorSoonMat);
+    panel.position.set(side + (i % 2 === 0 ? 0.09 : -0.09), 1.3, z); panel.rotation.y = rotY; worldGroup.add(panel);
+    const label = makeSign('Ch ' + door.ch + ' · ' + door.name + (isOpen ? '' : '\n(coming soon)'), { fontsize:26, width:520, height:170 });
+    label.position.set(side, 2.7, z); worldGroup.add(label);
+    addInteractable(panel, {
+      range: 4,
+      prompt: isOpen ? `Open Ch ${door.ch}` : `Ch ${door.ch} — coming soon`,
+      onInteract: () => { if (isOpen) fadeTransition('black', () => loadWorld('room:' + door.key)); else showTooltip('This room is still being built — coming soon.'); }
+    });
+  });
+
+  const resident = WING_RESIDENT[category];
+  if (resident) addPhilosopherNPC(-1.7, -3, resident, PERSONA_META[resident].name);
+
+  bounds = { minX:-2.6, maxX:2.6, minZ:-(length-1.5), maxZ:2.4 };
+  setLocation(data.title);
+  spawnAt(0, 1.6, 1.5, Math.PI);
+  addZone(new THREE.Vector3(0, 1.6, 2.3), 0.9, () => fadeTransition('black', () => {
+    loadWorld('introRoom');
+    const rs = WING_RETURN[category]; if (rs) spawnAt(rs.x, 1.6, rs.z, Math.PI);
+  }));
+}
+
+// ============================================================
+// ROOM: ALLEGORY OF THE CAVE  (intro closet)
+// ============================================================
+let cave_rotators = [];
+function buildRoom_cave() {
+  scene.background = new THREE.Color(0x05070a);
+  addLight(new THREE.AmbientLight(0x223344, 0.35));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 28), new THREE.MeshStandardMaterial({ color:0x141414 })); floor.rotation.x = -Math.PI/2; floor.position.z = -8; worldGroup.add(floor);
+  function caveWall(x, rotY) { const m = new THREE.Mesh(new THREE.PlaneGeometry(28, 5.5), new THREE.MeshStandardMaterial({ color:0x1a1210 })); m.position.set(x, 2.75, -8); m.rotation.y = rotY; worldGroup.add(m); }
+  caveWall(-5, Math.PI/2); caveWall(5, -Math.PI/2);
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(8, 5), new THREE.MeshStandardMaterial({ color:0x1c1c1c })); wall.position.set(0, 2.5, -16); worldGroup.add(wall);
+  const fireLight = new THREE.PointLight(0xff7a33, 1.4, 20); fireLight.position.set(0, 1.6, 2); addLight(fireLight);
+
+  const shapeGroup = new THREE.Group();
+  const shapes = [
+    new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshStandardMaterial({ color:0x222222 })),
+    new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshStandardMaterial({ color:0x222222 })),
+    new THREE.Mesh(new THREE.ConeGeometry(0.5, 1, 8), new THREE.MeshStandardMaterial({ color:0x222222 })),
+  ];
+  shapes[0].position.set(-1.6, 1.4, -4); shapes[1].position.set(0, 1.2, -4); shapes[2].position.set(1.6, 1.4, -4);
+  shapes.forEach(s => shapeGroup.add(s)); worldGroup.add(shapeGroup);
+  const introSign = makeSign('Shapes move on the wall ahead. Something is casting them — you can\'t see what, yet.', { width:680, height:160 }); introSign.position.set(0, 3.4, -9); worldGroup.add(introSign);
+
+  const litFloor = new THREE.Mesh(new THREE.CircleGeometry(3.2, 24), new THREE.MeshStandardMaterial({ color:0xddcfa0 })); litFloor.rotation.x = -Math.PI/2; litFloor.position.set(0, 0.01, -22); worldGroup.add(litFloor);
+  const sunLamp = new THREE.PointLight(0xfff3d0, 1.6, 14); sunLamp.position.set(0, 4, -22); addLight(sunLamp);
+  const realObjects = new THREE.Group();
+  const rs = shapes[0].clone(); rs.material = new THREE.MeshStandardMaterial({ color:0xb33b3b });
+  const rb = shapes[1].clone(); rb.material = new THREE.MeshStandardMaterial({ color:0x3b6cb3 });
+  const rc = shapes[2].clone(); rc.material = new THREE.MeshStandardMaterial({ color:0x3bb36c });
+  rs.position.set(-1.4, 1.4, -22); rb.position.set(0, 1.2, -22); rc.position.set(1.4, 1.4, -22);
+  realObjects.add(rs, rb, rc); worldGroup.add(realObjects);
+
+  let debriefShown = false;
+  addZone(new THREE.Vector3(0, 1.6, -21), 3, () => {
+    if (debriefShown) return; debriefShown = true;
+    const d = makeSign('These are the objects that cast the shapes. The wall showed you something real — just not the whole of it. How would you know, in general, when you\'re looking at a shadow and when you\'re looking at the thing itself?', { width:780, height:230, fontsize:32 });
+    d.position.set(0, 3.3, -24.5); worldGroup.add(d);
+  });
+
+  // back to the Ch 17 room (the cave is a closet there)
+  addReturnDoor('room:ch17', 'Return to the room');
+  bounds = { minX:-4.5, maxX:5.5, minZ:-26, maxZ:6 };
+  setLocation('The Cave — a thought-experience');
+  spawnAt(0, 1.6, 4, Math.PI);
+  cave_rotators.push(shapeGroup, realObjects);
+}
+
+// ============================================================
+// ROOM: SHIP OF THESEUS  (Epistemology · Ch 15 closet — personal identity)
+// ============================================================
+function buildRoom_shipOfTheseus() {
+  scene.background = new THREE.Color(0x1b2330);
+  addLight(new THREE.AmbientLight(0xffffff, 0.8));
+  const spot = new THREE.PointLight(0xfff2cc, 1, 25); spot.position.set(0, 4, -4); addLight(spot);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshStandardMaterial({ color:0x223044 })); floor.rotation.x = -Math.PI/2; worldGroup.add(floor);
+  const oldWood = new THREE.MeshStandardMaterial({ color:0x6b4423 }), newWood = new THREE.MeshStandardMaterial({ color:0xc9a66b });
+  const planks = [], replaced = new Set();
+  for (let i = 0; i < 6; i++) {
+    const plank = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 0.9), oldWood.clone()); plank.position.set(-4 + i*1.6, 0.6, -5); worldGroup.add(plank); planks.push(plank);
+    addInteractable(plank, { range: 3.5, prompt: 'replace this plank', onInteract: () => { if (!replaced.has(i)) { plank.material = newWood; replaced.add(i); check(); } } });
+  }
+  const intro = makeSign('Six planks make up this ship. Replace each one, and watch what happens.', { width:680, height:160 }); intro.position.set(0, 2.3, -5.6); worldGroup.add(intro);
+  let done = false;
+  function check() { if (replaced.size === planks.length && !done) { done = true; const d = makeSign('Every plank has been replaced. Is this still the same ship — and if so, what made it "the same" all along? (The same question your guide will ask about you.)', { width:760, height:220, fontsize:32 }); d.position.set(0, 2.7, -2.8); worldGroup.add(d); } }
+  addReturnDoor('wing:epistemology', 'Return to the wing');
+  bounds = { minX:-7, maxX:7, minZ:-7, maxZ:6 }; setLocation('Ship of Theseus'); spawnAt(0, 1.6, 4, Math.PI);
+}
+
+// ============================================================
+// ROOM: CH 17 — Can you lead a good life in a virtual world?  (Value Theory)
+// ============================================================
+function buildRoom_ch17() {
+  scene.background = new THREE.Color(0x241f2a);
+  addLight(new THREE.AmbientLight(0xffffff, 0.7));
+  const pl = new THREE.PointLight(0xffe0e8, 0.85, 44); pl.position.set(0, 3.6, 0); addLight(pl);
+  const floorMat = new THREE.MeshStandardMaterial({ color:0x38323e });
+  const wallMat  = new THREE.MeshStandardMaterial({ color:0x48424e });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), floorMat); floor.rotation.x = -Math.PI/2; worldGroup.add(floor);
+  const ceil  = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), wallMat);  ceil.rotation.x = Math.PI/2; ceil.position.y = 4; worldGroup.add(ceil);
+  function wall(w, x, z, r) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 4), wallMat); m.position.set(x, 2, z); m.rotation.y = r; worldGroup.add(m); }
+  wall(18, 0, -9, 0); wall(18, 0, 9, 0); wall(18, -9, 0, Math.PI/2); wall(18, 9, 0, Math.PI/2);
+
+  const title = makeSign('CH 17 · CAN YOU LEAD A GOOD LIFE IN A VIRTUAL WORLD?', { fontsize:26, width:720, height:130 }); title.position.set(0, 3.4, -8.6); worldGroup.add(title);
+
+  addPhilosopherNPC(0, 4, 'host', 'Your guide', { robe:0x8aa6b0, halo:0x6fb0c0, verb:'Talk to' });
+  addPhilosopherNPC(0, -3, 'nozick', 'Robert Nozick');
+
+  // closet 1 — the experience machine (left wall)
+  const c1 = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.2), new THREE.MeshStandardMaterial({ color:0x1e2c38 }));
+  c1.position.set(-8.55, 1.1, -2); c1.rotation.y = Math.PI/2; worldGroup.add(c1);
+  const c1s = makeSign('Closet · The Experience Machine\n(a thought-experience)', { fontsize:26, width:500, height:130 }); c1s.position.set(-8.5, 2.6, -2); c1s.rotation.y = Math.PI/2; worldGroup.add(c1s);
+  addInteractable(c1, { range:3.5, prompt:'enter the Experience Machine (play)', onInteract: () => fadeTransition('black', () => loadWorld('room:experienceMachine')) });
+
+  // closet 2 — Plato's cave (right wall)
+  const c2 = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.2), new THREE.MeshStandardMaterial({ color:0x2a2018 }));
+  c2.position.set(8.55, 1.1, -2); c2.rotation.y = -Math.PI/2; worldGroup.add(c2);
+  const c2s = makeSign('Closet · Plato\'s Cave\n(a thought-experience)', { fontsize:26, width:500, height:130 }); c2s.position.set(8.5, 2.6, -2); c2s.rotation.y = -Math.PI/2; worldGroup.add(c2s);
+  addInteractable(c2, { range:3.5, prompt:'enter the Cave (play)', onInteract: () => fadeTransition('black', () => loadWorld('room:cave')) });
+
+  // return to the wing
+  const rd = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.2), new THREE.MeshStandardMaterial({ color:0x777755 })); rd.position.set(-3, 1.1, 8.85); worldGroup.add(rd);
+  const rl = makeSign('Return to the wing', { fontsize:26, width:400, height:100 }); rl.position.set(-3, 2.6, 8.6); worldGroup.add(rl);
+  addInteractable(rd, { range:4, prompt:'return to the wing', onInteract: () => fadeTransition('black', () => loadWorld('wing:valuetheory')) });
+
+  bounds = { minX:-8, maxX:8, minZ:-8, maxZ:8 };
+  setLocation('Ch 17 — A good life in a virtual world?');
+  spawnAt(0, 1.6, 7.5, Math.PI);
+}
+
+// ============================================================
+// CLOSET: THE EXPERIENCE MACHINE  (Ch 17 thought-experience)
+// ============================================================
+function buildRoom_experienceMachine() {
+  scene.background = new THREE.Color(0x0a1018);
+  addLight(new THREE.AmbientLight(0x88aaff, 0.5));
+  const glow = new THREE.PointLight(0x66ccff, 1.3, 26); glow.position.set(0, 3, -6); addLight(glow);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 24), new THREE.MeshStandardMaterial({ color:0x121820 })); floor.rotation.x = -Math.PI/2; floor.position.z = -6; worldGroup.add(floor);
+
+  const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 2.2, 16), new THREE.MeshStandardMaterial({ color:0x2a3a4a, emissive:0x113355, emissiveIntensity:0.4 }));
+  pod.position.set(0, 1.3, -6); worldGroup.add(pod);
+  const ring = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.3, 32), new THREE.MeshBasicMaterial({ color:0x66ccff, side:THREE.DoubleSide, transparent:true, opacity:0.4 }));
+  ring.rotation.x = -Math.PI/2; ring.position.set(0, 0.05, -6); worldGroup.add(ring);
+
+  const intro = makeSign('A machine that will give you any experience you wish — a life of your choosing, indistinguishable from real, for as long as you live. You would never know you were inside.', { width:800, height:200, fontsize:30 });
+  intro.position.set(0, 3.2, -9.2); worldGroup.add(intro);
+
+  let decided = false;
+  function decide(plug) {
+    if (decided) return; decided = true;
+    const text = plug
+      ? 'You plugged in. From the inside it will feel like a full and happy life — yet nothing you "do" there is really done, and no one you "meet" is really met. Is the felt life enough, if none of it is real?'
+      : 'You stayed out. You chose a harder, smaller, real life over a guaranteed pleasant illusion. Why — what did you want that the machine could not give?';
+    const d = makeSign(text, { width:820, height:240, fontsize:30 }); d.position.set(0, 3.2, -3); worldGroup.add(d);
+  }
+  const plugBtn = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshStandardMaterial({ color:0x3a7a4a })); plugBtn.position.set(-1.8, 0.6, -3.5); worldGroup.add(plugBtn);
+  const stayBtn = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshStandardMaterial({ color:0x7a3a3a })); stayBtn.position.set(1.8, 0.6, -3.5); worldGroup.add(stayBtn);
+  const plugSign = makeSign('plug in', { fontsize:30, width:260, height:90 }); plugSign.position.set(-1.8, 1.4, -3.5); worldGroup.add(plugSign);
+  const staySign = makeSign('stay out', { fontsize:30, width:260, height:90 }); staySign.position.set(1.8, 1.4, -3.5); worldGroup.add(staySign);
+  addInteractable(plugBtn, { range:3, prompt:'plug in', onInteract: () => decide(true) });
+  addInteractable(stayBtn, { range:3, prompt:'stay out', onInteract: () => decide(false) });
+
+  addReturnDoor('room:ch17', 'Return to the room');
+  bounds = { minX:-6, maxX:6, minZ:-12, maxZ:5 };
+  setLocation('The Experience Machine');
+  spawnAt(0, 1.6, 3, Math.PI);
+}
+
+// ============================================================
+// ROOM: CH 18 — Do simulated lives matter?  (Value Theory)
+// ============================================================
+function buildRoom_ch18() {
+  scene.background = new THREE.Color(0x201e26);
+  addLight(new THREE.AmbientLight(0xffffff, 0.7));
+  const pl = new THREE.PointLight(0xffe8d0, 0.85, 44); pl.position.set(0, 3.6, 0); addLight(pl);
+
+  const floorMat = new THREE.MeshStandardMaterial({ color:0x35323c });
+  const wallMat  = new THREE.MeshStandardMaterial({ color:0x45424e });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), floorMat); floor.rotation.x = -Math.PI/2; worldGroup.add(floor);
+  const ceil  = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), wallMat);  ceil.rotation.x = Math.PI/2; ceil.position.y = 4; worldGroup.add(ceil);
+  function wall(w, x, z, r) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 4), wallMat); m.position.set(x, 2, z); m.rotation.y = r; worldGroup.add(m); }
+  wall(18, 0, -9, 0); wall(18, 0, 9, 0); wall(18, -9, 0, Math.PI/2); wall(18, 9, 0, Math.PI/2);
+
+  const title = makeSign('CH 18 · DO SIMULATED LIVES MATTER?', { fontsize:30, width:660, height:120 }); title.position.set(0, 3.4, -8.6); worldGroup.add(title);
+
+  // host + the cast (each a sealed one-on-one)
+  addPhilosopherNPC(0, 4, 'host', 'Your guide', { robe:0x8aa6b0, halo:0x6fb0c0, verb:'Talk to' });
+  addPhilosopherNPC(-4.5, 0, 'foot',    'Philippa Foot');
+  addPhilosopherNPC( 4.5, 0, 'thomson', 'J. J. Thomson');
+  addPhilosopherNPC( 0, -4.5, 'singer', 'Peter Singer');
+
+  // closet: the trolley thought-experience
+  const closet = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.2), new THREE.MeshStandardMaterial({ color:0x223018 }));
+  closet.position.set(-8.55, 1.1, -2); closet.rotation.y = Math.PI/2; worldGroup.add(closet);
+  const cs = makeSign('Closet · The Trolley\n(a thought-experience)', { fontsize:28, width:460, height:130 }); cs.position.set(-8.5, 2.6, -2); cs.rotation.y = Math.PI/2; worldGroup.add(cs);
+  addInteractable(closet, { range:3.5, prompt:'enter the Trolley (play)', onInteract: () => fadeTransition('black', () => loadWorld('room:trolley')) });
+
+  // return to the wing
+  const rd = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.2), new THREE.MeshStandardMaterial({ color:0x777755 })); rd.position.set(-3, 1.1, 8.85); worldGroup.add(rd);
+  const rl = makeSign('Return to the wing', { fontsize:26, width:400, height:100 }); rl.position.set(-3, 2.6, 8.6); worldGroup.add(rl);
+  addInteractable(rd, { range:4, prompt:'return to the wing', onInteract: () => fadeTransition('black', () => loadWorld('wing:valuetheory')) });
+
+  bounds = { minX:-8, maxX:8, minZ:-8, maxZ:8 };
+  setLocation('Ch 18 — Do simulated lives matter?');
+  spawnAt(0, 1.6, 7.5, Math.PI);
+}
+
+// ============================================================
+// ROOM: TROLLEY PROBLEM  (Value Theory · Ch 18 closet)
+// ============================================================
+function buildRoom_trolley() {
+  scene.background = new THREE.Color(0x2a2e22);
+  addLight(new THREE.AmbientLight(0xffffff, 0.85));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.6); sun.position.set(5, 10, 5); addLight(sun);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.MeshStandardMaterial({ color:0x4a5a36 })); floor.rotation.x = -Math.PI/2; worldGroup.add(floor);
+  function track(x1, z1, x2, z2) { const dx = x2-x1, dz = z2-z1, len = Math.sqrt(dx*dx+dz*dz); const rail = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.1, len), new THREE.MeshStandardMaterial({ color:0x333333 })); rail.position.set((x1+x2)/2, 0.05, (z1+z2)/2); rail.rotation.y = Math.atan2(dx, dz); worldGroup.add(rail); }
+  track(0, 2, 0, -10); track(0, -10, 3.5, -16);
+  function person(x, z) { const g = new THREE.Group(); const b = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 1, 8), new THREE.MeshStandardMaterial({ color:0xcc4444 })); b.position.y = 0.6; const h = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), new THREE.MeshStandardMaterial({ color:0xcc4444 })); h.position.y = 1.25; g.add(b, h); g.position.set(x, 0, z); worldGroup.add(g); }
+  [-1.2,-0.4,0.4,1.2,2.0].forEach(off => person(off*0.4, -13)); person(3.5, -19);
+  const trolley = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1, 2), new THREE.MeshStandardMaterial({ color:0x884422 })); trolley.position.set(0, 0.6, -1); worldGroup.add(trolley);
+  const leverBase = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.4), new THREE.MeshStandardMaterial({ color:0x222222 })); leverBase.position.set(1.6, 0.1, -2); worldGroup.add(leverBase);
+  const leverArm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.1, 8), new THREE.MeshStandardMaterial({ color:0xaa3333 })); leverArm.position.set(1.6, 0.6, -2); leverArm.rotation.z = -0.5; worldGroup.add(leverArm);
+  const intro = makeSign('A trolley nears the switch. Five are on the main track, one on the siding. The lever decides.', { width:760, height:180 }); intro.position.set(0, 3, -4); worldGroup.add(intro);
+  let decided = false;
+  function run(diverted) {
+    if (decided) return; decided = true;
+    leverArm.rotation.z = diverted ? 0.5 : -0.5;
+    const tz = diverted ? -16 : -13, tx = diverted ? 3.5 : 0, start = trolley.position.clone(), t0 = performance.now();
+    (function step(){ const t = Math.min(1,(performance.now()-t0)/1800); trolley.position.x = start.x+(tx-start.x)*t; trolley.position.z = start.z+(tz-start.z)*t; if (t<1) requestAnimationFrame(step); else debrief(diverted); })();
+  }
+  function debrief(diverted) {
+    const text = diverted ? 'You diverted it. One died instead of five — because of something you did. Does it matter, morally, that your hand was on the lever?' : 'You left the lever. Five died on the track it was already taking. Does choosing not to act still count as a choice?';
+    const d = makeSign(text, { width:780, height:220, fontsize:32 }); d.position.set(0, 3.2, -2.5); worldGroup.add(d);
+  }
+  addInteractable(leverArm, { range:3, prompt:'pull the lever (divert)', onInteract: () => run(true) });
+  addInteractable(leverBase, { range:3, prompt:'leave the lever alone', onInteract: () => run(false) });
+  addReturnDoor('room:ch18', 'Return to the room');
+  bounds = { minX:-3, maxX:6, minZ:-19, maxZ:5 }; setLocation('The Trolley Track'); spawnAt(0, 1.6, 3, Math.PI);
+}
+
+// ---------- shared return door ----------
+function addReturnDoor(targetKey, label) {
+  const door = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 2.2), new THREE.MeshStandardMaterial({ color:0x777755 })); door.position.set(0, 1.1, 5); worldGroup.add(door);
+  const s = makeSign(label || 'Return', { fontsize:28, width:420, height:100 }); s.position.set(0, 2.5, 5); worldGroup.add(s);
+  addInteractable(door, { range: 4, prompt: label || 'return', onInteract: () => fadeTransition('black', () => loadWorld(targetKey)) });
+}
+
+// ============================================================
+// world dispatcher
+// ============================================================
+function loadWorld(key) {
+  clearWorld(); cave_rotators = []; npcBobs = [];
+  currentRoomKey = key;
+  zoneImmunityUntil = performance.now() + 800;
+  if (key === 'forest') buildForest();
+  else if (key === 'introRoom') buildIntroRoom();
+  else if (key.startsWith('wing:')) buildWing(key.split(':')[1]);
+  else if (key === 'room:cave') buildRoom_cave();
+  else if (key === 'room:ch17') buildRoom_ch17();
+  else if (key === 'room:experienceMachine') buildRoom_experienceMachine();
+  else if (key === 'room:ch18') buildRoom_ch18();
+  else if (key === 'room:shipOfTheseus') buildRoom_shipOfTheseus();
+  else if (key === 'room:trolley') buildRoom_trolley();
+}
+
+// ============================================================
+// controls
+// ============================================================
+const keys = {};
+window.addEventListener('keydown', e => {
+  if (chatIsOpen || (authModal && authModal.classList.contains('open'))) return;
+  keys[e.code] = true;
+  if (e.code === 'KeyE') triggerInteract();
+  if (e.code === 'KeyM') { const nav = document.getElementById('navPanel'); nav.style.display = nav.style.display === 'none' ? 'flex' : 'none'; }
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+document.getElementById('startScreen').addEventListener('click', () => { document.getElementById('startScreen').style.display = 'none'; renderer.domElement.requestPointerLock(); });
+renderer.domElement.addEventListener('click', () => {
+  if (chatIsOpen) return;
+  if (document.pointerLockElement !== renderer.domElement && !renderer.xr.isPresenting) renderer.domElement.requestPointerLock();
+  else triggerInteract();
+});
+document.addEventListener('mousemove', e => {
+  if (chatIsOpen) return;
+  if (document.pointerLockElement !== renderer.domElement) return;
+  yawObject.rotation.y -= e.movementX * 0.0022;
+  pitchObject.rotation.x -= e.movementY * 0.0022;
+  pitchObject.rotation.x = Math.max(-Math.PI/2.2, Math.min(Math.PI/2.2, pitchObject.rotation.x));
+});
+
+const moveSpeed = 4.2;
+const camDir = new THREE.Vector3(), camRight = new THREE.Vector3();
+function updateMovement(delta) {
+  if (chatIsOpen) return;
+  if (!renderer.xr.isPresenting && document.pointerLockElement !== renderer.domElement) return;
+  let fwd = 0, right = 0;
+  if (keys['KeyW']) fwd += 1; if (keys['KeyS']) fwd -= 1; if (keys['KeyD']) right += 1; if (keys['KeyA']) right -= 1;
+  if (fwd !== 0 || right !== 0) {
+    camera.getWorldDirection(camDir); camDir.y = 0; camDir.normalize();
+    camRight.crossVectors(new THREE.Vector3(0, 1, 0), camDir).negate();
+    const len = Math.sqrt(fwd*fwd + right*right), scale = moveSpeed * delta / len;
+    yawObject.position.x += (camDir.x * fwd + camRight.x * right) * scale;
+    yawObject.position.z += (camDir.z * fwd + camRight.z * right) * scale;
+  }
+  if (renderer.xr.isPresenting) {
+    const session = renderer.xr.getSession();
+    if (session) for (const src of session.inputSources) {
+      const gp = src.gamepad; if (!gp || gp.axes.length < 2) continue;
+      const ax = gp.axes.length >= 4 ? gp.axes[2] : gp.axes[0];
+      const ay = gp.axes.length >= 4 ? gp.axes[3] : gp.axes[1];
+      if (Math.abs(ax) < 0.12 && Math.abs(ay) < 0.12) continue;
+      camera.getWorldDirection(fwdVec); fwdVec.y = 0; fwdVec.normalize();
+      const r = new THREE.Vector3().crossVectors(fwdVec, new THREE.Vector3(0,1,0)).negate();
+      yawObject.position.addScaledVector(fwdVec, -ay * moveSpeed * delta);
+      yawObject.position.addScaledVector(r, ax * moveSpeed * delta);
+    }
+  }
+  yawObject.position.x = Math.max(bounds.minX, Math.min(bounds.maxX, yawObject.position.x));
+  yawObject.position.z = Math.max(bounds.minZ, Math.min(bounds.maxZ, yawObject.position.z));
+}
+
+// VR
+async function setupVRButton() {
+  const container = document.getElementById('vrButtonContainer');
+  if (!navigator.xr) return;
+  try { if (!(await navigator.xr.isSessionSupported('immersive-vr'))) return; } catch(e) { return; }
+  const btn = document.createElement('button'); btn.textContent = 'Enter VR';
+  btn.onclick = async () => { try { const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures:['local-floor'] }); pitchObject.rotation.x = 0; renderer.xr.setSession(session); document.getElementById('startScreen').style.display = 'none'; } catch(e) { console.error(e); } };
+  container.appendChild(btn);
+}
+setupVRButton();
+const controller1 = renderer.xr.getController(0), controller2 = renderer.xr.getController(1);
+controller1.addEventListener('selectstart', triggerInteract); controller2.addEventListener('selectstart', triggerInteract);
+scene.add(controller1, controller2);
+
+// quick-nav
+(function buildNavPanel() {
+  const nav = document.getElementById('navPanel');
+  const title = document.createElement('div'); title.id = 'navTitle'; title.textContent = 'Quick nav (M)'; nav.appendChild(title);
+  [
+    ['Forest', 'forest'], ['Introduction', 'introRoom'],
+    ['Epistemology wing', 'wing:epistemology'], ['Metaphysics wing', 'wing:metaphysics'],
+    ['Value Theory wing', 'wing:valuetheory'], ['Foundations wing', 'wing:foundations'],
+    ['Ch 17 room', 'room:ch17'], ['Ch 18 room', 'room:ch18'],
+    ['Cave (closet)', 'room:cave'], ['Experience Machine', 'room:experienceMachine'], ['Ship of Theseus', 'room:shipOfTheseus'], ['Trolley', 'room:trolley']
+  ].forEach(([label, key]) => { const b = document.createElement('button'); b.textContent = label; b.onclick = () => fadeTransition('black', () => loadWorld(key)); nav.appendChild(b); });
+})();
+
+// ============================================================
+// main loop
+// ============================================================
+const clock = new THREE.Clock();
+function animate() {
+  const t = clock.elapsedTime;
+  const delta = Math.min(0.05, clock.getDelta());
+  updateMovement(delta); updateInteractionTarget(); checkZones();
+  cave_rotators.forEach(g => { g.rotation.y += delta * 0.25; });
+  npcBobs.forEach(fn => fn(t));
+  renderer.render(scene, camera);
+}
+renderer.setAnimationLoop(animate);
+
+loadWorld('forest');
+</script>
+</body>
+</html>
