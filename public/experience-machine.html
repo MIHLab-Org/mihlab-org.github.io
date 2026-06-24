@@ -238,6 +238,12 @@
 const PROXY_URL = ''; // e.g. 'https://YOUR-REF.supabase.co/functions/v1/philosopher'
 window.MIHLAB_JWT = window.MIHLAB_JWT || ''; // set to the Supabase access token after login (subscriber path)
 
+// Stripe function URLs are derived from PROXY_URL by swapping the last path segment,
+// so you only configure one base. (…/functions/v1/philosopher -> …/stripe-checkout)
+const FUNCTIONS_BASE = PROXY_URL ? PROXY_URL.replace(/\/[^/]*$/, '') : '';
+const CHECKOUT_URL = FUNCTIONS_BASE ? FUNCTIONS_BASE + '/stripe-checkout' : '';
+const PORTAL_URL   = FUNCTIONS_BASE ? FUNCTIONS_BASE + '/stripe-portal'   : '';
+
 // ============================================================
 // PERSONA SPECS  (identity/voice only — behaviour & mode appended at runtime)
 //   In PROXY mode these are unused (the server has its own copy in personas.ts);
@@ -577,13 +583,88 @@ async function doAuth(kind) {
 }
 document.getElementById('authSignIn').addEventListener('click', () => doAuth('in'));
 document.getElementById('authSignUp').addEventListener('click', () => doAuth('up'));
-document.getElementById('authSubscribe').addEventListener('click', () => {
+// ---- SUBSCRIBE: make sure there's an account, then open the plan picker ----
+const PLANS = [
+  { tier: 'base',    price: '$5',  credits: '$2.50 of conversation / month', blurb: 'a season of visits' },
+  { tier: 'plus',    price: '$10', credits: '$5 of conversation / month',    blurb: 'the regular caller' },
+  { tier: 'premium', price: '$20', credits: '$10 of conversation / month',   blurb: 'the resident thinker' },
+];
+
+async function ensureSessionForCheckout() {
+  if (window.MIHLAB_JWT) return true;            // already signed in
+  if (!window.mihlabAuth) { authMsg.textContent = 'Sign-in isn\'t configured yet.'; return false; }
+  const email = authEmail.value.trim(), pw = authPass.value;
+  if (!email || !pw) { authMsg.style.color = 'rgba(230,160,120,0.9)'; authMsg.textContent = 'Enter an email and password first — your membership attaches to that account.'; return false; }
   authMsg.style.color = 'rgba(210,180,120,0.7)';
-  authMsg.textContent = 'Subscriptions open soon — sign in to enter; members will ride the house\'s key.';
+  authMsg.textContent = 'Setting up your account…';
+  try {
+    try { await window.mihlabAuth.signIn(email, pw); }      // existing account?
+    catch { await window.mihlabAuth.signUp(email, pw); }    // otherwise make one
+  } catch (e) { authMsg.style.color = 'rgba(230,160,120,0.9)'; authMsg.textContent = (e && e.message) || 'Could not sign you in.'; return false; }
+  if (!window.MIHLAB_JWT) { authMsg.textContent = 'Account made — confirm via the email we sent, sign in, then subscribe.'; return false; }
+  return true;
+}
+
+async function startCheckout(tier) {
+  if (!CHECKOUT_URL) { authMsg.textContent = 'Checkout isn\'t configured yet.'; return; }
+  authMsg.style.color = 'rgba(210,180,120,0.7)';
+  authMsg.textContent = 'Opening checkout…';
+  try {
+    const r = await fetch(CHECKOUT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + window.MIHLAB_JWT },
+      body: JSON.stringify({ tier }),
+    });
+    const data = await r.json();
+    if (!r.ok || !data.url) throw new Error(data.error || `HTTP ${r.status}`);
+    window.location.href = data.url;   // hand off to Stripe's hosted page
+  } catch (e) {
+    authMsg.style.color = 'rgba(230,160,120,0.9)';
+    authMsg.textContent = (e && e.message) || 'Could not open checkout.';
+  }
+}
+
+function renderPlanPicker() {
+  const card = document.getElementById('authCard');
+  card.innerHTML =
+    '<h2>Choose how long you\'ll stay.</h2>' +
+    '<div class="sub">Members ride the house\'s own key. Half of each plan is conversation credit; the rest keeps the lights on.</div>' +
+    PLANS.map(p =>
+      '<button class="planBtn" data-tier="' + p.tier + '" style="width:100%;text-align:left;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">' +
+      '<span><strong>' + p.price + '/mo</strong> · ' + p.blurb + '<br><span style="font-size:11px;opacity:0.7;">' + p.credits + '</span></span>' +
+      '<span style="font-size:18px;">→</span></button>'
+    ).join('') +
+    '<div id="authMsg"></div>' +
+    '<button id="planBack" style="width:100%;background:none;border:none;color:rgba(200,170,100,0.5);font-size:11px;cursor:pointer;text-decoration:underline;margin-top:6px;">back</button>';
+  card.querySelectorAll('.planBtn').forEach(b =>
+    b.addEventListener('click', () => startCheckout(b.getAttribute('data-tier'))));
+  document.getElementById('planBack').addEventListener('click', () => location.reload());
+}
+
+document.getElementById('authSubscribe').addEventListener('click', async () => {
+  if (await ensureSessionForCheckout()) renderPlanPicker();
 });
 document.getElementById('authGuest').addEventListener('click', () => { closeAuthModal(); enterHouse(); });
 authPass.addEventListener('keydown', e => { if (e.key === 'Enter') doAuth('in'); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && authModal.classList.contains('open')) closeAuthModal(); });
+
+// ---- returning from Stripe Checkout ----
+(function handleCheckoutReturn() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('subscribed') === '1') {
+    // The webhook flips the tier server-side; the next question reads it live.
+    // Give it a moment, clean the URL, then welcome them in.
+    history.replaceState({}, '', location.pathname);
+    const banner = document.createElement('div');
+    banner.textContent = '✦ Your membership is active. Welcome in.';
+    banner.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:120;background:rgba(40,30,16,0.95);color:#f0dca8;border:1px solid rgba(210,180,120,0.4);border-radius:10px;padding:12px 18px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,0.5);';
+    document.body.appendChild(banner);
+    setTimeout(() => banner.remove(), 4200);
+    setTimeout(() => { if (typeof enterHouse === 'function') enterHouse(); }, 900);
+  } else if (params.get('subscribe') === 'cancel') {
+    history.replaceState({}, '', location.pathname);
+  }
+})();
 
 // ============================================================
 // three.js scene setup

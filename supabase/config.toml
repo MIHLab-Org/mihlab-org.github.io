@@ -371,3 +371,21 @@ entrypoint = "./functions/hello/index.ts"
 enabled = true
 verify_jwt = false
 import_map = "./functions/philosopher/deno.json"
+
+[functions.stripe-checkout]
+enabled = true
+verify_jwt = true
+import_map = "./functions/stripe-checkout/deno.json"
+entrypoint = "./functions/stripe-checkout/index.ts"
+
+[functions.stripe-webhook]
+enabled = true
+verify_jwt = false
+import_map = "./functions/stripe-webhook/deno.json"
+entrypoint = "./functions/stripe-webhook/index.ts"
+
+[functions.stripe-portal]
+enabled = true
+verify_jwt = true
+import_map = "./functions/stripe-portal/deno.json"
+entrypoint = "./functions/stripe-portal/index.ts"
