@@ -1,6 +1,5 @@
 import { Layout } from '@/components/Layout';
-import { useRef } from 'react';
-import { Maximize2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface Tier {
   name: string;
@@ -39,13 +38,6 @@ const TIERS: Tier[] = [
 ];
 
 export default function Media() {
-  const frameRef = useRef<HTMLIFrameElement>(null);
-
-  const goFullscreen = () => {
-    const el = frameRef.current;
-    if (el && el.requestFullscreen) el.requestFullscreen();
-  };
-
   return (
     <Layout>
       <div className="flex flex-col gap-16 pb-20">
@@ -60,25 +52,29 @@ export default function Media() {
           </p>
         </section>
 
-        {/* the experience, embedded */}
+        {/* the experience — launched as its own page, not embedded.
+            An iframe sandboxes the game's login and blocks Stripe Checkout
+            (which refuses to load in a frame), so we open it full-window instead. */}
         <section className="px-4 max-w-6xl w-full mx-auto flex flex-col gap-3">
-          <div className="relative rounded-xl overflow-hidden border border-[#1d4256] shadow-2xl bg-black">
-            <iframe
-              ref={frameRef}
-              src="/experience-machine.html"
-              title="The Experience Machine"
-              className="w-full h-[78vh] block"
-              allow="fullscreen; pointer-lock; xr-spatial-tracking; gamepad; accelerometer; gyroscope"
-            />
-            <button
-              onClick={goFullscreen}
-              className="absolute top-3 right-3 flex items-center gap-2 rounded-lg bg-black/60 hover:bg-black/80 text-white text-sm px-3 py-2 border border-white/20"
-            >
-              <Maximize2 className="w-4 h-4" /> Fullscreen
-            </button>
-          </div>
+          <a
+            href="/experience-machine.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative flex flex-col items-center justify-center gap-5 rounded-xl border border-[#1d4256] bg-gradient-to-b from-[#0e2433] to-[#06121b] shadow-2xl h-[60vh] min-h-[420px] overflow-hidden text-center px-6"
+          >
+            <span className="text-6xl" aria-hidden="true">🏚️</span>
+            <div className="flex flex-col gap-2">
+              <span className="text-2xl md:text-3xl font-bold text-white">Step into the woods</span>
+              <span className="text-[#9DC6D8] max-w-md mx-auto">
+                A path, a house, and the thinkers who live there. The experience opens in its own window.
+              </span>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-lg bg-[#1c87a8] group-hover:bg-[#23a3c9] text-white font-medium px-6 py-3 transition-colors">
+              Enter the Experience Machine <ArrowRight className="w-5 h-5" />
+            </span>
+          </a>
           <p className="text-sm text-[#6B8A99] text-center">
-            Click to look around · WASD to move · E to interact · you'll be asked to make an account when you knock on the door.
+            Opens full-screen in a new tab · Click to look around · WASD to move · E to interact · you'll be asked to make an account when you knock on the door.
           </p>
         </section>
 
