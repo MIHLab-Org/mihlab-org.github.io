@@ -1357,5 +1357,26 @@ renderer.setAnimationLoop(animate);
 
 loadWorld('forest');
 </script>
+  <!-- ============ SIGN OUT BUTTON ============ -->
+<button id="signOutBtn" title="Sign out"
+  style="display:none;position:fixed;top:14px;right:14px;z-index:101;
+         background:rgba(20,18,14,0.92);color:#e8d5a0;
+         border:1px solid rgba(210,180,120,0.4);border-radius:8px;
+         padding:7px 12px;font-size:12px;cursor:pointer;font-family:inherit;">Sign out</button>
+<script>
+(function () {
+  const btn = document.getElementById('signOutBtn');
+  if (!btn) return;
+  const sync = () => { btn.style.display = (window.MIHLAB_JWT && window.mihlabAuth) ? 'block' : 'none'; };
+  sync();
+  setInterval(sync, 500);
+  btn.addEventListener('click', async () => {
+    btn.textContent = 'Signing out…';
+    try { await window.mihlabAuth.signOut(); } catch (e) {}
+    window.MIHLAB_JWT = '';
+    location.reload();
+  });
+})();
+</script>
 </body>
 </html>
