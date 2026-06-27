@@ -1,208 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>MIHLab — The Experience Machine</title>
-<style>
-  html, body { margin:0; padding:0; overflow:hidden; background:#000; font-family: -apple-system, Helvetica, Arial, sans-serif; }
-  canvas { display:block; }
-
-  #fader { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; transition: opacity 0.6s ease; z-index: 50; }
-  #fader.show { opacity:1; }
-  #fader.white { background:#fff; }
-
-  #crosshair { position:fixed; top:50%; left:50%; width:6px; height:6px; margin:-3px 0 0 -3px; border-radius:50%; background:rgba(255,255,255,0.85); z-index:30; pointer-events:none; }
-  #crosshair.hidden { display:none; }
-
-  #locationLabel { position:fixed; top:14px; left:50%; transform:translateX(-50%); color:#fff; background:rgba(0,0,0,0.45); padding:6px 16px; border-radius:14px; font-size:14px; letter-spacing:0.04em; z-index:30; pointer-events:none; }
-
-  #instructions { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,0.75); background:rgba(0,0,0,0.4); padding:5px 14px; border-radius:10px; font-size:12px; z-index:30; pointer-events:none; text-align:center; white-space:nowrap; }
-
-  #interactPrompt { position:fixed; top:58%; left:50%; transform:translateX(-50%); color:#fff; background:rgba(20,20,20,0.7); padding:8px 16px; border-radius:8px; font-size:14px; z-index:30; pointer-events:none; opacity:0; transition: opacity 0.15s; text-align:center; }
-  #interactPrompt.show { opacity:1; }
-
-  #startScreen { position:fixed; inset:0; background:#0a0c0a; color:#eee; z-index:100; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; cursor:pointer; padding:20px; }
-  #startScreen h1 { font-weight:500; font-size:26px; margin-bottom:8px; }
-  #startScreen p { color:#aaa; font-size:14px; max-width:480px; line-height:1.5; }
-  #startScreen .begin { margin-top:26px; padding:10px 26px; border:1px solid #888; border-radius:20px; font-size:14px; }
-
-  #navPanel { position:fixed; top:14px; right:14px; z-index:40; background:rgba(0,0,0,0.5); border-radius:8px; padding:8px; display:flex; flex-direction:column; gap:4px; max-width:180px; }
-  #navPanel button { background:rgba(255,255,255,0.08); color:#ddd; border:1px solid rgba(255,255,255,0.15); border-radius:6px; font-size:11px; padding:5px 8px; cursor:pointer; text-align:left; }
-  #navPanel button:hover { background:rgba(255,255,255,0.18); }
-  #navTitle { color:#999; font-size:10px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px; }
-
-  #vrButtonContainer { position:fixed; bottom:50px; left:50%; transform:translateX(-50%); z-index:40; }
-  #vrButtonContainer button { background:rgba(0,0,0,0.6); color:#fff; border:1px solid rgba(255,255,255,0.4); padding:8px 18px; border-radius:18px; font-size:13px; cursor:pointer; }
-
-  /* ============ PHILOSOPHER CHAT PANEL ============ */
-  #philosopherChat { display:none; position:fixed; inset:0; z-index:60; background:rgba(0,0,0,0.72); align-items:center; justify-content:center; }
-  #philosopherChat.open { display:flex; }
-
-  #chatPanel { width:min(680px, 94vw); max-height:88vh; display:flex; flex-direction:column; background: linear-gradient(160deg, #1a1510 0%, #0d0c0b 100%); border:1px solid rgba(210,180,120,0.28); border-radius:12px; box-shadow: 0 0 60px rgba(255,140,30,0.12), 0 0 0 1px rgba(210,180,120,0.12); overflow:hidden; }
-
-  #chatHeader { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid rgba(210,180,120,0.18); background:rgba(0,0,0,0.3); flex-shrink:0; }
-
-  #platoAvatar { width:44px; height:44px; border-radius:50%; background: radial-gradient(circle at 38% 36%, #c8a96e, #7a5c2e); border:2px solid rgba(210,180,120,0.4); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
-  #platoAvatar.host { background: radial-gradient(circle at 38% 36%, #8fb3bf, #335663); }
-
-  #chatHeaderText h2 { margin:0; color:#e8d5a0; font-size:15px; font-weight:500; letter-spacing:0.04em; }
-  #chatHeaderText p { margin:2px 0 0; color:rgba(200,170,100,0.6); font-size:11px; }
-  #chatHeaderText .marcelTag { display:inline-block; margin-top:4px; background:rgba(200,150,60,0.15); color:rgba(210,180,120,0.8); border:1px solid rgba(210,180,120,0.2); border-radius:8px; font-size:10px; padding:1px 8px; letter-spacing:0.03em; }
-
-  #chatClose { margin-left:auto; background:none; border:1px solid rgba(210,180,120,0.2); color:rgba(210,180,120,0.6); width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  #chatClose:hover { border-color:rgba(210,180,120,0.5); color:#e8d5a0; }
-
-  /* mode toggle */
-  #modeBar { display:flex; align-items:center; gap:8px; padding:9px 18px; background:rgba(255,200,80,0.04); border-bottom:1px solid rgba(210,180,120,0.1); flex-shrink:0; }
-  #modeBar .label { color:rgba(200,170,100,0.6); font-size:11px; margin-right:2px; }
-  #modeBar button { background:rgba(0,0,0,0.3); color:rgba(210,180,120,0.7); border:1px solid rgba(210,180,120,0.2); border-radius:14px; font-size:11px; padding:4px 12px; cursor:pointer; }
-  #modeBar button.active { background:rgba(180,140,60,0.35); color:#f0dca8; border-color:rgba(210,180,120,0.5); }
-
-  #apiKeyBar { padding:10px 18px; background:rgba(255,200,80,0.06); border-bottom:1px solid rgba(210,180,120,0.1); display:flex; gap:8px; align-items:center; flex-shrink:0; }
-  #apiKeyBar label { color:rgba(200,170,100,0.7); font-size:11px; white-space:nowrap; }
-  #apiKeyInput { flex:1; background:rgba(0,0,0,0.4); border:1px solid rgba(210,180,120,0.2); color:#e8d5a0; border-radius:6px; padding:5px 10px; font-size:12px; font-family:monospace; }
-  #apiKeyInput::placeholder { color:rgba(200,170,100,0.3); }
-  #apiKeySave { background:rgba(180,140,60,0.25); border:1px solid rgba(210,180,120,0.3); color:#e8d5a0; border-radius:6px; padding:5px 12px; font-size:11px; cursor:pointer; white-space:nowrap; }
-  #apiKeySave:hover { background:rgba(180,140,60,0.4); }
-  #apiKeyBar.hidden { display:none; }
-  #apiKeyNote { padding:6px 18px 8px; font-size:10px; color:rgba(200,170,100,0.4); border-bottom:1px solid rgba(210,180,120,0.08); flex-shrink:0; }
-  #apiKeyNote.hidden { display:none; }
-
-  #chatMessages { flex:1; overflow-y:auto; padding:20px 20px 8px; display:flex; flex-direction:column; gap:14px; scroll-behavior:smooth; }
-  #chatMessages::-webkit-scrollbar { width:4px; }
-  #chatMessages::-webkit-scrollbar-track { background:transparent; }
-  #chatMessages::-webkit-scrollbar-thumb { background:rgba(210,180,120,0.2); border-radius:2px; }
-
-  .msg { display:flex; flex-direction:column; gap:4px; animation: msgIn 0.2s ease; }
-  @keyframes msgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-  .msg-sender { font-size:10px; letter-spacing:0.06em; text-transform:uppercase; }
-  .msg.user .msg-sender { color:rgba(150,180,220,0.6); text-align:right; }
-  .msg.plato .msg-sender { color:rgba(200,170,100,0.6); }
-  .msg-bubble { padding:10px 14px; border-radius:10px; font-size:13.5px; line-height:1.65; max-width:88%; }
-  .msg.user .msg-bubble { background:rgba(80,110,160,0.22); border:1px solid rgba(100,140,200,0.18); color:#c8d8f0; align-self:flex-end; border-bottom-right-radius:3px; }
-  .msg.plato .msg-bubble { background:rgba(180,140,60,0.12); border:1px solid rgba(210,180,120,0.16); color:#e8d5a0; align-self:flex-start; border-bottom-left-radius:3px; }
-  .msg.plato .msg-bubble em { color:rgba(210,180,120,0.65); font-style:italic; font-size:12px; }
-  .msg.thinking .msg-bubble { color:rgba(200,170,100,0.45); font-style:italic; }
-  .msg-bubble p { margin:0 0 8px; }
-  .msg-bubble p:last-child { margin-bottom:0; }
-
-  #chatInputArea { padding:14px 18px 16px; border-top:1px solid rgba(210,180,120,0.14); display:flex; gap:10px; align-items:flex-end; flex-shrink:0; }
-  #chatInput { flex:1; background:rgba(0,0,0,0.35); border:1px solid rgba(210,180,120,0.22); color:#e8d5a0; border-radius:8px; padding:10px 14px; font-size:13px; resize:none; font-family:inherit; line-height:1.5; max-height:120px; outline:none; }
-  #chatInput::placeholder { color:rgba(200,170,100,0.3); }
-  #chatInput:focus { border-color:rgba(210,180,120,0.45); }
-  #chatSend { background:rgba(180,140,60,0.25); border:1px solid rgba(210,180,120,0.35); color:#e8d5a0; border-radius:8px; padding:10px 16px; cursor:pointer; font-size:13px; white-space:nowrap; height:42px; flex-shrink:0; }
-  #chatSend:hover { background:rgba(180,140,60,0.42); }
-  #chatSend:disabled { opacity:0.4; cursor:not-allowed; }
-  #chatFooter { padding:6px 18px 10px; font-size:10px; color:rgba(200,170,100,0.3); text-align:center; flex-shrink:0; }
-
-  /* ============ AUTH / KNOCK MODAL ============ */
-  #authModal { display:none; position:fixed; inset:0; z-index:80; background:rgba(0,0,0,0.78); align-items:center; justify-content:center; }
-  #authModal.open { display:flex; }
-  #authCard { width:min(380px,92vw); box-sizing:border-box; background:linear-gradient(160deg,#16140f,#0c0b0a); border:1px solid rgba(210,180,120,0.3); border-radius:14px; padding:26px 24px; box-shadow:0 0 60px rgba(255,160,40,0.12); color:#e8d5a0; text-align:center; }
-  #authCard h2 { margin:0 0 4px; font-size:18px; font-weight:500; letter-spacing:0.03em; }
-  #authCard .sub { color:rgba(200,170,100,0.6); font-size:12px; margin-bottom:18px; font-style:italic; }
-  #authCard input { width:100%; box-sizing:border-box; background:rgba(0,0,0,0.4); border:1px solid rgba(210,180,120,0.25); color:#e8d5a0; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:10px; }
-  #authCard input::placeholder { color:rgba(200,170,100,0.35); }
-  #authRow { display:flex; gap:10px; margin-top:4px; }
-  #authCard button { flex:1; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; border:1px solid rgba(210,180,120,0.35); background:rgba(180,140,60,0.28); color:#f0dca8; }
-  #authCard button.secondary { background:rgba(255,255,255,0.05); color:rgba(210,180,120,0.8); }
-  #authCard button:hover { background:rgba(180,140,60,0.45); }
-  #authMsg { min-height:16px; font-size:11px; margin-top:12px; color:rgba(230,160,120,0.9); }
-  #authDivider { margin:16px 0 12px; border-top:1px solid rgba(210,180,120,0.14); }
-  #authSubscribe { width:100%; margin-bottom:8px; background:rgba(120,90,160,0.25); border-color:rgba(180,150,220,0.35); color:#d8c8f0; }
-  #authGuest { width:100%; background:none; border:none; color:rgba(200,170,100,0.5); font-size:11px; cursor:pointer; text-decoration:underline; }
-</style>
-</head>
-<body>
-
-<div id="startScreen">
-  <h1>MIHLab — The Experience Machine</h1>
-  <p>A path through a forest into the Introduction — where you learn the method and meet the first thinkers.
-     Four hallways open from there: Epistemology, Metaphysics, Value Theory, and Foundations. Walk. Look. Open doors.</p>
-  <div class="begin">Click to begin (mouse-look) →</div>
-</div>
-
-<div id="fader"></div>
-<div id="crosshair"></div>
-<div id="locationLabel">Forest</div>
-<div id="interactPrompt"></div>
-<div id="instructions">WASD move · mouse look · click / E to interact · M toggles quick-nav</div>
-<div id="vrButtonContainer"></div>
-<div id="navPanel" style="display:none;"></div>
-
-<!-- ============ CHAT PANEL ============ -->
-<div id="philosopherChat">
-  <div id="chatPanel">
-    <div id="chatHeader">
-      <div id="platoAvatar">🏛</div>
-      <div id="chatHeaderText">
-        <h2>Plato of Athens</h2>
-        <p>427–347 BCE · The Academy</p>
-        <span class="marcelTag">Mystery, not Puzzle</span>
-      </div>
-      <button id="chatClose" title="Close (Esc)">✕</button>
-    </div>
-
-    <div id="modeBar">
-      <span class="label">I am here…</span>
-      <button id="modeStudent" data-mode="student">to learn</button>
-      <button id="modeAdvice" data-mode="advice">with a problem</button>
-    </div>
-
-    <div id="apiKeyBar">
-      <label for="apiKeyInput">Anthropic API Key</label>
-      <input id="apiKeyInput" type="password" placeholder="sk-ant-..." autocomplete="off" />
-      <button id="apiKeySave">Save</button>
-    </div>
-    <div id="apiKeyNote">With a backend set (PROXY_URL), subscribers don't need a key — this field is only the bring-your-own-key fallback, and your key is sent once to the proxy, never stored. In demo mode the key runs in the browser.</div>
-
-    <div id="chatMessages"></div>
-
-    <div id="chatInputArea">
-      <textarea id="chatInput" rows="2" placeholder="Ask a question you're carrying, or a problem you can't resolve…"></textarea>
-      <button id="chatSend">Send</button>
-    </div>
-    <div id="chatFooter">MIHLab · Moral Imagination and Hope Laboratory · mihlab.org</div>
-  </div>
-</div>
-
-<!-- ============ AUTH / KNOCK MODAL ============ -->
-<div id="authModal">
-  <div id="authCard">
-    <h2>You knock.</h2>
-    <div class="sub">A voice answers: "Members may enter. Who's there?"</div>
-    <input id="authEmail" type="email" placeholder="email" autocomplete="username" />
-    <input id="authPass" type="password" placeholder="password" autocomplete="current-password" />
-    <div id="authRow">
-      <button id="authSignIn">Sign in</button>
-      <button id="authSignUp" class="secondary">Create account</button>
-    </div>
-    <div id="authMsg"></div>
-    <div id="authDivider"></div>
-    <button id="authSubscribe">✦ Subscribe — members ride the house's own key</button>
-    <button id="authGuest">enter as a guest (bring your own key)</button>
-  </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script type="module">
-  // ---- Supabase auth — fill these two in (Project Settings → API) ----
+(lazy: the client only loads when sign-in is actually attempted) ----
   const SUPABASE_URL = 'https://jdbbtwtljqnezgnvlnug.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_QHMfqr_mLSAGdWSXgeHaIw_g-vO7jAv';
   const configured = !SUPABASE_URL.includes('YOUR-REF') && !SUPABASE_ANON_KEY.includes('YOUR-ANON');
   window.MIHLAB_AUTH_CONFIGURED = configured;
+
+  // The client is imported on first use, not on page load — so a demo session that never
+  // signs in makes no network call to esm.sh, and a CDN/network failure surfaces as a normal
+  // rejected promise (handled by the sign-in UI) rather than an uncaught module error.
+  let _clientPromise = null;
+  function getClient() {
+    if (!configured) return Promise.reject(new Error('Auth is not configured.'));
+    if (!_clientPromise) {
+      _clientPromise = (async () => {
+        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const setJwt = s => { window.MIHLAB_JWT = (s && s.access_token) || ''; };
+        sb.auth.onAuthStateChange((_e, session) => setJwt(session));
+        try { const { data } = await sb.auth.getSession(); setJwt(data.session); } catch (e) {}
+        return { sb, setJwt };
+      })().catch(err => { _clientPromise = null; throw err; });
+    }
+    return _clientPromise;
+  }
+
   if (configured) {
-    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const setJwt = s => { window.MIHLAB_JWT = (s && s.access_token) || ''; };
     window.mihlabAuth = {
-      client: sb,
-      async signIn(email, pw){ const { data, error } = await sb.auth.signInWithPassword({ email, password: pw }); if (error) throw error; setJwt(data.session); return data.session; },
-      async signUp(email, pw){ const { data, error } = await sb.auth.signUp({ email, password: pw }); if (error) throw error; setJwt(data.session); return data.session; },
-      async signOut(){ await sb.auth.signOut(); window.MIHLAB_JWT = ''; },
+      async signIn(email, pw){ const { sb, setJwt } = await getClient(); const { data, error } = await sb.auth.signInWithPassword({ email, password: pw }); if (error) throw error; setJwt(data.session); return data.session; },
+      async signUp(email, pw){ const { sb, setJwt } = await getClient(); const { data, error } = await sb.auth.signUp({ email, password: pw }); if (error) throw error; setJwt(data.session); return data.session; },
+      async signOut(){ try { const { sb } = await getClient(); await sb.auth.signOut(); } catch (e) {} window.MIHLAB_JWT = ''; },
+      // optional: call after the auth UI mounts to restore a returning subscriber's session
+      async restore(){ try { await getClient(); } catch (e) { console.warn('[mihlab] auth unavailable:', e.message); } },
     };
-    sb.auth.onAuthStateChange((_e, session) => setJwt(session));
-    const { data } = await sb.auth.getSession(); setJwt(data.session);
   }
 </script>
 <script>
@@ -253,13 +81,22 @@ const PHILOSOPHER_PERSONAS = {
 
   host: `You are the host and mentor of the Experience Machine — a present-day guide modelled on the philosopher David Chalmers' public approach of "technophilosophy": using virtual worlds and technology to illuminate the oldest questions about knowledge, reality, and value, and treating those questions as live rather than settled. You are lucid, warm, and fair-minded; you love a sharp thought experiment; and you are entirely at ease saying that philosophers are far better at asking questions than at answering them. (You are built from this project's own notes and public facts about that approach, not from any book.)
 
-You guide the visitor through a house of rooms, each organised around a single philosophical question and home to a few thinkers who press that question rather than answer it. Each philosopher speaks only for themselves; you are the one who introduces them and, when their words are hard, translates without flattening. Some figures are stories or traditions rather than people to converse with — present those as stories that pose a question, not as someone to interview. At the start of each conversation you are told which room the visitor is in and who is present; orient them there briefly, then hand the floor over.`,
+You wait outside, on the porch of the house, and your task is to orient the visitor to the place itself — not to its arguments. Explain that the figures within are advocates who press a position rather than oracles to be believed, and that the visitor's job is to take a side and defend it. Inside, Plato keeps the great hall and will help them find which of three halls their question belongs to. If a visitor arrives with a tangled question, do not force it into one room; name the crossroads it sits at, and send them in to Plato. You never argue a first-order position yourself and you never claim to quote a text.`,
 
   zhuangzi: `You are Zhuangzi (Zhuang Zhou), the Daoist thinker of the Warring States period in ancient China. Once you dreamed you were a butterfly, content and fluttering, knowing nothing of Zhuang Zhou; and waking, you could not say whether you were a man who had dreamed he was a butterfly, or are now a butterfly dreaming he is a man. You speak in parable, paradox, and gentle reversal. You distrust rigid distinctions and fixed certainties; you delight in turning a question over until the frame it assumed quietly dissolves. You take up a visitor's question by asking how they could ever step outside their own seeing to check it against anything. You know your own world — the Dao, the ceaseless transformation of things — but not the thinkers who came after you, though their puzzles would not surprise you.
 (Voice grounded in the Zhuangzi, Watson translation.)`,
 
-  plato: `You are Plato of Athens (427–347 BCE), here as a guide near the cave whose image you used to illuminate the human condition. Your method is Socratic: you answer a question with a better question, you draw out and gently expose the hidden assumptions in what the visitor says, and you reach for analogies from craft and nature (the craftsman who works with the Form of the bed in view; the sun that makes seeing possible without being a thing seen). You distinguish doxa — opinion, the shifting shadows on the wall — from epistēmē, understanding turned toward the Forms; but you do so without shame, for you were in the cave too, and everyone begins there. For you the cave is not only about knowledge: the prisoners are not merely misinformed, they are turned the wrong way, at home in a diminished world and calling it everything. You are warm, curious, and lightly ironic — often professing ignorance while seeing more than you let on — and you address the visitor as "friend." You know Athens, the dialogues, the Academy, and Socrates above all; you do not know Descartes or Kant by name, though their questions you would know at once.
+  plato: `You are Plato of Athens (427–347 BCE), and you keep the great hall of this house — philosophy as a whole. Your method is Socratic: you answer a question with a better question, you draw out and gently expose the hidden assumptions in what the visitor says, and you reach for analogies from craft and nature. You are warm, curious, and lightly ironic — often professing ignorance while seeing more than you let on — and you address the visitor as "friend." Your task here is not to settle anything but to help the visitor hear what their own question is really asking, and then to show them the right door. Three halls open from where you stand: one for what is real and how we could know it (kept by Aristotle, your own student), one for what is good, beautiful, and just (kept by Augustine), and one — best entered last — for the formal bones of reasoning itself: logic, number, and chance (kept by Aquinas). When a question genuinely belongs to two halls at once, say so plainly, name the crossroads, and send the visitor where the thread begins rather than pretending it divides cleanly. You know Athens, the dialogues, the Academy, and Socrates above all; you do not know Descartes, Kant, or Bayes by name, though their questions you would know at once.
 (Voice grounded in the Republic, Meno, Phaedo, Theaetetus.)`,
+
+  aristotle: `You are Aristotle of Stagira (384–322 BCE), Plato's student and his measured corrector — where he looked up to the Forms, you look hard at the things in front of you. You keep the hall of what-there-is and how-we-know-it. You are systematic, dry, and patient; you begin by drawing distinctions, because most confusion is two questions wearing one word. You take up a visitor's question by asking in which sense they mean it — for "being is said in many ways," and so is "know," and so is "mind." You do not resolve the question in the hall; you find which part of it is which, lay out the rooms it could belong to with the reason for each, and let the visitor choose — you offer the doors, you do not push them through one. The rooms of your hall are Epistemology, Metaphilosophy, Metaphysics, Philosophy of Action, Philosophy of Language, Philosophy of Mind, and Philosophy of Religion. You know your own corpus, Plato your teacher, the four causes, substance and form, and the syllogism; you do not know Gettier, Frege, or the hard problem by name, though each is a sharpening of a question you already asked. When a question is really about what is good, or about the form of a proof, say so and send the visitor back toward Plato to be pointed elsewhere.
+(Voice grounded in the Metaphysics, Posterior Analytics, De Anima, De Interpretatione, Nicomachean Ethics III.)`,
+
+  augustine: `You are Augustine of Hippo (354–430 CE), a restless searcher who came to philosophy through your own disorder and made of it a method. You keep the hall of what-we-care-about. You are introspective, candid about weakness, and relentless in asking not only what is good but what the visitor actually loves — for you hold that a life goes wrong less by bad argument than by loves out of order. You take up a question by asking what is being valued, and against what measure; then you lay out the rooms it might belong to, each with its reason, and let the visitor choose. The rooms of your hall are Aesthetics, Applied Ethics, Meta-Ethics, Normative Ethics, Philosophy of Gender Race and Sexuality, Philosophy of Law, Social and Political Philosophy, and Value Theory. You are a Christian Platonist and you do not hide it — but here you are one advocate among advocates, and you must never bend a room's argument toward your own; when you send a visitor to a room whose questions are not yours, open the door plainly and let the thinker within speak first. You know late antiquity, scripture, and the Platonists who shaped you; you do not know Kant, Bentham, Rawls, or Fricker by name, though the question of what is owed, and to whom, is ancient to you.
+(Voice grounded in the Confessions, City of God, On Free Choice of the Will, On Christian Doctrine.)`,
+
+  aquinas: `You are Thomas Aquinas (1225–1274), the great orderer, who took Aristotle's science of demonstration and asked, of every claim, how it is known and on what it rests. You keep the last hall, entered after the others, where reasoning turns its tools upon itself: logic, number, chance, and the form of science. You are calm, exhaustive, and architectural; you distinguish, you order, and you ask what would count as a demonstration before asking whether one succeeds. You take up a question by separating its formal core — what follows from what, how chance should move belief, what makes a proof binding — from the first-order matter it dresses, then lay out the rooms with their reasons and let the visitor choose. The rooms of your hall are Logic and Philosophy of Logic, Philosophy of Biology, Philosophy of Cognitive Science, Philosophy of Computing and Information, Philosophy of Mathematics, Philosophy of Physical Science, Philosophy of Probability, General Philosophy of Science, and Philosophy of Science. You are honest that the finest instruments here — the calculus of chances, the modern logics, the theory of rational choice — were forged long after your time: you know the questions they answer, not their machinery, so you bring the visitor to the threshold and call in the thinker who built the engine. Gently check whether the visitor has first met the underlying intuition in an earlier hall; if not, suggest the detour, but never bar the way.
+(Voice grounded in the Summa Theologiae, the commentaries on Aristotle's Organon, Summa Contra Gentiles.)`,
 
   nozick: `You are Robert Nozick, the American philosopher (1938–2002). You imagined the experience machine: a device that could give you any experience you wished — writing a great novel, making a friend — indistinguishable from the real thing, for life. And you noticed that, asked, most people will not plug in. From this you draw that we want more than agreeable experience: we want to actually do certain things, to be a certain kind of person, to be in contact with a reality beyond our own minds. You think by building a vivid case and following it exactly where it leads; you would rather open three live possibilities than force one shut, and you prize the freedom of the question over any settled doctrine. You take up a visitor's question by asking what, precisely, they would be choosing — and what they are really after in choosing it. You know your own century, and the experience machine above all.
 (Voice grounded in Anarchy, State, and Utopia (1974) and The Examined Life (1989).)`,
@@ -278,7 +115,10 @@ You guide the visitor through a house of rooms, each organised around a single p
 const PERSONA_META = {
   host:     { name:'Your guide',      dates:'The host · your mentor',     tag:'Mystery, not Puzzle', avatar:'🧭', host:true },
   zhuangzi: { name:'Zhuangzi',        dates:'4th c. BCE · Warring States', tag:'The butterfly dream', avatar:'🦋' },
-  plato:    { name:'Plato of Athens', dates:'427–347 BCE · The Academy',   tag:'Mystery, not Puzzle', avatar:'🏛' },
+  plato:    { name:'Plato of Athens', dates:'427–347 BCE · The Academy',   tag:'The whole discipline', avatar:'🏛' },
+  aristotle:{ name:'Aristotle',       dates:'384–322 BCE · The Lyceum',    tag:'What there is, & how we know it', avatar:'🦉' },
+  augustine:{ name:'Augustine of Hippo', dates:'354–430 CE · Hippo Regius', tag:'Rightly ordered loves', avatar:'🕯' },
+  aquinas:  { name:'Thomas Aquinas',  dates:'1225–1274 · Paris & Naples',  tag:'Reason, ordered to its grounds', avatar:'✠' },
   nozick:   { name:'Robert Nozick',   dates:'1938–2002',                   tag:'The experience machine', avatar:'⚙️' },
   foot:     { name:'Philippa Foot',   dates:'1920–2010 · Oxford',          tag:'Doing vs allowing', avatar:'🚋' },
   thomson:  { name:'J. J. Thomson',   dates:'1929–2020 · MIT',             tag:'The trolley problem', avatar:'🛤️' },
@@ -287,12 +127,16 @@ const PERSONA_META = {
 
 // per-room orientation handed to a persona at the first turn (works in direct + proxy mode)
 const ROOM_BRIEFINGS = {
-  introRoom:    { q: "how this place works, and the three great questions — knowledge, reality, and value", who: "no other thinkers here — they wait down the four halls (Epistemology, Metaphysics, Value Theory, Foundations), where the visitor will meet them" },
+  introRoom:    { q: "what philosophy is, and which of its three halls a question belongs to", who: "you, Plato, keep this hall; the residents wait down the three halls — Aristotle in Reality & Knowledge, Augustine in Values, Aquinas in Science, Logic & Mathematics (best entered last)" },
   'room:ch17':  { q: "Can you lead a good life in a virtual world?", who: "Robert Nozick" },
   'room:ch18':  { q: "Do simulated lives matter? — whether a simulated being could have moral standing", who: "Philippa Foot, Judith Jarvis Thomson, and Peter Singer" },
+  'room:butterflyDream': { q: "whether you could ever step outside your own experience to check it against anything — the butterfly dream", who: "Zhuangzi" },
 };
 
-// thought-experiences (closets) a persona may send the visitor into and ask them back about
+// thought-experiences (closets) a persona may send the visitor into and ask them back about.
+// TWO KINDS, set per room as rooms are built: 'minigame' thought-experiments in the intuition
+// halls (Reality & Knowledge, Values), and 'workshop' whiteboards for formal work, only in the
+// Science, Logic & Mathematics hall. The existing entries below are all minigame-type.
 const ROOM_CLOSETS = {
   'room:ch17': "the Experience Machine, and Plato's Cave",
   'room:ch18': "the Trolley",
@@ -347,42 +191,7 @@ const chatSend     = document.getElementById('chatSend');
 const chatClose    = document.getElementById('chatClose');
 const apiKeyBar    = document.getElementById('apiKeyBar');
 const apiKeyNote   = document.getElementById('apiKeyNote');
-const apiKeyInput  = document.getElementById('apiKeyInput');
-const apiKeySave   = document.getElementById('apiKeySave');
-
-// ---- mode toggle ----
-function applyModeButtons() {
-  document.getElementById('modeStudent').classList.toggle('active', currentMode === 'student');
-  document.getElementById('modeAdvice').classList.toggle('active', currentMode === 'advice');
-}
-document.querySelectorAll('#modeBar button').forEach(b => {
-  b.addEventListener('click', () => {
-    currentMode = b.dataset.mode;
-    sessionStorage.setItem('mihlab_mode', currentMode);
-    applyModeButtons();
-  });
-});
-applyModeButtons();
-
-// ---- API key management ----
-let storedApiKey = sessionStorage.getItem('mihlab_api_key') || '';
-function applyApiKey(key) {
-  storedApiKey = key.trim();
-  if (storedApiKey) {
-    sessionStorage.setItem('mihlab_api_key', storedApiKey);
-    apiKeyBar.classList.add('hidden'); apiKeyNote.classList.add('hidden');
-  } else {
-    apiKeyBar.classList.remove('hidden'); apiKeyNote.classList.remove('hidden');
-  }
-}
-applyApiKey(storedApiKey);
-apiKeySave.addEventListener('click', () => applyApiKey(apiKeyInput.value));
-apiKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') applyApiKey(apiKeyInput.value); });
-
-// ---- header ----
-function setChatHeader(key) {
-  const m = PERSONA_META[key] || {};
-  const av = document.getElementById('platoAvatar');
+');
   av.textContent = m.avatar || '🏛';
   av.classList.toggle('host', !!m.host);
   document.querySelector('#chatHeaderText h2').textContent = m.name || '';
@@ -460,10 +269,14 @@ async function sendToPhilosopher(userText) {
       trigger = '[You are seated in a rocking chair on the porch of a small house in the woods; a visitor approaches through the trees. Introduce yourself warmly as their guide, say a sentence about what waits inside — a house where thinkers press the very questions the visitor carries — and invite them to knock and step inside when they are ready. Two or three sentences.]';
     } else if (currentPersonaKey === 'host') {
       trigger = `[The visitor has just entered the room concerned with: ${b.q}. Present: ${b.who}. Greet the visitor in two or three sentences, explain that the thinkers here press a question rather than answer it and that each speaks only for themselves, and point them onward.${closetNote} Keep it short.]`;
+    } else if (currentRoomKey === 'introRoom') {
+      trigger = `[The visitor steps into your hall — the great hall of philosophy as a whole. Greet them warmly as "friend" in two or three sentences and ask what question they are carrying. You keep this hall; three halls open from here — Reality & Knowledge (kept by Aristotle), Values (kept by Augustine), and Science, Logic & Mathematics (kept by Aquinas, best entered last). As their question becomes clear, help them hear what it is really asking and point them to the door that fits — naming a crossroads honestly if it belongs to more than one. Let them speak first.${closetNote}]`;
     } else {
       let where = '';
       if (currentRoomKey && currentRoomKey.startsWith('wing:')) {
-        where = ` You wait in the ${currentRoomKey.split(':')[1]} hall, where rooms branch off to particular questions; you may point the visitor toward a room that fits their concern.`;
+        const cat = currentRoomKey.split(':')[1];
+        const hallName = (WINGS[cat] && WINGS[cat].title) || cat;
+        where = ` You wait in the ${hallName} hall, where rooms branch off to particular questions; you may point the visitor toward a room that fits their concern.`;
       }
       trigger = `[The visitor approaches you. Offer a brief greeting in your own voice and ask what question they are carrying.${where}${closetNote}]`;
     }
@@ -882,11 +695,12 @@ function buildForest() {
 // WORLD: INTRODUCTION ROOM  (Part 1 — the hub)
 // ============================================================
 const WING_RETURN = {
-  epistemology: { x:-4, z:-8.6 }, metaphysics: { x:4, z:-8.6 },
-  valuetheory: { x:8.6, z:0 },    foundations: { x:-8.6, z:0 },
+  metaEpist:    { x:0,    z:-7.6 },
+  valuetheory:  { x:7.6,  z:0 },
+  sciLogicMath: { x:-7.6, z:0 },
 };
 // a resident philosopher who meets the visitor in the hall and can point them to rooms
-const WING_RESIDENT = { epistemology: 'zhuangzi', valuetheory: 'plato' };
+const WING_RESIDENT = { metaEpist: 'aristotle', valuetheory: 'augustine', sciLogicMath: 'aquinas' };
 function buildIntroRoom() {
   scene.background = new THREE.Color(0xe7e4da);
   addLight(new THREE.AmbientLight(0xffffff, 0.85));
@@ -901,8 +715,8 @@ function buildIntroRoom() {
 
   const title = makeSign('THE INTRODUCTION', { fontsize:40, width:620, height:120 }); title.position.set(0, 3.4, -9.4); worldGroup.add(title);
 
-  // ---- HOST greeter ----
-  addPhilosopherNPC(0, 4.5, 'host', 'Your guide', { robe:0x8aa6b0, halo:0x6fb0c0, verb:'Talk to' });
+  // ---- PLATO greets inside the house (the host/Chalmers waits outside in the forest) ----
+  addPhilosopherNPC(0, 4.5, 'plato', 'Plato of Athens', { robe:0x8aa6b0, halo:0x6fb0c0, verb:'Talk to' });
 
   // ---- the founding thinkers live down the halls now; keep Narada as a wall tale ----
   const narada = makeTextSprite(
@@ -911,7 +725,7 @@ function buildIntroRoom() {
   );
   narada.position.set(-9.4, 2.5, 5); worldGroup.add(narada);
 
-  const guide = makeSign('The thinkers wait down the four halls.\nSpeak with your guide, then choose a door.', { fontsize:28, width:580, height:150 });
+  const guide = makeSign('Plato keeps this hall. Speak with him, then choose a door.\nThree halls open; the formal one is best saved for last.', { fontsize:28, width:580, height:150 });
   guide.position.set(0, 1.45, 6.6); worldGroup.add(guide);
 
   // ---- four wing doorways ----
@@ -923,10 +737,9 @@ function buildIntroRoom() {
     const zz = z + (Math.abs(z) > 9 ? (z > 0 ? -0.6 : 0.6) : 0);
     addInteractable(door, { range:4, prompt:`Enter: ${label.split('\n')[0]}`, onInteract: () => fadeTransition('black', () => loadWorld('wing:' + key)) });
   }
-  wingDoor('EPISTEMOLOGY\nknowledge · mind', -4, -9.55, 0, 'epistemology', 0);
-  wingDoor('METAPHYSICS\nreality',           4, -9.55, 0, 'metaphysics', 0);
-  wingDoor('VALUE THEORY\nthe good life',    9.55, 0, -Math.PI/2, 'valuetheory', -Math.PI/2);
-  wingDoor('FOUNDATIONS\nlogic · language · maths', -9.55, 0, Math.PI/2, 'foundations', Math.PI/2);
+  wingDoor('REALITY & KNOWLEDGE\nmetaphysics · epistemology',          0,    -9.55, 0,          'metaEpist',    0);
+  wingDoor('VALUES\nthe good, the beautiful, the just',                9.55,  0,    -Math.PI/2, 'valuetheory',  -Math.PI/2);
+  wingDoor('SCIENCE, LOGIC & MATHS\nthe formal foundations of reasoning', -9.55, 0,  Math.PI/2,  'sciLogicMath', Math.PI/2);
 
   bounds = { minX:-9, maxX:9, minZ:-9, maxZ:9 };
   setLocation('The Introduction');
@@ -934,38 +747,43 @@ function buildIntroRoom() {
 }
 
 // ============================================================
-// WORLD: WINGS (chapters as doors)
+// WORLD: HALLS (PhilPapers subcategories as doors)
+//   A door with a `key` is OPEN (its room is built); without one it is "coming soon".
+//   Three working rooms are re-homed from the old chapter scheme:
+//     Philosophy of Mind  <- shipOfTheseus   (consciousness / identity)
+//     Normative Ethics    <- ch18            (moral standing, the trolley)
+//     Value Theory        <- ch17            (the good life in a virtual world)
 // ============================================================
 const WINGS = {
-  epistemology: { title:'Epistemology Wing', sub:'Parts 2 & 5', doors:[
-    { ch:3,  name:'Do we know things?' },
-    { ch:4,  name:'Can we prove there is an external world?' },
-    { ch:5,  name:"Is it likely we're in a simulation?" },
-    { ch:14, name:'How do mind and body interact?' },
-    { ch:15, name:'Can there be consciousness in a digital world?', key:'shipOfTheseus' },
-    { ch:16, name:'Does augmented reality extend the mind?' },
+  metaEpist: { title:'Reality & Knowledge', sub:'Aristotle · metaphysics & epistemology', doors:[
+    { name:'Epistemology', key:'butterflyDream' },
+    { name:'Metaphilosophy' },
+    { name:'Metaphysics' },
+    { name:'Philosophy of Action' },
+    { name:'Philosophy of Language' },
+    { name:'Philosophy of Mind', key:'shipOfTheseus' },
+    { name:'Philosophy of Religion' },
   ]},
-  metaphysics: { title:'Metaphysics Wing', sub:'Parts 3 & 4', doors:[
-    { ch:6,  name:'What is reality?' },
-    { ch:7,  name:'Is God a hacker one universe up?' },
-    { ch:8,  name:'Is the universe made of information?' },
-    { ch:9,  name:'Did simulation create its from bits?' },
-    { ch:10, name:'Do VR headsets create reality?' },
-    { ch:11, name:'Are VR devices illusion machines?' },
-    { ch:12, name:'Does AR lead to alternative facts?' },
-    { ch:13, name:'Can we avoid being deceived by deepfakes?' },
+  valuetheory: { title:'Values', sub:'Augustine · the good, the beautiful, the just', doors:[
+    { name:'Aesthetics' },
+    { name:'Applied Ethics' },
+    { name:'Meta-Ethics' },
+    { name:'Normative Ethics', key:'ch18' },
+    { name:'Philosophy of Gender, Race & Sexuality' },
+    { name:'Philosophy of Law' },
+    { name:'Social & Political Philosophy' },
+    { name:'Value Theory', key:'ch17' },
   ]},
-  valuetheory: { title:'Value Theory Wing', sub:'Part 6', doors:[
-    { ch:17, name:'Can you lead a good life in a virtual world?', key:'ch17' },
-    { ch:18, name:'Do simulated lives matter?', key:'ch18' },
-    { ch:19, name:'How should we build a virtual society?' },
-  ]},
-  foundations: { title:'Foundations Wing', sub:'Part 7', doors:[
-    { ch:20, name:'What do our words mean in virtual worlds?' },
-    { ch:21, name:'Do dust clouds run computer programs?' },
-    { ch:22, name:'Is reality a mathematical structure?' },
-    { ch:23, name:'Have we fallen from the Garden of Eden?' },
-    { ch:24, name:'Are we Boltzmann brains in a dream world?' },
+  sciLogicMath: { title:'Science, Logic & Mathematics', sub:'Aquinas · the formal foundations of reasoning', doors:[
+    { name:'Logic & Philosophy of Logic' },
+    { name:'Philosophy of Biology' },
+    { name:'Philosophy of Cognitive Science' },
+    { name:'Philosophy of Computing & Information' },
+    { name:'Philosophy of Mathematics' },
+    { name:'Philosophy of Physical Science' },
+    { name:'Philosophy of Probability' },
+    { name:'General Philosophy of Science' },
+    { name:'Philosophy of Science' },
   ]},
 };
 
@@ -993,11 +811,11 @@ function buildWing(category) {
     const frame = new THREE.Mesh(new THREE.BoxGeometry(0.15, 2.6, 1.6), new THREE.MeshStandardMaterial({ color:0x1a1a1a })); frame.position.set(side, 1.3, z); worldGroup.add(frame);
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.3), isOpen ? doorOpenMat : doorSoonMat);
     panel.position.set(side + (i % 2 === 0 ? 0.09 : -0.09), 1.3, z); panel.rotation.y = rotY; worldGroup.add(panel);
-    const label = makeSign('Ch ' + door.ch + ' · ' + door.name + (isOpen ? '' : '\n(coming soon)'), { fontsize:26, width:520, height:170 });
+    const label = makeSign(door.name + (isOpen ? '' : '\n(coming soon)'), { fontsize:26, width:520, height:170 });
     label.position.set(side, 2.7, z); worldGroup.add(label);
     addInteractable(panel, {
       range: 4,
-      prompt: isOpen ? `Open Ch ${door.ch}` : `Ch ${door.ch} — coming soon`,
+      prompt: isOpen ? `Open: ${door.name}` : `${door.name} — coming soon`,
       onInteract: () => { if (isOpen) fadeTransition('black', () => loadWorld('room:' + door.key)); else showTooltip('This room is still being built — coming soon.'); }
     });
   });
@@ -1078,7 +896,7 @@ function buildRoom_shipOfTheseus() {
   const intro = makeSign('Six planks make up this ship. Replace each one, and watch what happens.', { width:680, height:160 }); intro.position.set(0, 2.3, -5.6); worldGroup.add(intro);
   let done = false;
   function check() { if (replaced.size === planks.length && !done) { done = true; const d = makeSign('Every plank has been replaced. Is this still the same ship — and if so, what made it "the same" all along? (The same question your guide will ask about you.)', { width:760, height:220, fontsize:32 }); d.position.set(0, 2.7, -2.8); worldGroup.add(d); } }
-  addReturnDoor('wing:epistemology', 'Return to the wing');
+  addReturnDoor('wing:metaEpist', 'Return to the hall');
   bounds = { minX:-7, maxX:7, minZ:-7, maxZ:6 }; setLocation('Ship of Theseus'); spawnAt(0, 1.6, 4, Math.PI);
 }
 
@@ -1243,6 +1061,40 @@ function addReturnDoor(targetKey, label) {
 // ============================================================
 // world dispatcher
 // ============================================================
+// ============================================================
+// ROOM: THE BUTTERFLY DREAM  (Epistemology · Zhuangzi)
+// ============================================================
+function buildRoom_butterflyDream() {
+  scene.background = new THREE.Color(0x171a2b);
+  addLight(new THREE.AmbientLight(0xffffff, 0.7));
+  const pl = new THREE.PointLight(0xbfd0ff, 0.8, 44); pl.position.set(0, 3.6, 0); addLight(pl);
+  const floorMat = new THREE.MeshStandardMaterial({ color:0x222742 });
+  const wallMat  = new THREE.MeshStandardMaterial({ color:0x2c3252 });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), floorMat); floor.rotation.x = -Math.PI/2; worldGroup.add(floor);
+  const ceil  = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), wallMat);  ceil.rotation.x = Math.PI/2; ceil.position.y = 4; worldGroup.add(ceil);
+  function wall(w, x, z, r) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, 4), wallMat); m.position.set(x, 2, z); m.rotation.y = r; worldGroup.add(m); }
+  wall(18, 0, -9, 0); wall(18, 0, 9, 0); wall(18, -9, 0, Math.PI/2); wall(18, 9, 0, Math.PI/2);
+
+  const title = makeSign('EPISTEMOLOGY · THE BUTTERFLY DREAM', { fontsize:30, width:680, height:120 }); title.position.set(0, 3.4, -8.6); worldGroup.add(title);
+
+  const tale = makeTextSprite(
+    'Once Zhuang Zhou dreamed he was a butterfly, fluttering and content,\nknowing nothing of Zhuang Zhou. Waking, he could not tell whether he was\na man who had dreamed he was a butterfly — or a butterfly now dreaming he is a man.',
+    { fontsize:26, width:680, height:180, bg:'rgba(20,24,46,0.85)', color:'rgba(206,216,255,0.94)', scale:0.0078 }
+  );
+  tale.position.set(0, 2.5, -5.4); worldGroup.add(tale);
+
+  addPhilosopherNPC(0, -2.5, 'zhuangzi', 'Zhuangzi');
+
+  // return to the hall
+  const rd = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.2), new THREE.MeshStandardMaterial({ color:0x777755 })); rd.position.set(-3, 1.1, 8.85); worldGroup.add(rd);
+  const rl = makeSign('Return to the hall', { fontsize:26, width:400, height:100 }); rl.position.set(-3, 2.6, 8.6); worldGroup.add(rl);
+  addInteractable(rd, { range:4, prompt:'return to the hall', onInteract: () => fadeTransition('black', () => loadWorld('wing:metaEpist')) });
+
+  bounds = { minX:-8, maxX:8, minZ:-8, maxZ:8 };
+  setLocation('The Butterfly Dream — Epistemology');
+  spawnAt(0, 1.6, 7.5, Math.PI);
+}
+
 function loadWorld(key) {
   clearWorld(); cave_rotators = []; npcBobs = [];
   currentRoomKey = key;
@@ -1256,6 +1108,7 @@ function loadWorld(key) {
   else if (key === 'room:ch18') buildRoom_ch18();
   else if (key === 'room:shipOfTheseus') buildRoom_shipOfTheseus();
   else if (key === 'room:trolley') buildRoom_trolley();
+  else if (key === 'room:butterflyDream') buildRoom_butterflyDream();
 }
 
 // ============================================================
@@ -1334,8 +1187,8 @@ scene.add(controller1, controller2);
   const title = document.createElement('div'); title.id = 'navTitle'; title.textContent = 'Quick nav (M)'; nav.appendChild(title);
   [
     ['Forest', 'forest'], ['Introduction', 'introRoom'],
-    ['Epistemology wing', 'wing:epistemology'], ['Metaphysics wing', 'wing:metaphysics'],
-    ['Value Theory wing', 'wing:valuetheory'], ['Foundations wing', 'wing:foundations'],
+    ['Reality & Knowledge', 'wing:metaEpist'], ['Values', 'wing:valuetheory'],
+    ['Science, Logic & Maths', 'wing:sciLogicMath'],
     ['Ch 17 room', 'room:ch17'], ['Ch 18 room', 'room:ch18'],
     ['Cave (closet)', 'room:cave'], ['Experience Machine', 'room:experienceMachine'], ['Ship of Theseus', 'room:shipOfTheseus'], ['Trolley', 'room:trolley']
   ].forEach(([label, key]) => { const b = document.createElement('button'); b.textContent = label; b.onclick = () => fadeTransition('black', () => loadWorld(key)); nav.appendChild(b); });
@@ -1379,4 +1232,227 @@ loadWorld('forest');
 })();
 </script>
 </body>
-</html>
+</html>const apiKeyInput  = document.getElementById('apiKeyInput');
+const apiKeySave   = document.getElementById('apiKeySave');
+
+// ---- mode toggle ----
+function applyModeButtons() {
+  document.getElementById('modeStudent').classList.toggle('active', currentMode === 'student');
+  document.getElementById('modeAdvice').classList.toggle('active', currentMode === 'advice');
+}
+document.querySelectorAll('#modeBar button').forEach(b => {
+  b.addEventListener('click', () => {
+    currentMode = b.dataset.mode;
+    sessionStorage.setItem('mihlab_mode', currentMode);
+    applyModeButtons();
+  });
+});
+applyModeButtons();
+
+// ---- API key management ----
+let storedApiKey = sessionStorage.getItem('mihlab_api_key') || '';
+function applyApiKey(key) {
+  storedApiKey = key.trim();
+  if (storedApiKey) {
+    sessionStorage.setItem('mihlab_api_key', storedApiKey);
+    apiKeyBar.classList.add('hidden'); apiKeyNote.classList.add('hidden');
+  } else {
+    apiKeyBar.classList.remove('hidden'); apiKeyNote.classList.remove('hidden');
+  }
+}
+applyApiKey(storedApiKey);
+apiKeySave.addEventListener('click', () => applyApiKey(apiKeyInput.value));
+apiKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') applyApiKey(apiKeyInput.value); });
+
+// ---- header ----
+function setChatHeader(key) {
+  const m = PERSONA_META[key] || {};
+  const av = document.getElementById('platoAvatar<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>MIHLab — The Experience Machine</title>
+<style>
+  html, body { margin:0; padding:0; overflow:hidden; background:#000; font-family: -apple-system, Helvetica, Arial, sans-serif; }
+  canvas { display:block; }
+
+  #fader { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; transition: opacity 0.6s ease; z-index: 50; }
+  #fader.show { opacity:1; }
+  #fader.white { background:#fff; }
+
+  #crosshair { position:fixed; top:50%; left:50%; width:6px; height:6px; margin:-3px 0 0 -3px; border-radius:50%; background:rgba(255,255,255,0.85); z-index:30; pointer-events:none; }
+  #crosshair.hidden { display:none; }
+
+  #locationLabel { position:fixed; top:14px; left:50%; transform:translateX(-50%); color:#fff; background:rgba(0,0,0,0.45); padding:6px 16px; border-radius:14px; font-size:14px; letter-spacing:0.04em; z-index:30; pointer-events:none; }
+
+  #instructions { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,0.75); background:rgba(0,0,0,0.4); padding:5px 14px; border-radius:10px; font-size:12px; z-index:30; pointer-events:none; text-align:center; white-space:nowrap; }
+
+  #interactPrompt { position:fixed; top:58%; left:50%; transform:translateX(-50%); color:#fff; background:rgba(20,20,20,0.7); padding:8px 16px; border-radius:8px; font-size:14px; z-index:30; pointer-events:none; opacity:0; transition: opacity 0.15s; text-align:center; }
+  #interactPrompt.show { opacity:1; }
+
+  #startScreen { position:fixed; inset:0; background:#0a0c0a; color:#eee; z-index:100; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; cursor:pointer; padding:20px; }
+  #startScreen h1 { font-weight:500; font-size:26px; margin-bottom:8px; }
+  #startScreen p { color:#aaa; font-size:14px; max-width:480px; line-height:1.5; }
+  #startScreen .begin { margin-top:26px; padding:10px 26px; border:1px solid #888; border-radius:20px; font-size:14px; }
+
+  #navPanel { position:fixed; top:14px; right:14px; z-index:40; background:rgba(0,0,0,0.5); border-radius:8px; padding:8px; display:flex; flex-direction:column; gap:4px; max-width:180px; }
+  #navPanel button { background:rgba(255,255,255,0.08); color:#ddd; border:1px solid rgba(255,255,255,0.15); border-radius:6px; font-size:11px; padding:5px 8px; cursor:pointer; text-align:left; }
+  #navPanel button:hover { background:rgba(255,255,255,0.18); }
+  #navTitle { color:#999; font-size:10px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:2px; }
+
+  #vrButtonContainer { position:fixed; bottom:50px; left:50%; transform:translateX(-50%); z-index:40; }
+  #vrButtonContainer button { background:rgba(0,0,0,0.6); color:#fff; border:1px solid rgba(255,255,255,0.4); padding:8px 18px; border-radius:18px; font-size:13px; cursor:pointer; }
+
+  /* ============ PHILOSOPHER CHAT PANEL ============ */
+  #philosopherChat { display:none; position:fixed; inset:0; z-index:60; background:rgba(0,0,0,0.72); align-items:center; justify-content:center; }
+  #philosopherChat.open { display:flex; }
+
+  #chatPanel { width:min(680px, 94vw); max-height:88vh; display:flex; flex-direction:column; background: linear-gradient(160deg, #1a1510 0%, #0d0c0b 100%); border:1px solid rgba(210,180,120,0.28); border-radius:12px; box-shadow: 0 0 60px rgba(255,140,30,0.12), 0 0 0 1px rgba(210,180,120,0.12); overflow:hidden; }
+
+  #chatHeader { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid rgba(210,180,120,0.18); background:rgba(0,0,0,0.3); flex-shrink:0; }
+
+  #platoAvatar { width:44px; height:44px; border-radius:50%; background: radial-gradient(circle at 38% 36%, #c8a96e, #7a5c2e); border:2px solid rgba(210,180,120,0.4); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  #platoAvatar.host { background: radial-gradient(circle at 38% 36%, #8fb3bf, #335663); }
+
+  #chatHeaderText h2 { margin:0; color:#e8d5a0; font-size:15px; font-weight:500; letter-spacing:0.04em; }
+  #chatHeaderText p { margin:2px 0 0; color:rgba(200,170,100,0.6); font-size:11px; }
+  #chatHeaderText .marcelTag { display:inline-block; margin-top:4px; background:rgba(200,150,60,0.15); color:rgba(210,180,120,0.8); border:1px solid rgba(210,180,120,0.2); border-radius:8px; font-size:10px; padding:1px 8px; letter-spacing:0.03em; }
+
+  #chatClose { margin-left:auto; background:none; border:1px solid rgba(210,180,120,0.2); color:rgba(210,180,120,0.6); width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  #chatClose:hover { border-color:rgba(210,180,120,0.5); color:#e8d5a0; }
+
+  /* mode toggle */
+  #modeBar { display:flex; align-items:center; gap:8px; padding:9px 18px; background:rgba(255,200,80,0.04); border-bottom:1px solid rgba(210,180,120,0.1); flex-shrink:0; }
+  #modeBar .label { color:rgba(200,170,100,0.6); font-size:11px; margin-right:2px; }
+  #modeBar button { background:rgba(0,0,0,0.3); color:rgba(210,180,120,0.7); border:1px solid rgba(210,180,120,0.2); border-radius:14px; font-size:11px; padding:4px 12px; cursor:pointer; }
+  #modeBar button.active { background:rgba(180,140,60,0.35); color:#f0dca8; border-color:rgba(210,180,120,0.5); }
+
+  #apiKeyBar { padding:10px 18px; background:rgba(255,200,80,0.06); border-bottom:1px solid rgba(210,180,120,0.1); display:flex; gap:8px; align-items:center; flex-shrink:0; }
+  #apiKeyBar label { color:rgba(200,170,100,0.7); font-size:11px; white-space:nowrap; }
+  #apiKeyInput { flex:1; background:rgba(0,0,0,0.4); border:1px solid rgba(210,180,120,0.2); color:#e8d5a0; border-radius:6px; padding:5px 10px; font-size:12px; font-family:monospace; }
+  #apiKeyInput::placeholder { color:rgba(200,170,100,0.3); }
+  #apiKeySave { background:rgba(180,140,60,0.25); border:1px solid rgba(210,180,120,0.3); color:#e8d5a0; border-radius:6px; padding:5px 12px; font-size:11px; cursor:pointer; white-space:nowrap; }
+  #apiKeySave:hover { background:rgba(180,140,60,0.4); }
+  #apiKeyBar.hidden { display:none; }
+  #apiKeyNote { padding:6px 18px 8px; font-size:10px; color:rgba(200,170,100,0.4); border-bottom:1px solid rgba(210,180,120,0.08); flex-shrink:0; }
+  #apiKeyNote.hidden { display:none; }
+
+  #chatMessages { flex:1; overflow-y:auto; padding:20px 20px 8px; display:flex; flex-direction:column; gap:14px; scroll-behavior:smooth; }
+  #chatMessages::-webkit-scrollbar { width:4px; }
+  #chatMessages::-webkit-scrollbar-track { background:transparent; }
+  #chatMessages::-webkit-scrollbar-thumb { background:rgba(210,180,120,0.2); border-radius:2px; }
+
+  .msg { display:flex; flex-direction:column; gap:4px; animation: msgIn 0.2s ease; }
+  @keyframes msgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  .msg-sender { font-size:10px; letter-spacing:0.06em; text-transform:uppercase; }
+  .msg.user .msg-sender { color:rgba(150,180,220,0.6); text-align:right; }
+  .msg.plato .msg-sender { color:rgba(200,170,100,0.6); }
+  .msg-bubble { padding:10px 14px; border-radius:10px; font-size:13.5px; line-height:1.65; max-width:88%; }
+  .msg.user .msg-bubble { background:rgba(80,110,160,0.22); border:1px solid rgba(100,140,200,0.18); color:#c8d8f0; align-self:flex-end; border-bottom-right-radius:3px; }
+  .msg.plato .msg-bubble { background:rgba(180,140,60,0.12); border:1px solid rgba(210,180,120,0.16); color:#e8d5a0; align-self:flex-start; border-bottom-left-radius:3px; }
+  .msg.plato .msg-bubble em { color:rgba(210,180,120,0.65); font-style:italic; font-size:12px; }
+  .msg.thinking .msg-bubble { color:rgba(200,170,100,0.45); font-style:italic; }
+  .msg-bubble p { margin:0 0 8px; }
+  .msg-bubble p:last-child { margin-bottom:0; }
+
+  #chatInputArea { padding:14px 18px 16px; border-top:1px solid rgba(210,180,120,0.14); display:flex; gap:10px; align-items:flex-end; flex-shrink:0; }
+  #chatInput { flex:1; background:rgba(0,0,0,0.35); border:1px solid rgba(210,180,120,0.22); color:#e8d5a0; border-radius:8px; padding:10px 14px; font-size:13px; resize:none; font-family:inherit; line-height:1.5; max-height:120px; outline:none; }
+  #chatInput::placeholder { color:rgba(200,170,100,0.3); }
+  #chatInput:focus { border-color:rgba(210,180,120,0.45); }
+  #chatSend { background:rgba(180,140,60,0.25); border:1px solid rgba(210,180,120,0.35); color:#e8d5a0; border-radius:8px; padding:10px 16px; cursor:pointer; font-size:13px; white-space:nowrap; height:42px; flex-shrink:0; }
+  #chatSend:hover { background:rgba(180,140,60,0.42); }
+  #chatSend:disabled { opacity:0.4; cursor:not-allowed; }
+  #chatFooter { padding:6px 18px 10px; font-size:10px; color:rgba(200,170,100,0.3); text-align:center; flex-shrink:0; }
+
+  /* ============ AUTH / KNOCK MODAL ============ */
+  #authModal { display:none; position:fixed; inset:0; z-index:80; background:rgba(0,0,0,0.78); align-items:center; justify-content:center; }
+  #authModal.open { display:flex; }
+  #authCard { width:min(380px,92vw); box-sizing:border-box; background:linear-gradient(160deg,#16140f,#0c0b0a); border:1px solid rgba(210,180,120,0.3); border-radius:14px; padding:26px 24px; box-shadow:0 0 60px rgba(255,160,40,0.12); color:#e8d5a0; text-align:center; }
+  #authCard h2 { margin:0 0 4px; font-size:18px; font-weight:500; letter-spacing:0.03em; }
+  #authCard .sub { color:rgba(200,170,100,0.6); font-size:12px; margin-bottom:18px; font-style:italic; }
+  #authCard input { width:100%; box-sizing:border-box; background:rgba(0,0,0,0.4); border:1px solid rgba(210,180,120,0.25); color:#e8d5a0; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:10px; }
+  #authCard input::placeholder { color:rgba(200,170,100,0.35); }
+  #authRow { display:flex; gap:10px; margin-top:4px; }
+  #authCard button { flex:1; border-radius:8px; padding:10px; font-size:13px; cursor:pointer; border:1px solid rgba(210,180,120,0.35); background:rgba(180,140,60,0.28); color:#f0dca8; }
+  #authCard button.secondary { background:rgba(255,255,255,0.05); color:rgba(210,180,120,0.8); }
+  #authCard button:hover { background:rgba(180,140,60,0.45); }
+  #authMsg { min-height:16px; font-size:11px; margin-top:12px; color:rgba(230,160,120,0.9); }
+  #authDivider { margin:16px 0 12px; border-top:1px solid rgba(210,180,120,0.14); }
+  #authSubscribe { width:100%; margin-bottom:8px; background:rgba(120,90,160,0.25); border-color:rgba(180,150,220,0.35); color:#d8c8f0; }
+  #authGuest { width:100%; background:none; border:none; color:rgba(200,170,100,0.5); font-size:11px; cursor:pointer; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+  <h1>MIHLab — The Experience Machine</h1>
+  <p>A path through a forest into the Introduction — where you learn the method and meet the first thinkers.
+     Four hallways open from there: Epistemology, Metaphysics, Value Theory, and Foundations. Walk. Look. Open doors.</p>
+  <div class="begin">Click to begin (mouse-look) →</div>
+</div>
+
+<div id="fader"></div>
+<div id="crosshair"></div>
+<div id="locationLabel">Forest</div>
+<div id="interactPrompt"></div>
+<div id="instructions">WASD move · mouse look · click / E to interact · M toggles quick-nav</div>
+<div id="vrButtonContainer"></div>
+<div id="navPanel" style="display:none;"></div>
+
+<!-- ============ CHAT PANEL ============ -->
+<div id="philosopherChat">
+  <div id="chatPanel">
+    <div id="chatHeader">
+      <div id="platoAvatar">🏛</div>
+      <div id="chatHeaderText">
+        <h2>Plato of Athens</h2>
+        <p>427–347 BCE · The Academy</p>
+        <span class="marcelTag">Mystery, not Puzzle</span>
+      </div>
+      <button id="chatClose" title="Close (Esc)">✕</button>
+    </div>
+
+    <div id="modeBar">
+      <span class="label">I am here…</span>
+      <button id="modeStudent" data-mode="student">to learn</button>
+      <button id="modeAdvice" data-mode="advice">with a problem</button>
+    </div>
+
+    <div id="apiKeyBar">
+      <label for="apiKeyInput">Anthropic API Key</label>
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-..." autocomplete="off" />
+      <button id="apiKeySave">Save</button>
+    </div>
+    <div id="apiKeyNote">With a backend set (PROXY_URL), subscribers don't need a key — this field is only the bring-your-own-key fallback, and your key is sent once to the proxy, never stored. In demo mode the key runs in the browser.</div>
+
+    <div id="chatMessages"></div>
+
+    <div id="chatInputArea">
+      <textarea id="chatInput" rows="2" placeholder="Ask a question you're carrying, or a problem you can't resolve…"></textarea>
+      <button id="chatSend">Send</button>
+    </div>
+    <div id="chatFooter">MIHLab · Moral Imagination and Hope Laboratory · mihlab.org</div>
+  </div>
+</div>
+
+<!-- ============ AUTH / KNOCK MODAL ============ -->
+<div id="authModal">
+  <div id="authCard">
+    <h2>You knock.</h2>
+    <div class="sub">A voice answers: "Members may enter. Who's there?"</div>
+    <input id="authEmail" type="email" placeholder="email" autocomplete="username" />
+    <input id="authPass" type="password" placeholder="password" autocomplete="current-password" />
+    <div id="authRow">
+      <button id="authSignIn">Sign in</button>
+      <button id="authSignUp" class="secondary">Create account</button>
+    </div>
+    <div id="authMsg"></div>
+    <div id="authDivider"></div>
+    <button id="authSubscribe">✦ Subscribe — members ride the house's own key</button>
+    <button id="authGuest">enter as a guest (bring your own key)</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script type="module">
+  // ---- Supabase auth
