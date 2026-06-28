@@ -220,6 +220,18 @@
       async restore(){ try { await getClient(); } catch (e) { console.warn('[mihlab] auth unavailable:', e.message); } },
     };
   }
+
+  // Rehydrate a persisted session on load — returning members, and anyone coming back from
+  // Stripe Checkout (a fresh page load), so they ride the house key without re-entering
+  // anything. Only does the import when a session is actually stored, so pure guests make
+  // no network call. Conversation calls await this promise before reading the JWT.
+  window.MIHLAB_RESTORE = Promise.resolve();
+  if (configured) {
+    try {
+      const hasSession = Object.keys(localStorage).some(k => k.startsWith('sb-') && k.includes('-auth-token'));
+      if (hasSession) window.MIHLAB_RESTORE = window.mihlabAuth.restore();
+    } catch (e) {}
+  }
 </script>
 <script>
 /* =========================================================================
@@ -537,6 +549,7 @@ async function sendToPhilosopher(userText) {
 
 // Game -> your backend proxy -> Anthropic (subscriber on your key, or BYOK forwarded)
 async function callProxy(personaKey, mode, messages) {
+  try { await window.MIHLAB_RESTORE; } catch (e) {}  // ensure a persisted session is rehydrated before we read the JWT
   const headers = { 'Content-Type': 'application/json' };
   if (window.MIHLAB_JWT) headers['Authorization'] = 'Bearer ' + window.MIHLAB_JWT; // subscriber path
   if (storedApiKey)      headers['x-byok-key'] = storedApiKey;                      // BYOK fallback
