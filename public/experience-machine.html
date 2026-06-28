@@ -251,7 +251,7 @@
 //                      subscribers ride your key (via Supabase login), everyone else BYOK.
 //                      Once set, the browser only sends personaKey — the agents live server-side.
 // ============================================================
-const PROXY_URL = ''; // e.g. 'https://YOUR-REF.supabase.co/functions/v1/philosopher'
+const PROXY_URL = 'https://jdbbtwtljqnezgnvlnug.supabase.co/functions/v1/philosopher'; // subscriber path: calls go through your Supabase Edge Function (subscribers ride your key; others BYOK)
 window.MIHLAB_JWT = window.MIHLAB_JWT || ''; // set to the Supabase access token after login (subscriber path)
 
 // Stripe function URLs are derived from PROXY_URL by swapping the last path segment,
