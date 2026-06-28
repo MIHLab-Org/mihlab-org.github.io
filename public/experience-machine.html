@@ -586,6 +586,16 @@ const authEmail = document.getElementById('authEmail');
 const authPass  = document.getElementById('authPass');
 const authMsg   = document.getElementById('authMsg');
 
+// Status/error line under the auth + plan card. Re-queried on every call because
+// renderPlanPicker() rewrites the card's innerHTML — the original #authMsg node is
+// replaced, so a cached reference would silently write to a detached (invisible) node.
+function setAuthMsg(text, kind) {
+  const el = document.getElementById('authMsg');
+  if (!el) return;
+  el.style.color = (kind === 'error') ? 'rgba(230,160,120,0.9)' : 'rgba(210,180,120,0.7)';
+  el.textContent = text;
+}
+
 function knockOnHouse() {
   if (window.MIHLAB_JWT) { enterHouse(); return; }              // already a member, signed in
   if (!window.MIHLAB_AUTH_CONFIGURED) { enterHouse(); return; } // auth not configured yet -> guest
@@ -628,35 +638,32 @@ const PLANS = [
 
 async function ensureSessionForCheckout() {
   if (window.MIHLAB_JWT) return true;            // already signed in
-  if (!window.mihlabAuth) { authMsg.textContent = 'Sign-in isn\'t configured yet.'; return false; }
+  if (!window.mihlabAuth) { setAuthMsg('Sign-in isn\'t configured yet.', 'error'); return false; }
   const email = authEmail.value.trim(), pw = authPass.value;
-  if (!email || !pw) { authMsg.style.color = 'rgba(230,160,120,0.9)'; authMsg.textContent = 'Enter an email and password first — your membership attaches to that account.'; return false; }
-  authMsg.style.color = 'rgba(210,180,120,0.7)';
-  authMsg.textContent = 'Setting up your account…';
+  if (!email || !pw) { setAuthMsg('Enter an email and password first — your membership attaches to that account.', 'error'); return false; }
+  setAuthMsg('Setting up your account…');
   try {
     try { await window.mihlabAuth.signIn(email, pw); }      // existing account?
     catch { await window.mihlabAuth.signUp(email, pw); }    // otherwise make one
-  } catch (e) { authMsg.style.color = 'rgba(230,160,120,0.9)'; authMsg.textContent = (e && e.message) || 'Could not sign you in.'; return false; }
-  if (!window.MIHLAB_JWT) { authMsg.textContent = 'Account made — confirm via the email we sent, sign in, then subscribe.'; return false; }
+  } catch (e) { setAuthMsg((e && e.message) || 'Could not sign you in.', 'error'); return false; }
+  if (!window.MIHLAB_JWT) { setAuthMsg('Account made — confirm via the email we sent, sign in, then subscribe.', 'error'); return false; }
   return true;
 }
 
 async function startCheckout(tier) {
-  if (!CHECKOUT_URL) { authMsg.textContent = 'Checkout isn\'t configured yet.'; return; }
-  authMsg.style.color = 'rgba(210,180,120,0.7)';
-  authMsg.textContent = 'Opening checkout…';
+  if (!CHECKOUT_URL) { setAuthMsg('Checkout isn\'t configured yet.', 'error'); return; }
+  setAuthMsg('Opening checkout…');
   try {
     const r = await fetch(CHECKOUT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + window.MIHLAB_JWT },
       body: JSON.stringify({ tier }),
     });
-    const data = await r.json();
+    const data = await r.json().catch(() => ({}));
     if (!r.ok || !data.url) throw new Error(data.error || `HTTP ${r.status}`);
     window.location.href = data.url;   // hand off to Stripe's hosted page
   } catch (e) {
-    authMsg.style.color = 'rgba(230,160,120,0.9)';
-    authMsg.textContent = (e && e.message) || 'Could not open checkout.';
+    setAuthMsg((e && e.message) || 'Could not open checkout.', 'error');
   }
 }
 
