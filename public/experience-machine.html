@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>MIHLab — The Experience Machine</title>
 <style>
   html, body { margin:0; padding:0; overflow:hidden; background:#000; font-family: -apple-system, Helvetica, Arial, sans-serif; }
-  canvas { display:block; }
+  canvas { display:block; touch-action:none; }
+  html, body { touch-action:none; overscroll-behavior:none; -webkit-touch-callout:none; }
 
   #fader { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; transition: opacity 0.6s ease; z-index: 50; }
   #fader.show { opacity:1; }
@@ -234,6 +236,137 @@
   }
 </script>
 <script>
+/* === MIHLab mobile touch controls — injected; drives the yaw/pitch rig ====
+   No-op on desktop (so WASD + pointer-lock are untouched). On touch devices:
+   left thumb = move joystick, right side = drag-to-look, quick tap = interact.
+   Wired below via MobileControls.init({...}); see the call near loadWorld().    */
+(function () {
+  'use strict';
+  var isTouch =
+    (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) ||
+    'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  var S = {
+    yaw: null, pitch: null, enabled: false, shown: false,
+    lookSensitivity: 0.0035, isBlocked: function () { return false; }, onTap: null,
+    move: { forward: 0, strafe: 0 }, joyId: null, lookId: null,
+    lookLast: { x: 0, y: 0 }, tap: { t0: 0, moved: 0 }, root: null
+  };
+  var PITCH_LIMIT = Math.PI / 2.2; // matches the game's existing mouse-look clamp
+
+  function injectStyles() {
+    var css =
+      '#mc-root{position:fixed;inset:0;z-index:45;pointer-events:none;' +
+      'touch-action:none;-webkit-user-select:none;user-select:none;display:none;}' +
+      '#mc-joy-zone{position:absolute;left:0;bottom:0;width:45%;height:55%;pointer-events:auto;}' +
+      '#mc-joy-base{position:absolute;width:120px;height:120px;border-radius:50%;' +
+      'background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.22);' +
+      'transform:translate(-50%,-50%);opacity:0;transition:opacity .12s;}' +
+      '#mc-joy-thumb{position:absolute;width:52px;height:52px;border-radius:50%;' +
+      'background:rgba(232,213,160,0.35);border:2px solid rgba(232,213,160,0.55);' +
+      'transform:translate(-50%,-50%);}' +
+      '#mc-look-zone{position:absolute;right:0;top:56px;width:55%;height:calc(100% - 56px);pointer-events:auto;}';
+    var s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
+  }
+
+  function buildUI() {
+    var root = document.createElement('div');
+    root.id = 'mc-root';
+    root.innerHTML =
+      '<div id="mc-joy-zone"><div id="mc-joy-base"><div id="mc-joy-thumb"></div></div></div>' +
+      '<div id="mc-look-zone"></div>';
+    document.body.appendChild(root); S.root = root;
+    return {
+      joyZone: root.querySelector('#mc-joy-zone'),
+      joyBase: root.querySelector('#mc-joy-base'),
+      joyThumb: root.querySelector('#mc-joy-thumb'),
+      lookZone: root.querySelector('#mc-look-zone')
+    };
+  }
+
+  function wireJoystick(ui) {
+    var R = 55, ox = 0, oy = 0;
+    ui.joyZone.addEventListener('touchstart', function (e) {
+      if (S.isBlocked()) return;
+      var t = e.changedTouches[0]; S.joyId = t.identifier; ox = t.clientX; oy = t.clientY;
+      ui.joyBase.style.left = ox + 'px'; ui.joyBase.style.top = oy + 'px';
+      ui.joyBase.style.opacity = '1'; ui.joyThumb.style.left = '50%'; ui.joyThumb.style.top = '50%';
+      e.preventDefault();
+    }, { passive: false });
+    ui.joyZone.addEventListener('touchmove', function (e) {
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        var t = e.changedTouches[i]; if (t.identifier !== S.joyId) continue;
+        var dx = t.clientX - ox, dy = t.clientY - oy, d = Math.hypot(dx, dy);
+        if (d > R) { dx *= R / d; dy *= R / d; }
+        ui.joyThumb.style.left = (50 + dx / R * 50) + '%';
+        ui.joyThumb.style.top = (50 + dy / R * 50) + '%';
+        S.move.forward = -dy / R; S.move.strafe = dx / R; e.preventDefault();
+      }
+    }, { passive: false });
+    function end(e) {
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier !== S.joyId) continue;
+        S.joyId = null; S.move.forward = 0; S.move.strafe = 0; ui.joyBase.style.opacity = '0';
+      }
+    }
+    ui.joyZone.addEventListener('touchend', end); ui.joyZone.addEventListener('touchcancel', end);
+  }
+
+  function wireLook(ui) {
+    ui.lookZone.addEventListener('touchstart', function (e) {
+      var t = e.changedTouches[0]; S.lookId = t.identifier;
+      S.lookLast.x = t.clientX; S.lookLast.y = t.clientY;
+      S.tap.t0 = performance.now(); S.tap.moved = 0; e.preventDefault();
+    }, { passive: false });
+    ui.lookZone.addEventListener('touchmove', function (e) {
+      if (S.isBlocked()) return;
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        var t = e.changedTouches[i]; if (t.identifier !== S.lookId) continue;
+        var dx = t.clientX - S.lookLast.x, dy = t.clientY - S.lookLast.y;
+        S.lookLast.x = t.clientX; S.lookLast.y = t.clientY;
+        S.tap.moved += Math.abs(dx) + Math.abs(dy);
+        if (S.yaw) S.yaw.rotation.y -= dx * S.lookSensitivity;
+        if (S.pitch) {
+          S.pitch.rotation.x -= dy * S.lookSensitivity;
+          S.pitch.rotation.x = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, S.pitch.rotation.x));
+        }
+        e.preventDefault();
+      }
+    }, { passive: false });
+    function end(e) {
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier !== S.lookId) continue;
+        S.lookId = null;
+        var quick = performance.now() - S.tap.t0 < 250;
+        if (quick && S.tap.moved < 12 && !S.isBlocked() && typeof S.onTap === 'function') S.onTap();
+      }
+    }
+    ui.lookZone.addEventListener('touchend', end); ui.lookZone.addEventListener('touchcancel', end);
+  }
+
+  window.MobileControls = {
+    init: function (o) {
+      o = o || {};
+      S.yaw = o.yawObject || null; S.pitch = o.pitchObject || null;
+      if (o.lookSensitivity) S.lookSensitivity = o.lookSensitivity;
+      if (typeof o.isBlocked === 'function') S.isBlocked = o.isBlocked;
+      if (typeof o.onTap === 'function') S.onTap = o.onTap;
+      if (!isTouch) { S.enabled = false; return false; }   // desktop: stay out of the way
+      injectStyles(); var ui = buildUI(); wireJoystick(ui); wireLook(ui);
+      S.enabled = true;
+      setInterval(function () {            // hide overlay while a chat/auth panel is open
+        if (!S.root || !S.shown) return;
+        S.root.style.display = S.isBlocked() ? 'none' : 'block';
+      }, 150);
+      return true;
+    },
+    show: function () { S.shown = true; if (S.root && !S.isBlocked()) S.root.style.display = 'block'; },
+    getMove: function () { return S.move; },
+    isActive: function () { return S.enabled; }
+  };
+})();
+/* === end mobile touch controls =========================================== */
+
 /* =========================================================================
    MIHLab Experience Machine — v3
    --------------------------------------------------------------------
@@ -1365,7 +1498,7 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyM') { const nav = document.getElementById('navPanel'); nav.style.display = nav.style.display === 'none' ? 'flex' : 'none'; }
 });
 window.addEventListener('keyup', e => { keys[e.code] = false; });
-document.getElementById('startScreen').addEventListener('click', () => { document.getElementById('startScreen').style.display = 'none'; renderer.domElement.requestPointerLock(); });
+document.getElementById('startScreen').addEventListener('click', () => { document.getElementById('startScreen').style.display = 'none'; renderer.domElement.requestPointerLock(); if (window.MobileControls) MobileControls.show(); });
 renderer.domElement.addEventListener('click', () => {
   if (chatIsOpen) return;
   if (document.pointerLockElement !== renderer.domElement && !renderer.xr.isPresenting) renderer.domElement.requestPointerLock();
@@ -1383,13 +1516,14 @@ const moveSpeed = 4.2;
 const camDir = new THREE.Vector3(), camRight = new THREE.Vector3();
 function updateMovement(delta) {
   if (chatIsOpen) return;
-  if (!renderer.xr.isPresenting && document.pointerLockElement !== renderer.domElement) return;
+  if (!renderer.xr.isPresenting && document.pointerLockElement !== renderer.domElement && !(window.MobileControls && MobileControls.isActive())) return;
   let fwd = 0, right = 0;
   if (keys['KeyW']) fwd += 1; if (keys['KeyS']) fwd -= 1; if (keys['KeyD']) right += 1; if (keys['KeyA']) right -= 1;
+  if (window.MobileControls && MobileControls.isActive()) { const m = MobileControls.getMove(); fwd += m.forward; right += m.strafe; }
   if (fwd !== 0 || right !== 0) {
     camera.getWorldDirection(camDir); camDir.y = 0; camDir.normalize();
     camRight.crossVectors(new THREE.Vector3(0, 1, 0), camDir).negate();
-    const len = Math.sqrt(fwd*fwd + right*right), scale = moveSpeed * delta / len;
+    const len = Math.sqrt(fwd*fwd + right*right), scale = moveSpeed * delta * Math.min(len, 1) / len;
     yawObject.position.x += (camDir.x * fwd + camRight.x * right) * scale;
     yawObject.position.z += (camDir.z * fwd + camRight.z * right) * scale;
   }
@@ -1450,6 +1584,12 @@ function animate() {
   renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
+
+MobileControls.init({
+  yawObject, pitchObject,
+  isBlocked: () => chatIsOpen || (authModal && authModal.classList.contains('open')),
+  onTap: () => triggerInteract()
+});
 
 loadWorld('forest');
 </script>
