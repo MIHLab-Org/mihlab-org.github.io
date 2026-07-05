@@ -1,31 +1,28 @@
 import { Layout } from '@/components/Layout';
-import { User, ExternalLink } from 'lucide-react';
+import { User, ExternalLink, Mail } from 'lucide-react';
 import soldiersImage from '@/assets/uploads/soldiers-horizon.jpg';
 
 const teamMembers = [
 {
-  name: "Lab Director",
-  role: "Principal Investigator",
-  bio: "Leading research on moral imagination and the ethics of art and media.",
-  interests: ["Philosophy of Art", "Moral Psychology", "Game Studies"]
+  name: "Montaque Reynolds",
+  role: "Visiting Assistant Professor of Philosophy, Stetson University",
+  bio: "Combines philosophy with technology, leveraging AI and interactive storytelling to enhance human reasoning, ethical decision-making, and overall flourishing—particularly for underserved youth. Leads a small team developing interactive philosophical simulations using massively multiplayer online game platforms.",
+  interests: ["Philosophy & AI", "Interactive Narratives", "Ethics Education", "Human Flourishing"],
+  email: "montaque.reynolds@gmail.com"
 },
 {
-  name: "Research Associate",
-  role: "Postdoctoral Researcher",
-  bio: "Exploring the intersection of interactive media and ethical development.",
-  interests: ["Interactive Ethics", "Virtual Reality", "Narrative Theory"]
+  name: "Stephen Snyder",
+  role: "Fulbright Fellow · Visiting Assistant Professor, Bogazici University",
+  bio: "Author of The End of Art Philosophy: Hegel, Nietzsche, and Danto. Examines how shifts in cultural value systems are reflected in the visual arts and metaphor, with a focus on the communicative dimensions of artistic practice.",
+  interests: ["Philosophy of Art", "Social & Political Philosophy", "Continental Philosophy", "Art & Aesthetics"],
+  email: "montaque.reynolds@gmail.com"
 },
 {
-  name: "Graduate Researcher",
-  role: "PhD Student",
-  bio: "Investigating music's role in shaping moral identity and emotional intelligence.",
-  interests: ["Music Philosophy", "Identity Formation", "Aesthetics"]
-},
-{
-  name: "Research Assistant",
-  role: "Research Coordinator",
-  bio: "Supporting lab operations and community engagement initiatives.",
-  interests: ["Public Philosophy", "Art Education", "Community Building"]
+  name: "Owen Godwin",
+  role: "Musician | Experimental Luthier",
+  bio: "A musician and experimental luthier and synthesizer builder/engineer who specializes in building applications and instruments for a wide variety of musical productions.",
+  interests: ["Music Technology", "Instrument Design", "Synthesizer Engineering", "Application Development"],
+  email: "ekb123@uw.edu"
 }];
 
 
@@ -86,7 +83,7 @@ export default function People() {
                     <p data-ev-id="ev_9cf6c284bf" className="text-sm text-white/70 mb-4">
                       {member.bio}
                     </p>
-                    <div data-ev-id="ev_8020b2a7fa" className="flex flex-wrap gap-2">
+                    <div data-ev-id="ev_8020b2a7fa" className="flex flex-wrap gap-2 mb-4">
                       {member.interests.map((interest, i) =>
                     <span data-ev-id="ev_98c0ebd760"
                     key={i}
@@ -96,6 +93,12 @@ export default function People() {
                         </span>
                     )}
                     </div>
+                    {member.email && (
+                      <a href={`mailto:${member.email}`} className="inline-flex items-center gap-1 text-xs text-white/50 hover:text-[#7DD3E8] transition-colors">
+                        <Mail size={12} />
+                        {member.email}
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
