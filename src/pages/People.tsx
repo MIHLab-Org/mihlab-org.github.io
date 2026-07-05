@@ -6,7 +6,7 @@ const teamMembers = [
 {
   name: "Montaque Reynolds",
   role: "Visiting Assistant Professor of Philosophy, Stetson University",
-  bio: "Combines philosophy with technology, leveraging AI and interactive storytelling to enhance human reasoning, ethical decision-making, and overall flourishing—particularly for underserved youth. Leads a small team developing interactive philosophical simulations using massively multiplayer online game platforms.",
+  bio: "A visiting professor of philosophy at Stetson University, Monty leverages AI and interactive storytelling to enhance human reasoning, ethical decision-making, and overall flourishing—particularly for at diverse populations. He also leads a small team developing interactive philosophical simulations using massively multiplayer online game platforms.",
   interests: ["Philosophy & AI", "Interactive Narratives", "Ethics Education", "Human Flourishing"],
   email: "montaque.reynolds@gmail.com"
 },
