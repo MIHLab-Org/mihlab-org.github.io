@@ -1,6 +1,6 @@
 import { Layout } from '@/components/Layout';
 import { User, ExternalLink, Mail } from 'lucide-react';
-import soldiersImage from '@/assets/uploads/soldiers-horizon.jpg';
+import soldiersImage from '@/assets/uploads/avatar-owen.jpg';
 
 const teamMembers = [
 {
@@ -45,7 +45,7 @@ export default function People() {
         style={{ backgroundImage: `url(${soldiersImage})` }} />
 
         <div data-ev-id="ev_172f47095c" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/80 via-[#0a2a3a]/70 to-[#1a3a47]/90" />
-        
+
         <div data-ev-id="ev_1b3967aa6e" className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1 data-ev-id="ev_cad5cbee65" className="text-4xl md:text-5xl font-semibold text-white mb-6">
             People
@@ -62,7 +62,7 @@ export default function People() {
           <h2 data-ev-id="ev_898097020e" className="text-2xl md:text-3xl font-semibold text-white text-center mb-12">
             Our Team
           </h2>
-          
+
           <div data-ev-id="ev_ed0f3b66f0" className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {teamMembers.map((member, index) =>
             <div data-ev-id="ev_7bdc82c9bf"
@@ -116,7 +116,7 @@ export default function People() {
           <p data-ev-id="ev_eabe16fc95" className="text-white/70 mb-10 max-w-xl mx-auto">
             Our interdisciplinary approach brings together diverse perspectives
           </p>
-          
+
           <div data-ev-id="ev_2160ff15c1" className="flex flex-wrap justify-center gap-4">
             {collaborators.map((collab, index) =>
             <span data-ev-id="ev_c5d6b22017"
