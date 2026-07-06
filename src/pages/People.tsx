@@ -1,6 +1,6 @@
 import { Layout } from '@/components/Layout';
 import { User, ExternalLink, Mail } from 'lucide-react';
-import soldiersImage from '@/assets/uploads/avatar-owen.jpg';
+import soldiersImage from '@/assets/uploads/avatar-owen.png';
 
 const teamMembers = [
 {
