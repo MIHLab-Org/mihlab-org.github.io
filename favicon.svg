@@ -10,7 +10,7 @@
     </clipPath>
   </defs>
 
-  <rect width="64" height="64" rx="8" fill="#0a0a0f"/>
+  <!-- transparent background -->
 
   <!-- L in Pinyon Script -->
   <text x="4" y="52" font-size="58" fill="#e8e8f0" class="pinyon">L</text>
