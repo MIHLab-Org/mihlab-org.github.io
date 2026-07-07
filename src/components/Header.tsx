@@ -20,16 +20,7 @@ export function Header() {
         <div data-ev-id="ev_cae15b3aff" className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <div data-ev-id="ev_77d08f6fce" className="w-10 h-10 flex items-center justify-center">
-              <svg data-ev-id="ev_f515688d47" viewBox="0 0 50 50" className="w-full h-full text-[#7DD3E8]">
-                <circle data-ev-id="ev_073e812482" cx="25" cy="25" r="4" fill="currentColor" />
-                <circle data-ev-id="ev_fa4801206b" cx="25" cy="25" r="10" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                <circle data-ev-id="ev_10b2dbe715" cx="25" cy="25" r="16" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                <circle data-ev-id="ev_179823e983" cx="25" cy="25" r="22" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                <line data-ev-id="ev_48795cba89" x1="25" y1="3" x2="25" y2="12" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-            </div>
-            <span data-ev-id="ev_67ed2c76a2" className="text-xl font-semibold text-white">MIHLab</span>
+            <img src="/favicon.svg" alt="MIHLab.org" className="h-12" />
           </Link>
 
           {/* Desktop Navigation */}
