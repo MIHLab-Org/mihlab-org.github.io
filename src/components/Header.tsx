@@ -20,7 +20,7 @@ export function Header() {
         <div data-ev-id="ev_cae15b3aff" className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src="/logo-transparent.svg" alt="MIHLab.org" className="h-12" />
+            <img src="/mihlab-logo-transparent.svg" alt="MIHLab.org" className="h-12" />
           </Link>
 
           {/* Desktop Navigation */}
