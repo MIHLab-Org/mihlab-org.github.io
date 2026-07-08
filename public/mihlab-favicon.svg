@@ -1,7 +1,12 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>MIHLab favicon</title>
   <defs>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap'); .p { font-family: "Pinyon Script", cursive; }</style>
+    <style>
+      <![CDATA[
+        @import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap');
+        .p { font-family: "Pinyon Script", cursive; }
+      ]]>
+    </style>
     <clipPath id="earth-clip-fav">
       <circle cx="54" cy="26" r="13"/>
     </clipPath>
