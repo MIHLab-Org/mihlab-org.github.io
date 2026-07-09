@@ -1,0 +1,80 @@
+name: Task
+description: A work item for the MIH Experience Machine — pick it up, assign it, ship it.
+title: "[TASK] "
+labels: ["task"]
+assignees: []
+
+body:
+  - type: dropdown
+    id: workstream
+    attributes:
+      label: Workstream
+      description: Which area of the project does this belong to?
+      options:
+        - "A — Product / Engineering"
+        - "B — Philosophy / Content"
+        - "C — Business / Ops / Fundraising"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Where does this sit on the shared board?
+      options:
+        - "[now] — Current priority, actively being worked"
+        - "[next] — Queued, starts after current priorities clear"
+        - "[later] — Backlog, not yet scheduled"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Task description
+      description: What needs to be done? Be specific enough that someone picking this up cold can understand the goal.
+      placeholder: "e.g. Add on-screen touch controls (movement joystick + look-drag) so the experience works on mobile."
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this matters
+      description: Context, motivation, or the blocking dependency this unblocks.
+      placeholder: "e.g. This blocks the 'runs on phones' claim and is how investors will most often try the demo."
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Depends on / blocks
+      description: List any tasks or issues this depends on, or that depend on this.
+      placeholder: |
+        Depends on: #12
+        Blocks: #15, #18
+    validations:
+      required: false
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      description: How will we know this task is complete? List acceptance criteria as checkboxes if helpful.
+      placeholder: |
+        - [ ] Works on iOS Safari and Android Chrome
+        - [ ] Joystick visible on touch devices, hidden on desktop
+        - [ ] No regression to keyboard/mouse movement
+    validations:
+      required: false
+
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      description: GitHub handle of the person taking this (leave blank if unassigned).
+      placeholder: "@username"
+    validations:
+      required: false
