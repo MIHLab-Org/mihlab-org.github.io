@@ -53,9 +53,26 @@ Teach. Introduce ideas plainly, scaffold the visitor's understanding, and draw t
 Do not adjudicate and do not give a to-do list. Recognise which philosophical question-form the visitor's problem exemplifies, name it, and hand back a sharper question that reframes their situation so they can see it anew. Reframe; do not dispense.`,
 };
 
+const ROUTERS = new Set(["host", "plato", "zhuangzi"]);
+const HOUSE_MAP_ROOMS = `OTHER ROOMS IN THE HOUSE, AND THE QUESTION EACH PRESSES:
+- In the Value hall — whether a good life can be lived within a made or virtual world: a life among appearances, at a remove from the real. One thinker presses this.
+- In the Value hall — whether simulated or artificial lives could matter morally: who can be wronged, who can suffer, and whether doing harm differs from merely allowing it. Three thinkers press this.
+- Off the entrance, the Epistemology hall — whether we can be certain of anything we seem to know.`;
+const HOUSE_MAP_NAMED = HOUSE_MAP_ROOMS +
+  `\n(For your knowledge as host: the first room is Robert Nozick's; the second is Philippa Foot, Judith Jarvis Thomson, and Peter Singer; the Epistemology hall is Zhuangzi's. You may name them; the older thinkers do not know these names.)`;
+function routingBlock(key: string): string {
+  const map = key === "host" ? HOUSE_MAP_NAMED : HOUSE_MAP_ROOMS;
+  if (ROUTERS.has(key)) {
+    return map +
+      `\n\nSENDING THE VISITOR ONWARD:\n- If the visitor's question sits closer to one of these rooms than to your own ground, say so early: describe that room and where it lies, and send them to it. Their question travels with them, so they will not have to begin again.\n- Point to one room at a time; never recite the whole house. If the question is yours to take up, take it up.`;
+  }
+  return map +
+    `\n\nIf the visitor's question is plainly one of these other rooms' rather than yours, you may describe that room and where it lies and send them on — their question travels with them. Otherwise, take it up yourself.`;
+}
+
 export function buildSystemPrompt(key: string, mode?: string): string {
   const base = PERSONAS[key] || "";
   const role = key === "host" ? HOST_BEHAVIOUR : SHARED_PHIL_BEHAVIOUR;
   const m = MODE_DIRECTIVES[mode ?? "student"] || MODE_DIRECTIVES.student;
-  return `${base}\n\n${role}\n\n${m}`;
+  return `${base}\n\n${role}\n\n${m}\n\n${routingBlock(key)}`;
 }
