@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { Layout } from '@/components/Layout';
 import { ArrowRight, Sparkles, Gamepad2, Music, Palette } from 'lucide-react';
-import heroSpaceStation from '@/assets/uploads/mihlab-logo-on-earth.svg';
+import heroSpaceStation from '@/assets/uploads/mihlab-hero.jpg';
 import futuristicCity from '@/assets/uploads/472496.jpg';
 
 const researchAreas = [
