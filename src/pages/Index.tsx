@@ -38,7 +38,7 @@ export default function Index() {
         style={{ backgroundImage: `url(${heroSpaceStation})` }} />
 
         {/* Overlay for text readability */}
-        <div data-ev-id="ev_9de03f00ac" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/10 via-[#0a2a3a]/50 to-[#1a4a5a]/20" />
+        <div data-ev-id="ev_9de03f00ac" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/10 via-[#0a2a3a]/30 to-[#1a4a5a]/20" />
         <div data-ev-id="ev_68fd800613" className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1 data-ev-id="ev_610f62f454" className="text-lg md:text-xl font-medium text-[#7DD3E8] mb-4 tracking-wider">
             THE EXPERIENCE MACHINES
@@ -66,7 +66,7 @@ export default function Index() {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${futuristicCity})` }} />
 
-        <div data-ev-id="ev_ba57e616cb" className="absolute inset-0 bg-[#1a3a47]/85" />
+        <div data-ev-id="ev_ba57e616cb" className="absolute inset-0 bg-[#1a3a47]/50" />
         <div data-ev-id="ev_ff1e00a19d" className="relative z-10 max-w-7xl mx-auto px-6">
           <h2 data-ev-id="ev_5f9a514b61" className="text-2xl md:text-3xl font-semibold text-white text-center mb-4">
             Philosophy for the Real World
