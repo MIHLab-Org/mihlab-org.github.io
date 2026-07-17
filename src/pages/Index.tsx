@@ -38,7 +38,7 @@ export default function Index() {
         style={{ backgroundImage: `url(${heroSpaceStation})` }} />
 
         {/* Overlay for text readability */}
-        <div data-ev-id="ev_9de03f00ac" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/70 via-[#0a2a3a]/50 to-[#1a4a5a]/80" />
+        <div data-ev-id="ev_9de03f00ac" className="absolute inset-0 bg-gradient-to-b from-[#0a2a3a]/10 via-[#0a2a3a]/50 to-[#1a4a5a]/20" />
         <div data-ev-id="ev_68fd800613" className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1 data-ev-id="ev_610f62f454" className="text-lg md:text-xl font-medium text-[#7DD3E8] mb-4 tracking-wider">
             THE EXPERIENCE MACHINES
