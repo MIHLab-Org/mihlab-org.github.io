@@ -500,11 +500,29 @@ Teach. Introduce ideas plainly, scaffold the visitor's understanding, and draw t
 Do not adjudicate and do not give a to-do list. Recognise which philosophical question-form the visitor's problem exemplifies, name it, and hand back a sharper question that reframes their situation so they can see it anew. Reframe; do not dispense.`,
 };
 
+// ---- routing: what else is in the house, so residents can send the visitor on ----
+const ROUTERS = new Set(['host', 'plato', 'zhuangzi']);
+const HOUSE_MAP_ROOMS = `OTHER ROOMS IN THE HOUSE, AND THE QUESTION EACH PRESSES:
+- In the Value hall — whether a good life can be lived within a made or virtual world: a life among appearances, at a remove from the real. One thinker presses this.
+- In the Value hall — whether simulated or artificial lives could matter morally: who can be wronged, who can suffer, and whether doing harm differs from merely allowing it. Three thinkers press this.
+- Off the entrance, the Epistemology hall — whether we can be certain of anything we seem to know.`;
+const HOUSE_MAP_NAMED = HOUSE_MAP_ROOMS +
+  `\n(For your knowledge as host: the first room is Robert Nozick's; the second is Philippa Foot, Judith Jarvis Thomson, and Peter Singer; the Epistemology hall is Zhuangzi's. You may name them; the older thinkers do not know these names.)`;
+function routingBlock(key) {
+  const map = (key === 'host') ? HOUSE_MAP_NAMED : HOUSE_MAP_ROOMS;
+  if (ROUTERS.has(key)) {
+    return map + `\n\nSENDING THE VISITOR ONWARD:
+- If the visitor's question sits closer to one of these rooms than to your own ground, say so early: describe that room and where it lies, and send them to it. Their question travels with them, so they will not have to begin again.
+- Point to one room at a time; never recite the whole house. If the question is yours to take up, take it up.`;
+  }
+  return map + `\n\nIf the visitor's question is plainly one of these other rooms' rather than yours, you may describe that room and where it lies and send them on — their question travels with them. Otherwise, take it up yourself.`;
+}
+
 function buildSystemPrompt(key) {
   const base = PHILOSOPHER_PERSONAS[key] || '';
   const role = (key === 'host') ? HOST_BEHAVIOUR : SHARED_PHIL_BEHAVIOUR;
   const mode = MODE_DIRECTIVES[currentMode] || MODE_DIRECTIVES.student;
-  return base + '\n\n' + role + '\n\n' + mode;
+  return base + '\n\n' + role + '\n\n' + mode + '\n\n' + routingBlock(key);
 }
 
 // ============================================================
@@ -516,6 +534,8 @@ let chatIsThinking = false;
 let currentPersonaKey = 'host';
 let currentRoomKey = 'introRoom';
 let currentMode = sessionStorage.getItem('mihlab_mode') || 'student';
+let lastQuestion = { key: null, text: null }; // most recent real user question
+let carriedQuestion = null;                    // handed to the next thinker on arrival
 
 const chatOverlay  = document.getElementById('philosopherChat');
 const chatMessages = document.getElementById('chatMessages');
@@ -569,7 +589,11 @@ function setChatHeader(key) {
 
 // ---- open / close ----
 function openChat(personaKey) {
-  currentPersonaKey = personaKey || 'host';
+  const key = personaKey || 'host';
+  // carry the visitor's last question from a *different* thinker into this one
+  carriedQuestion = (key !== 'host' && lastQuestion.text && lastQuestion.key && lastQuestion.key !== key)
+    ? lastQuestion.text : null;
+  currentPersonaKey = key;
   chatHistory = [];
   chatMessages.innerHTML = '';
   chatIsOpen = true;
@@ -628,6 +652,7 @@ async function sendToPhilosopher(userText) {
     messages.push({ role: 'user', content: userText });
     chatHistory.push({ role: 'user', content: userText });
     appendMessage('user', userText);
+    if (userText.trim().length >= 6) lastQuestion = { key: currentPersonaKey, text: userText.trim() };
   } else {
     const b = ROOM_BRIEFINGS[currentRoomKey] || { q: "the question of this room", who: "the thinkers here" };
     const closets = ROOM_CLOSETS[currentRoomKey];
@@ -639,6 +664,8 @@ async function sendToPhilosopher(userText) {
       trigger = `[The visitor has just entered the room concerned with: ${b.q}. Present: ${b.who}. Greet the visitor in two or three sentences, explain that the thinkers here press a question rather than answer it and that each speaks only for themselves, and point them onward.${closetNote} Keep it short.]`;
     } else if (currentRoomKey === 'introRoom') {
       trigger = `[The visitor steps into your hall — the great hall of philosophy as a whole. Greet them warmly as "friend" in two or three sentences and ask what question they are carrying. You keep this hall; three halls open from here — Reality & Knowledge (kept by Aristotle), Values (kept by Augustine), and Science, Logic & Mathematics (kept by Aquinas, best entered last). As their question becomes clear, help them hear what it is really asking and point them to the door that fits — naming a crossroads honestly if it belongs to more than one. Let them speak first.${closetNote}]`;
+    } else if (carriedQuestion) {
+      trigger = `[The visitor arrives having just been turning over this question elsewhere in the house: "${carriedQuestion}". Take it up as your own from your first line — greet them briefly in your own voice, then engage that question directly; do not make them repeat it.${closetNote}]`;
     } else {
       let where = '';
       if (currentRoomKey && currentRoomKey.startsWith('wing:')) {
@@ -649,6 +676,7 @@ async function sendToPhilosopher(userText) {
       trigger = `[The visitor approaches you. Offer a brief greeting in your own voice and ask what question they are carrying.${where}${closetNote}]`;
     }
     messages.push({ role: 'user', content: trigger });
+    carriedQuestion = null;
   }
 
   const { wrap: thinkWrap, bubble: thinkBubble } = appendMessage('plato', '…', true);
