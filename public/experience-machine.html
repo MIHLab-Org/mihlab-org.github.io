@@ -273,8 +273,8 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/loaders/GLTFLoader.js"></script>
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 /* =========================================================================
    MIHLab Experience Machine — v2 (with Plato chat agent)
@@ -724,7 +724,15 @@ function spawnAt(x, y, z, yaw) {
 //   Never ship CC-BY-NC (non-commercial) assets in a subscription app.
 // ============================================================
 
-const gltfLoader = new THREE.GLTFLoader();
+// Instantiate the glTF loader defensively. If the loader script failed to
+// load for any reason (CDN blocked, offline, 404), we must NOT let that crash
+// the whole app — the experience should still run on primitive fallbacks.
+let gltfLoader = null;
+if (typeof THREE.GLTFLoader === 'function') {
+  gltfLoader = new THREE.GLTFLoader();
+} else {
+  console.warn('[MIHLab] GLTFLoader unavailable — running on primitive figures only. Real .glb models will be skipped.');
+}
 
 // Central registry: swap a room from primitives to real art by adding a URL here.
 // Leave a value as null to keep the hand-built primitive geometry (the fallback).
@@ -759,6 +767,7 @@ let animationMixers = [];
 function loadModel(url, opts = {}, onLoad, onFail) {
   const { x = 0, y = 0, z = 0, scale = 1, rotationY = 0, animation = 'idle' } = opts;
   if (!url) { if (onFail) onFail(new Error('no url')); return; }
+  if (!gltfLoader) { if (onFail) onFail(new Error('loader unavailable')); return; }
   gltfLoader.load(
     url,
     (gltf) => {
