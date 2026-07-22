@@ -44,7 +44,7 @@ export default function Index() {
             THE EXPERIENCE MACHINES
           </h1>
           <p data-ev-id="ev_879bbc7189" className="text-3xl md:text-4xl lg:text-5xl font-light text-white leading-tight mb-8 text-balance">
-            The <span data-ev-id="ev_c59043b1e3" className="font-semibold text-[#7DD3E8]">Moral Imagination and Hope Laboratory</span> explores how art shapes who we become.
+            The <span data-ev-id="ev_c59043b1e3" className="font-semibold text-[#7DD3E8]">Moral Imagination and Hope Laboratory</span>
           </p>
           <p data-ev-id="ev_b7260388ad" className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto">
             A philosophical laboratory where we invite the public into virtual worlds to explore questions of ethics, identity, and meaning.
