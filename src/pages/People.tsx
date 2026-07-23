@@ -1,14 +1,25 @@
 import { Layout } from '@/components/Layout';
-import { User, ExternalLink, Mail } from 'lucide-react';
+import { User, ExternalLink, Mail, ArrowRight } from 'lucide-react';
 import soldiersImage from '@/assets/uploads/soldiers-horizon.jpg';
 
-const teamMembers = [
+type TeamMember = {
+  name: string;
+  role: string;
+  bio: string;
+  interests: string[];
+  email?: string;
+  /** When set, the whole card becomes a link to this person's CV page. */
+  cvPath?: string;
+};
+
+const teamMembers: TeamMember[] = [
 {
   name: "Montaque Reynolds",
   role: "Visiting Assistant Professor of Philosophy, Stetson University",
   bio: "A visiting professor of philosophy at Stetson University, Monty leverages AI and interactive storytelling to enhance human reasoning, ethical decision-making, and overall flourishing—particularly for at diverse populations. He also leads a small team developing interactive philosophical simulations using massively multiplayer online game platforms.",
   interests: ["Philosophy & AI", "Interactive Narratives", "Ethics Education", "Human Flourishing"],
-  email: "montaque.reynolds@gmail.com"
+  email: "montaque.reynolds@gmail.com",
+  cvPath: "/cv"
 },
 {
   name: "Stephen Snyder",
@@ -67,7 +78,19 @@ export default function People() {
             {teamMembers.map((member, index) =>
             <div data-ev-id="ev_7bdc82c9bf"
             key={index}
-            className="bg-white/10 backdrop-blur-sm p-6 rounded-lg border border-white/20">
+            className={`relative bg-white/10 backdrop-blur-sm p-6 rounded-lg border border-white/20 transition-colors ${
+            member.cvPath ? 'group hover:bg-white/[0.14] hover:border-[#7DD3E8]/40' : ''}`
+            }>
+
+                {/* Stretched link: makes the whole card clickable without nesting
+                    anchors. Interactive children below sit above it via z-10. */}
+                {member.cvPath &&
+              <a
+                href={member.cvPath}
+                aria-label={`View ${member.name}'s curriculum vitae`}
+                className="absolute inset-0 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7DD3E8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a2a3a]" />
+
+              }
 
                 <div data-ev-id="ev_ff2f745cf1" className="flex items-start gap-4">
                   <div data-ev-id="ev_234d043010" className="w-16 h-16 bg-gradient-to-br from-[#5DBCD2] to-[#3AA8C4] rounded-full flex items-center justify-center flex-shrink-0">
@@ -93,12 +116,20 @@ export default function People() {
                         </span>
                     )}
                     </div>
-                    {member.email && (
-                      <a href={`mailto:${member.email}`} className="inline-flex items-center gap-1 text-xs text-white/50 hover:text-[#7DD3E8] transition-colors">
-                        <Mail size={12} />
-                        {member.email}
-                      </a>
-                    )}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      {member.email &&
+                    <a href={`mailto:${member.email}`} className="relative z-10 inline-flex items-center gap-1 text-xs text-white/50 hover:text-[#7DD3E8] transition-colors">
+                          <Mail size={12} />
+                          {member.email}
+                        </a>
+                    }
+                      {member.cvPath &&
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#7DD3E8]/70 group-hover:text-[#7DD3E8] transition-colors">
+                          View CV
+                          <ArrowRight size={12} />
+                        </span>
+                    }
+                    </div>
                   </div>
                 </div>
               </div>

@@ -12,6 +12,7 @@ import People from '@/pages/People';
 import Media from '@/pages/Media';
 import Participate from '@/pages/Participate';
 import Contact from '@/pages/Contact';
+import CVPage from './pages/CVPage.tsx'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
       <Route path="/media" element={<Media />} />
       <Route path="/participate" element={<Participate />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/cv" element={<CVPage />} />
     </Routes>
   );
 }
