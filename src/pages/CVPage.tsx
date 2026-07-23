@@ -548,7 +548,7 @@ export default function CVPage() {
             </a>
             <a
               className="mihl-cv-btn"
-              href="https://mihlab.com/people"
+              href="https://mihlab.org/people"
               target="_blank"
               rel="noreferrer"
             >
