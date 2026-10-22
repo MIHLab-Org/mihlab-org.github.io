@@ -53,9 +53,23 @@
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/WebGL.loader.js";
+      /* MIHLab: pick texture format */
+      // Phones need ASTC textures; desktops need DXT. A browser given textures it
+      // can't read unpacks them to full size in memory, which phones can't afford.
+      var textureFormat = (function () {
+        var forced = new URLSearchParams(location.search).get("textures");
+        if (forced === "astc" || forced === "dxt") return forced;
+        try {
+          var c = document.createElement("canvas");
+          var gl = c.getContext("webgl2") || c.getContext("webgl");
+          if (gl && gl.getExtension("WEBGL_compressed_texture_astc")) return "astc";
+        } catch (e) {}
+        return "dxt";
+      })();
+      console.log("[MIHLab] Loading " + textureFormat.toUpperCase() + " textures");
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebGL.data.unityweb",
+        dataUrl: buildUrl + (textureFormat === "astc" ? "/WebGL.astc.data.unityweb" : "/WebGL.data.unityweb"),
         frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
         codeUrl: buildUrl + "/WebGL.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
