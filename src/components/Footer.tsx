@@ -30,15 +30,15 @@ export function Footer() {
           <div data-ev-id="ev_3e42f8220f">
             <h3 data-ev-id="ev_b0fd9121d1" className="text-lg font-semibold text-white mb-4">Contact Us</h3>
             <div data-ev-id="ev_dfccffcd89" className="flex flex-col gap-3 text-sm text-[#a0c4d4]">
-              <a data-ev-id="ev_090d5b0d55" href="mailto:contact@mihlab.org" className="hover:text-[#7DD3E8] transition-colors flex items-center gap-2">
+              <a data-ev-id="ev_090d5b0d55" href="mailto:montaque@mihlab.org" className="hover:text-[#7DD3E8] transition-colors flex items-center gap-2">
                 <Mail size={16} />
-                contact@mihlab.org
+                montaque@mihlab.org
               </a>
               <div data-ev-id="ev_b3f8fd4d81" className="flex items-center gap-4 mt-2">
                 <a data-ev-id="ev_9e81843ae4" href="#" className="hover:text-[#7DD3E8] transition-colors">
                   <Twitter size={20} />
                 </a>
-                <a data-ev-id="ev_7520dd6b8c" href="#" className="hover:text-[#7DD3E8] transition-colors">
+                <a data-ev-id="ev_7520dd6b8c" href="https://github.com/MIHLab-Org" target="_blank" rel="noopener noreferrer" aria-label="MIHLab on GitHub" className="hover:text-[#7DD3E8] transition-colors">
                   <Github size={20} />
                 </a>
               </div>

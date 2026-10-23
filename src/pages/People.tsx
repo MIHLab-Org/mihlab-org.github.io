@@ -18,7 +18,7 @@ const teamMembers: TeamMember[] = [
   role: "Visiting Assistant Professor of Philosophy, Stetson University",
   bio: "A visiting professor of philosophy at Stetson University, Monty leverages AI and interactive storytelling to enhance human reasoning, ethical decision-making, and overall flourishing—particularly for at diverse populations. He also leads a small team developing interactive philosophical simulations using massively multiplayer online game platforms.",
   interests: ["Philosophy & AI", "Interactive Narratives", "Ethics Education", "Human Flourishing"],
-  email: "montaque.reynolds@gmail.com",
+  email: "montaque@mihlab.org",
   cvPath: "/cv"
 },
 {
@@ -26,7 +26,7 @@ const teamMembers: TeamMember[] = [
   role: "Fulbright Fellow · Visiting Assistant Professor, Bogazici University",
   bio: "Author of The End of Art Philosophy: Hegel, Nietzsche, and Danto. Examines how shifts in cultural value systems are reflected in the visual arts and metaphor, with a focus on the communicative dimensions of artistic practice.",
   interests: ["Philosophy of Art", "Social & Political Philosophy", "Continental Philosophy", "Art & Aesthetics"],
-  email: "montaque.reynolds@gmail.com"
+  email: "stephen@mihlab.org"
 },
 {
   name: "Owen Godwin",

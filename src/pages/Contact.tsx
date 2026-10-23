@@ -11,10 +11,14 @@ export default function Contact() {
     message: ''
   });
 
+  // There is no mail server behind this form, so it opens the visitor's own email app
+  // with the message filled in and addressed to Montaque, instead of discarding it.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you for your message! We\'ll get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    const subject = formData.subject || `Message from ${formData.name || 'the MIHLab website'}`;
+    const body = `${formData.message}\n\n— ${formData.name}${formData.email ? ` (${formData.email})` : ''}`;
+    window.location.href =
+      `mailto:montaque@mihlab.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -61,8 +65,8 @@ export default function Contact() {
                   </div>
                   <div data-ev-id="ev_73fda9d387">
                     <h3 data-ev-id="ev_3921b60374" className="font-semibold text-white mb-1">Email</h3>
-                    <a data-ev-id="ev_60632e9af2" href="mailto:contact@mihlab.org" className="text-white/70 hover:text-[#7DD3E8] transition-colors">
-                      contact@mihlab.org
+                    <a data-ev-id="ev_60632e9af2" href="mailto:montaque@mihlab.org" className="text-white/70 hover:text-[#7DD3E8] transition-colors">
+                      montaque@mihlab.org
                     </a>
                   </div>
                 </div>
@@ -103,7 +107,7 @@ export default function Contact() {
                     <Twitter size={20} />
                   </a>
                   <a data-ev-id="ev_ef7265a219"
-                  href="#"
+                  href="https://github.com/MIHLab-Org" target="_blank" rel="noopener noreferrer" aria-label="MIHLab on GitHub"
                   className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-[#7DD3E8] hover:bg-white/20 transition-colors border border-white/20">
 
                     <Github size={20} />
