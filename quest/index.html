@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131d">
+  <title>The Experience Machine — MIHLab</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="The Experience Machine home">
+        <span class="brand-mark" aria-hidden="true">◇</span>
+        <span>THE EXPERIENCE MACHINE</span>
+      </a>
+      <span class="phase-tag">PHASE 1 · LOBBY</span>
+    </header>
+
+    <section id="notice" class="notice" role="status" aria-live="polite">Connecting to the game service…</section>
+
+    <section id="home-view" class="panel hero">
+      <p class="eyebrow">A MULTIPLAYER PHILOSOPHY QUEST</p>
+      <h1>What if reality<br><em>isn't what it seems?</em></h1>
+      <p class="lead">Gather your party. Test your grip on reality. Understand the argument before you challenge the thinker.</p>
+      <div class="home-grid">
+        <form id="create-form" class="subpanel">
+          <h2>Create a room</h2>
+          <label for="create-name">Your display name</label>
+          <input id="create-name" name="name" maxlength="20" autocomplete="nickname" required placeholder="e.g. Alex">
+          <label for="create-class">Choose your class</label>
+          <select id="create-class" name="class">
+            <option value="skeptic">The Skeptic</option>
+            <option value="empiricist">The Empiricist</option>
+            <option value="rationalist">The Rationalist</option>
+            <option value="pragmatist">The Pragmatist</option>
+          </select>
+          <label for="campaign">Campaign length</label>
+          <select id="campaign" name="campaign">
+            <option value="short">Short Quest · 15–20 min</option>
+            <option value="full">Full Campaign · 40–50 min</option>
+          </select>
+          <button class="primary" type="submit">Create room</button>
+        </form>
+
+        <form id="join-form" class="subpanel">
+          <h2>Join a room</h2>
+          <label for="join-code">Four-letter room code</label>
+          <input id="join-code" name="code" maxlength="4" minlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" required placeholder="ABCD">
+          <label for="join-name">Your display name</label>
+          <input id="join-name" name="name" maxlength="20" autocomplete="nickname" required placeholder="e.g. Jordan">
+          <label for="join-class">Choose your class</label>
+          <select id="join-class" name="class">
+            <option value="skeptic">The Skeptic</option>
+            <option value="empiricist">The Empiricist</option>
+            <option value="rationalist">The Rationalist</option>
+            <option value="pragmatist">The Pragmatist</option>
+          </select>
+          <button class="secondary" type="submit">Join room</button>
+        </form>
+      </div>
+      <p class="fineprint">No account or password needed. A private browser token helps you reconnect to your seat.</p>
+    </section>
+
+    <section id="room-view" class="panel room-panel" hidden>
+      <div class="room-heading">
+        <div>
+          <p class="eyebrow">YOUR PARTY</p>
+          <h1>Room <span id="room-code-label" class="room-code">----</span></h1>
+          <p id="room-status" class="lead compact">Waiting for players…</p>
+        </div>
+        <button id="copy-code" class="secondary small" type="button">Copy code</button>
+      </div>
+      <div class="room-meta">
+        <span id="campaign-label">Short Quest</span>
+        <span id="player-count">1 / 6 players</span>
+        <span id="host-label">You are the host</span>
+      </div>
+      <h2>Party members</h2>
+      <ul id="player-list" class="player-list"></ul>
+      <div class="room-actions">
+        <button id="start-game" class="primary" type="button" disabled>Start game</button>
+        <button id="leave-room" class="quiet" type="button">Leave room</button>
+      </div>
+      <p id="start-help" class="fineprint">The host can start when at least two players have joined.</p>
+      <div id="phase1-started" class="started-card" hidden>
+        <p class="eyebrow">LOBBY CHECK PASSED</p>
+        <h2>Your party is assembled.</h2>
+        <p>Phase 1 is connected and synchronized. Encounter play, dice checks, and the first boss arrive in Phase 2.</p>
+      </div>
+    </section>
+
+    <footer>
+      <span>MIHLab · Original philosophy game</span>
+      <span>Structure inspired by David Chalmers, <i>Reality+</i> (2022).</span>
+    </footer>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
