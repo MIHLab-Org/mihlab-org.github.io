@@ -103,7 +103,15 @@
       <span>MIHLab · Original philosophy game</span>
       <span>Structure inspired by David Chalmers, <i>Reality+</i> (2022).</span>
     </footer>
-  </main>
+  <section id="game-panel" hidden aria-live="polite">
+  <h2 id="game-heading">Realm I</h2>
+  <div class="meta"><span id="game-stage"></span><span id="game-grip"></span><span id="game-timer"></span><span id="game-conviction"></span></div>
+  <p id="game-instructions"></p><p id="game-scene"></p><h3 id="game-question"></h3>
+  <div id="game-choices"></div><div id="game-whispers"></div><div id="game-reveal"></div>
+  <p id="game-roll"></p><p id="game-lore" class="lore" hidden></p>
+  <div id="game-abilities"></div><button id="game-next" type="button" hidden>Continue (host)</button>
+</section>
+</main>
   <script type="module" src="./app.js"></script>
 </body>
 </html>

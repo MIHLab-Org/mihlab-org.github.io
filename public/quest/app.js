@@ -1,3 +1,4 @@
+import { makeEngine } from "./phase2-engine.js";
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import {
@@ -24,6 +25,7 @@ let roomUnsubscribe = null;
 let localRoom = null;
 let busy = false;
 let roomSession = 0;
+let engine = null;
 
 function notice(message, kind = "info") {
   const el = $("notice");
@@ -89,6 +91,12 @@ async function initialize() {
     const credential = await signInAnonymously(auth);
     currentUser = credential.user;
     db = getDatabase(app);
+    const response = await fetch('./realm1-content.json');
+    if (!response.ok) throw new Error('Realm I content failed to load');
+    const content = await response.json();
+    engine = makeEngine({ db, api: { ref, set, update, runTransaction },
+      getContext: () => ({ room: localRoom, uid: currentUser?.uid, code: currentRoomCode }),
+      content, notice });
     notice("Connected. Create a room or join your party.", "success");
   } catch (error) {
     console.error(error);
@@ -134,11 +142,11 @@ async function createRoom(event) {
         game: {
           phase: "lobby",
           schemaVersion: 1,
-          encounters: { activeId: "" },
+          encounters: { activeId: "lobby" },
           // Realtime Database omits empty objects; Phase 2 may populate these maps.
           votes: {},
           diceResults: {},
-          grip: {},
+          grip: { value: 10 },
           insightCards: {}
         }
       };
@@ -236,6 +244,7 @@ async function enterRoom(code) {
     }
     localRoom = room;
     renderRoom(room);
+    engine?.render(room);
     maybeTakeOverHost(room, code).catch((error) => console.warn("Host migration attempt failed", error));
   }, (error) => {
     console.error(error);
@@ -252,13 +261,11 @@ function renderRoom(room) {
   $("campaign-label").textContent = room.campaign === "full" ? "Full Campaign" : "Short Quest";
   $("player-count").textContent = `${players.length} / ${MAX_PLAYERS} players`;
   $("host-label").textContent = isHost ? "You are the host" : `Host: ${room.players?.[room.hostUid]?.name || "transferring…"}`;
-  $("room-status").textContent = room.status === "started"
-    ? "The party is ready. The encounter engine arrives in Phase 2."
-    : "Waiting for the party to assemble…";
+  $("room-status").textContent = room.status === "started" ? "Realm I is underway." : "Waiting for the party to assemble…";
   $("start-game").hidden = !isHost || room.status === "started";
   $("start-game").disabled = !isHost || players.length < 2;
   $("start-help").hidden = !isHost || room.status === "started";
-  $("phase1-started").hidden = room.status !== "started";
+  $("phase1-started").hidden = true;
 
   const list = $("player-list");
   list.replaceChildren();
@@ -312,28 +319,9 @@ async function maybeTakeOverHost(room, code) {
 }
 
 async function startGame() {
-  if (!currentRoomCode || !localRoom || localRoom.hostUid !== currentUser.uid) return;
-  const players = Object.keys(localRoom.players || {});
-  if (players.length < 2) return notice("At least two players must join before the host can start.", "error");
-  try {
-    // Room-level writes are intentionally forbidden after creation. Write only to
-    // the host-authorized status and game paths.
-    await set(ref(db, `rooms/${currentRoomCode}/game`), {
-      phase: "phase1-complete",
-      schemaVersion: 1,
-      startedAt: Date.now(),
-      encounters: { activeId: "" },
-      votes: {},
-      diceResults: {},
-      grip: {},
-      insightCards: {}
-    });
-    await set(ref(db, `rooms/${currentRoomCode}/status`), "started");
-    notice("Lobby test passed. Phase 1 is ready for multiplayer testing.", "success");
-  } catch (error) {
-    console.error(error);
-    notice(friendlyError(error), "error");
-  }
+  if (!engine || !localRoom || localRoom.hostUid !== currentUser.uid) return;
+  try { await engine.begin(); }
+  catch (error) { console.error(error); notice(friendlyError(error), 'error'); }
 }
 
 async function leaveRoom() {
