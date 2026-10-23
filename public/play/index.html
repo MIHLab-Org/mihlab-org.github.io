@@ -100,8 +100,12 @@
       // existing user projects that might rely on the earlier manual
       // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
       // expected to change.
+      /* MIHLab: embed mode */
+      // mihlab.org/media shows the game inside a box with /play/?embed=1. Use Unity's
+      // fill-the-window layout (the one it uses on phones) so it fills the frame, no footer.
+      var embedded = new URLSearchParams(location.search).get("embed") === "1";
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      if (embedded || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
 
         var meta = document.createElement('meta');

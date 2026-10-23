@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { ArrowRight } from 'lucide-react';
 
@@ -38,6 +39,16 @@ const TIERS: Tier[] = [
 ];
 
 export default function Media() {
+  // The Unity build (served from /play/) loads only when the visitor clicks the box:
+  // it is ~54 MB and needs ~1 GB of memory, so it shouldn't load just from viewing the page.
+  const [playing, setPlaying] = useState(false);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+
+  const goFullscreen = () => {
+    const frame = frameRef.current;
+    if (frame && frame.requestFullscreen) frame.requestFullscreen().catch(() => {});
+  };
+
   return (
     <Layout>
       <div className="flex flex-col gap-16 pb-20">
@@ -52,29 +63,54 @@ export default function Media() {
           </p>
         </section>
 
-        {/* the experience — launched as its own page, not embedded.
-            An iframe sandboxes the game's login and blocks Stripe Checkout
-            (which refuses to load in a frame), so we open it full-window instead. */}
+        {/* the experience — the Unity WebGL build from /play/, embedded in this box.
+            (The earlier browser-built version, /experience-machine.html, opened in its own
+            window because a frame blocked its login and Stripe Checkout; the Unity build
+            has neither.) ?embed=1 makes the Unity page fill the frame. */}
         <section className="px-4 max-w-6xl w-full mx-auto flex flex-col gap-3">
-          <a
-            href="/experience-machine.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex flex-col items-center justify-center gap-5 rounded-xl border border-[#1d4256] bg-gradient-to-b from-[#0e2433] to-[#06121b] shadow-2xl h-[60vh] min-h-[420px] overflow-hidden text-center px-6"
+          {playing ? (
+            <div className="relative rounded-xl border border-[#1d4256] bg-[#06121b] shadow-2xl h-[60vh] min-h-[420px] overflow-hidden">
+              <iframe
+                ref={frameRef}
+                src="/play/?embed=1"
+                title="The Experience Machine"
+                className="absolute inset-0 w-full h-full border-0"
+                allow="fullscreen; autoplay; gamepad; xr-spatial-tracking"
+                allowFullScreen
+              />
+            </div>
+          ) : (
+          <button
+            type="button"
+            onClick={() => setPlaying(true)}
+            className="group relative flex flex-col items-center justify-center gap-5 rounded-xl border border-[#1d4256] bg-gradient-to-b from-[#0e2433] to-[#06121b] shadow-2xl h-[60vh] min-h-[420px] overflow-hidden text-center px-6 w-full cursor-pointer"
           >
             <span className="text-6xl" aria-hidden="true">🏚️</span>
             <div className="flex flex-col gap-2">
               <span className="text-2xl md:text-3xl font-bold text-white">Step into the woods</span>
               <span className="text-[#9DC6D8] max-w-md mx-auto">
-                A path, a house, and the thinkers who live there. The experience opens in its own window.
+                A path, a house, and the thinkers who live there. The experience loads right here.
               </span>
             </div>
             <span className="inline-flex items-center gap-2 rounded-lg bg-[#1c87a8] group-hover:bg-[#23a3c9] text-white font-medium px-6 py-3 transition-colors">
               Enter the Experience Machine <ArrowRight className="w-5 h-5" />
             </span>
-          </a>
+          </button>
+          )}
           <p className="text-sm text-[#6B8A99] text-center">
-            Opens full-screen in a new tab · Click to look around · WASD to move · E to interact · you'll be asked to make an account when you knock on the door.
+            Click inside to look around · WASD to move · arrow keys to turn · E to talk · F to continue the conversation
+            {playing && (
+              <>
+                {' · '}
+                <button type="button" onClick={goFullscreen} className="underline hover:text-[#9DC6D8] cursor-pointer">
+                  Full screen
+                </button>
+              </>
+            )}
+            {' · '}
+            <a href="/play/" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#9DC6D8]">
+              Open in a new tab
+            </a>
           </p>
         </section>
 
