@@ -148,7 +148,7 @@ export function makeEngine({ db, api, getContext, content, notice, elements }) {
         if(g.eliminated&&option.tag==='WEAK')button.classList.add('eliminated');
         if(already&&myBallot.choice===i)button.classList.add('selected');
         button.disabled=!eligible||already||Date.now()>g.deadline;
-        button.addEventListener('click',()=>vote(i).catch(e=>notice(e.message,'error')));choices.append(button);
+        button.addEventListener('click',()=>vote(i).catch(e=>notice('Your choice could not be saved: '+e.message,'error')));choices.append(button);
       });
     }
     el('game-instructions').textContent=complete?'Realm I is finished. Realm II will arrive in Phase 3.':plugged?'Host: continue to retry Realm I.':lore?'Read the teaching card, then host advances.':result?'Review the simultaneous choices and dice result. Host: continue.':g.stageIndex===3&&!eligible?`Spotlight: ${room.players?.[g.spotlightUid]?.name||'another player'} answers. Send one whisper.`:already?'Choice locked. Waiting for the party or timer.':'Choose the strongest philosophical response.';
