@@ -26,7 +26,7 @@ const teamMembers: TeamMember[] = [
   role: "Fulbright Fellow · Visiting Assistant Professor, Bogazici University",
   bio: "Author of The End of Art Philosophy: Hegel, Nietzsche, and Danto. Examines how shifts in cultural value systems are reflected in the visual arts and metaphor, with a focus on the communicative dimensions of artistic practice.",
   interests: ["Philosophy of Art", "Social & Political Philosophy", "Continental Philosophy", "Art & Aesthetics"],
-  email: "montaque@mihlab.org"
+  email: "stephen@mihlab.org"
 },
 {
   name: "Owen Godwin",

@@ -2,10 +2,9 @@ import { useRef, useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { ArrowRight, Heart } from 'lucide-react';
 
-// Where the "Leave a tip" button goes (a Stripe Payment Link, Ko-fi, PayPal.me, etc.).
-// Empty = the button shows "Tip link coming soon" and points people to email instead.
+// Where the "Leave a tip" button goes (Ko-fi). Set to '' to show "Tip link coming soon" instead.
 // Subscriptions come later, once the business licensing is in place.
-const TIP_URL = '';
+const TIP_URL = 'https://ko-fi.com/redapemusic35';
 
 export default function Media() {
   // The Unity build (served from /play/) loads only when the visitor clicks the box:
@@ -29,9 +28,9 @@ export default function Media() {
             The Experience Machine is a game about thinking well. You walk through a forest with
             Socrates and meet philosophers who won't hand you answers; they press your questions until
             you can see them more clearly. The first conversation is drawn from Plato's{' '}
-            <em>Phaedrus</em>, which we read as a defense of critical reflection: not a habit for the
-            classroom alone, but a lens for everything, from what we love to whom we trust and how we
-            are persuaded. From there the map opens onto metaphysics, knowledge, mind and value, laid out
+            <em>Phaedrus</em>, which we read as an argument that reason does its best work when love
+            moves it: philosophy grows out of passion and out of lasting friendships, and it is meant to
+            shape how we see everything, not only what we study. From there the map opens onto metaphysics, knowledge, mind and value, laid out
             the way philosophers organize the field. A project of the Moral Imagination and Hope
             Laboratory.
           </p>
