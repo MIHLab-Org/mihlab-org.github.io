@@ -131,7 +131,16 @@ async function createRoom(event) {
             name, class: playerClass, joinedAt: now, connected: true
           }
         },
-        game: { phase: "lobby" }
+        game: {
+          phase: "lobby",
+          schemaVersion: 1,
+          encounters: { activeId: "" },
+          // Realtime Database omits empty objects; Phase 2 may populate these maps.
+          votes: {},
+          diceResults: {},
+          grip: {},
+          insightCards: {}
+        }
       };
       try {
         // A plain set avoids a transaction read at /rooms/$code, which is intentionally
@@ -307,10 +316,19 @@ async function startGame() {
   const players = Object.keys(localRoom.players || {});
   if (players.length < 2) return notice("At least two players must join before the host can start.", "error");
   try {
-    await update(roomRef(currentRoomCode), {
-      status: "started",
-      game: { phase: "phase1-complete", startedAt: Date.now() }
+    // Room-level writes are intentionally forbidden after creation. Write only to
+    // the host-authorized status and game paths.
+    await set(ref(db, `rooms/${currentRoomCode}/game`), {
+      phase: "phase1-complete",
+      schemaVersion: 1,
+      startedAt: Date.now(),
+      encounters: { activeId: "" },
+      votes: {},
+      diceResults: {},
+      grip: {},
+      insightCards: {}
     });
+    await set(ref(db, `rooms/${currentRoomCode}/status`), "started");
     notice("Lobby test passed. Phase 1 is ready for multiplayer testing.", "success");
   } catch (error) {
     console.error(error);
@@ -325,12 +343,8 @@ async function leaveRoom() {
   try {
     // Deliberately keep the seat and player record so the same browser can reconnect.
     await update(playerRef(code, currentUser.uid), { connected: false, lastSeenAt: Date.now() });
-    if (room?.hostUid === currentUser.uid) {
-      await maybeTakeOverHost({ ...room, players: {
-        ...room.players,
-        [currentUser.uid]: { ...room.players?.[currentUser.uid], connected: false }
-      }}, code);
-    }
+    // Other connected players observe this presence change and can take over
+    // through the guarded hostUid rule. This client is leaving the room view.
   } catch (error) {
     console.warn("Leave presence update failed", error);
   }

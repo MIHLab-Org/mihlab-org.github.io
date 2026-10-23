@@ -11,7 +11,7 @@ Copy these files into `MIHLab-Org/mihlab-org.github.io/quest/`:
 - `app.js`
 - `firebase-config.js`
 
-Publish `database.rules.json` through Firebase Console → Realtime Database → Rules. Do **not** upload it as a public website file unless you want the rules source visible; it is not a secret, but it is configuration rather than a browser asset.
+Publish `database.rules.json` through Firebase Console → Realtime Database → Rules. Keep `database.rules.json` and `security-test-console.js` as setup/test files; they do not need to be copied into the public website folder.
 
 ## Firebase setup
 
@@ -34,7 +34,7 @@ The page uses relative file paths (`./styles.css`, `./app.js`, `./firebase-confi
 
 ## Room expiry and cleanup
 
-Rooms have an `expiresAt` timestamp 24 hours after creation. The rules deny room reads and writes after that timestamp, and the client treats expired rooms as unavailable. An expired room code may be reused. Realtime Database on the Spark plan does not provide a general scheduled TTL deletion mechanism, so expired records may remain stored until their code is reused or they are manually deleted in the console. They are inaccessible through these rules after expiry.
+Rooms have an `expiresAt` timestamp 24 hours after creation. The rules deny room reads and writes after that timestamp, and the client treats expired rooms as unavailable. Existing expired room records cannot be reused automatically by this ruleset; the short-code generator will try another code if it collides with an old record. Realtime Database on the Spark plan does not provide a general scheduled TTL deletion mechanism, so expired records may remain stored until manually deleted in the console by an administrator. They are inaccessible through these rules after expiry.
 
 ## Phase 1 limitations
 
@@ -45,6 +45,23 @@ Rooms have an `expiresAt` timestamp 24 hours after creation. The rules deny room
 - Host migration depends on Firebase presence state. A sudden network partition can delay disconnect detection.
 - This is a Phase 1 implementation, not the complete seven-realm game. Start Game currently records that the lobby is ready; Phase 2 will replace that transition with the playable Realm I.
 
-## Security notes
+## Revised database security model
 
-The rules allow room reads only for an authenticated UID that holds one of the room's six seats. They do not allow listing `/rooms` or reading/deleting unrelated rooms. Room codes are short, so they should not be treated as cryptographic secrets; anonymous auth, seat claims, expiry, and rules are important layers, but a server-backed join endpoint would provide stronger abuse protection. Never put a Firebase Admin SDK key or service-account credential in this repository.
+- After a room is created, writes at `/rooms/{code}` are not permitted. Room creation is the only operation allowed at that parent path.
+- Each player may update only their own `/players/{uid}` record, with validated fields and values. A seat can be claimed only when empty; an occupied seat cannot be overwritten.
+- The room host may update `/status` and the `/game` subtree. Other players cannot write there. The host cannot use this permission to edit player records, seats, room expiry, or the host UID.
+- All Phase 2 shared state belongs under `/game`: `encounters`, `votes`, `diceResults`, `grip`, and `insightCards`, alongside `phase`, `schemaVersion`, and optional `startedAt`. The host-only write permission is granted at `/game`, so new fields under those game-state categories do not require broader room permissions. Empty maps may be absent in Realtime Database until the first entry is written; Phase 2 code should treat missing maps as empty maps.
+- Host takeover is permitted only for a seated, connected player when the previous host's player record is marked disconnected.
+- These rules are stricter than the first draft but are **not claimed to be verified against the live Firebase Rules engine**. Publish them to a test project or use the Firebase Emulator Suite before relying on them for a public game.
+
+## Run the browser-console security checks
+
+1. Publish `database.rules.json` in Firebase Console → Realtime Database → Rules.
+2. Open the game, join a room, and preferably use a non-host player's browser.
+3. Open DevTools → Console, paste the complete contents of `security-test-console.js`, and press Enter.
+4. Check the `console.table` output. Every attempted forbidden operation should report `PASS — denied`; `FAIL` means a write/read unexpectedly succeeded, and `ERROR` means the result is inconclusive.
+5. To check a known expired room, put its four-letter code in `EXPIRED_ROOM_CODE` near the top of the script before pasting it.
+
+The console script uses same-value writes for current-room tests so a failed rule does not intentionally change names, classes, presence, status, or game phase. The optional expired-room metadata probe writes `0` to `expiresAt`; use it only with a known expired test room, never a live room.
+
+Room codes are short and are not cryptographic secrets. Anonymous auth, seat claims, expiry, and rules help, but a server-backed join endpoint would provide stronger abuse protection. Never put a Firebase Admin SDK key or service-account credential in this repository.
