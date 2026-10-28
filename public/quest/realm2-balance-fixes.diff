@@ -1,0 +1,276 @@
+--- a/quest/index.html
++++ b/quest/index.html
+@@ -110,12 +110,13 @@
+   <p id="game-identity-taunt" class="identity-taunt" hidden></p>
+   <blockquote id="game-machine" class="machine-voice" hidden></blockquote>
+   <p id="game-scene"></p><h3 id="game-question"></h3>
++  <p id="game-spotlight" class="spotlight-banner" hidden></p>
+   <p id="game-instructions" class="game-instructions"></p>
+   <div id="game-choices"></div><div id="game-whispers"></div>
+   <div id="game-reveal"></div><div id="game-debate" hidden></div>
+-  <div id="game-die" aria-live="polite"></div><p id="game-roll"></p>
++  <div id="game-die" aria-live="polite"></div><p id="game-roll" hidden></p>
+   <div id="game-lore" class="lore" hidden></div>
+-  <div id="game-abilities"></div><button id="game-next" type="button" hidden>Continue (host)</button>
++  <div id="game-abilities"></div><button id="game-next" type="button" hidden disabled tabindex="-1" aria-hidden="true">Continue (host)</button>
+ </section>
+ </main>
+   <script type="module" src="./app.js"></script>
+--- a/quest/styles.css
++++ b/quest/styles.css
+@@ -207,3 +207,11 @@
+ #game-panel[data-realm="2"] .machine-voice { border-left-color: #d4af75; }
+ #game-panel[data-realm="2"] .realm-eyebrow { color:#e5c78a; }
+ #game-panel[data-realm="2"] .roll-outcome { text-shadow:0 0 25px rgba(213,178,121,.35); }
++
++/* Keep inactive host-only actions out of sight AND keyboard/AT navigation. */
++#game-next[hidden], #game-roll[hidden], #game-spotlight[hidden] { display:none !important; }
++#game-panel .spotlight-banner {
++  padding:12px 16px; margin:12px 0 16px; border-radius:10px;
++  border:1px solid rgba(235,197,128,.7); background:rgba(139,95,59,.22);
++  color:#f9ebcf; font-weight:800; letter-spacing:.015em;
++}
+--- a/quest/phase2-engine.js
++++ b/quest/phase2-engine.js
+@@ -34,17 +34,39 @@
+     for(let i=permuted.length-1; i>0; i--){const j=rand(i); [permuted[i],permuted[j]]=[permuted[j],permuted[i]];}
+     return Object.fromEntries(members.map((uid,i) => [uid,permuted[i]]));
+   }
+-  function newStage(index, grip, abilities, cards, usedCards, attempt=0, bossWins=0, oldMask=null) {
++  // Preserve Spotlight turns under the existing host-writable /game/encounters path.
++  // A fresh pool is opened only after every connected member has had a turn.
++  function pickSpotlight(members, previous={}) {
++    const priorSeen = previous.spotlightSeen || {};
++    const last = previous.spotlightLast || '';
++    let available = members.filter(uid => !priorSeen[uid]);
++    const seen = available.length ? {...priorSeen} : {};
++    if(!available.length) available = [...members];
++    if(available.length>1 && available.includes(last)) available = available.filter(uid=>uid!==last);
++    const chosen = available[rand(available.length)] || getContext().uid;
++    seen[chosen] = true;
++    return {uid:chosen, seen, last:chosen};
++  }
++  function newStage(index, grip, abilities, cards, usedCards, attempt=0, bossWins=0, oldMask=null, previousEncounters={}) {
+     const stage=stages[index];
+     const startedAt=Date.now();
+     const eligible=getMembers();
++    const spotlight = isSpotlight(stage) ? pickSpotlight(eligible, previousEncounters) : null;
++    const encounters = {activeId:stage.id};
++    if(spotlight){
++      encounters.spotlightSeen=spotlight.seen;
++      encounters.spotlightLast=spotlight.last;
++    }else{
++      if(previousEncounters.spotlightSeen) encounters.spotlightSeen=previousEncounters.spotlightSeen;
++      if(previousEncounters.spotlightLast) encounters.spotlightLast=previousEncounters.spotlightLast;
++    }
+     const result={
+       phase:'choice', schemaVersion:1, startedAt, realm:stage.realm, stageIndex:index, attempt,
+       roundId:`${index}-${attempt}-${startedAt}-${rand(100000)}`,
+       deadline:startedAt+(stage.selectionSeconds || (stage.kind==='boss'?45:60))*1000,
+-      encounters:{activeId:stage.id}, votes:{}, diceResults:{}, grip:{value:grip},
++      encounters, votes:{}, diceResults:{}, grip:{value:grip},
+       insightCards:cards || {}, usedCards:usedCards || {}, abilities:abilities || {}, bossWins,
+-      spotlightUid:isSpotlight(stage)?(eligible[rand(eligible.length)] || getContext().uid):'',
++      spotlightUid:spotlight?.uid || '',
+       whispers:{}, rollBonus:0, rerollUsed:false, eliminated:false, hintVisible:attempt>0,
+       optionOrder:shuffle(stage.options.map((_,i)=>i))
+     };
+@@ -128,16 +150,19 @@
+   }
+   function makeRoll(room,g){
+     const stage=stageFor(g),votes=stageVotes(room,g);
+-    let modifier=0;
+-    for(const choice of Object.values(votes)){
+-      const tag=stage.options[choice]?.tag;
+-      modifier+=tag==='STRONG'?2:tag==='DEFENSIBLE'?1:tag==='WEAK'?-1:0;
+-    }
++    const values=Object.values(votes).map(choice=>stage.options[choice]?.tag).filter(Boolean);
++    // Average of ACTUAL submitted votes; an absent vote never supplies free points.
++    // One Spotlight vote is a one-person average, not a party consensus.
++    const score={STRONG:7, DEFENSIBLE:3, WEAK:-2};
++    const modifier=values.length
++      ? Math.floor(values.reduce((sum,tag)=>sum+(score[tag]??0),0)/values.length)
++      : 0;
+     const dc=g.dc || (g.stageIndex===0?10:12);
+-    const die=roll(),total=die+modifier+(g.rollBonus||0),success=total>=dc;
+-    return {phase:'rolling',votes,dc,die,total,modifier,success,
++    const learningBonus=3*(g.attempt||0);
++    const die=roll(),total=die+modifier+(g.rollBonus||0)+learningBonus,success=total>=dc;
++    return {phase:'rolling',votes,dc,die,total,modifier,learningBonus,success,
+       rollRevealAt:Date.now()+(chapterFor(g).dicePresentation.tumbleMilliseconds||2000),
+-      [`diceResults/${g.roundId}`]:{die,total,modifier,dc,success,at:Date.now()}};
++      [`diceResults/${g.roundId}`]:{die,total,modifier,learningBonus,dc,success,at:Date.now()}};
+   }
+   let syncing=false;
+   async function hostSync() {
+@@ -152,10 +177,10 @@
+     if(pending.length){
+       const [uid,request]=pending[0],klass=room.players?.[uid]?.class;
+       if(request.type==='pragmatist'&&klass==='pragmatist'&&g.phase==='result'&&!g.success&&!g.rerollUsed){
+-        const die=roll(),total=die+g.modifier+(g.rollBonus||0),success=total>=g.dc;
++        const die=roll(),total=die+g.modifier+(g.rollBonus||0)+(g.learningBonus??3*(g.attempt||0)),success=total>=g.dc;
+         await update(path(),{phase:'rolling',rerollUsed:true,die,total,success,
+           rollRevealAt:Date.now()+(chapterFor(g).dicePresentation.tumbleMilliseconds||2000),
+-          [`abilities/${uid}`]:true,[`diceResults/${g.roundId}-reroll`]:{die,total,dc:g.dc,success,at:Date.now()}});
++          [`abilities/${uid}`]:true,[`diceResults/${g.roundId}-reroll`]:{die,total,modifier:g.modifier,learningBonus:g.learningBonus??3*(g.attempt||0),dc:g.dc,success,at:Date.now()}});
+       }else if(g.phase==='choice' && Date.now()<g.deadline && (request.type===klass || request.type==='insight')){
+         const changes={[`abilities/${uid}`]:true};
+         if(klass==='skeptic')changes.eliminated=true;
+@@ -195,7 +220,7 @@
+     if(!isHost())return;
+     const g=getContext().room?.game;if(!g)return;
+     if(g.phase==='realm-complete' && g.realm<realms.length){
+-      await set(path(),newStage(chapterStart(g.realm+1),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards));
++      await set(path(),newStage(chapterStart(g.realm+1),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,0,null,g.encounters));
+       return;
+     }
+     if(g.phase==='ready-to-roll'){
+@@ -204,36 +229,35 @@
+     }
+     if(g.phase==='result'){
+       if(!g.success){
+-        const grip=Math.max(0,(g.grip?.value??10)-2);
++        const grip=Math.max(0,(g.grip?.value??10)-1);
+         if(grip===0){
+-          const abilities=Object.fromEntries(Object.keys(getContext().room.players||{}).map(uid=>[uid,false]));
+-          await set(path(),{...newStage(chapterStart(g.realm||1),6,abilities,g.insightCards||{},g.usedCards||{}),phase:'plugged',failureText:chapterFor(g).failure});
++          // Leave the current stage intact. The next host action starts a fresh
++          // countdown on this same stage with the existing boss progress.
++          await update(path(),{phase:'plugged','grip/value':0});
+           return;
+         }
+-        await set(path(),newStage(g.stageIndex,grip,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask));
++        await set(path(),newStage(g.stageIndex,grip,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters));
+         return;
+       }
+       const stage=stageFor(g),chapter=chapterFor(g);
+-      const cards=stage.kind==='encounter'&&stage.localIndex===0?
++      const cards=stage.kind==='boss'&&stage.localIndex===chapter.bossPhases.length-1?
+         {...(g.insightCards||{}),[chapter.insight.id]:true}:g.insightCards||{};
+       await update(path(),{phase:'lore',insightCards:cards,bossWins:stage.kind==='boss'?(g.bossWins||0)+1:(g.bossWins||0)});
+       return;
+     }
+-    if(g.phase==='plugged'){await update(path(),{phase:'choice'});return;}
++    if(g.phase==='plugged'){await set(path(),newStage(g.stageIndex,6,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters));return;}
+     if(g.phase!=='lore')return;
+     if(g.stageIndex===chapterEnd(g.realm||1)){
+       await update(path(),{phase:'realm-complete',completedAt:Date.now()});return;
+     }
+-    await set(path(),newStage(g.stageIndex+1,g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,g.bossWins||0));
++    await set(path(),newStage(g.stageIndex+1,g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,g.bossWins||0,null,g.encounters));
+   }
+   function addText(target,tag,cls,text){
+     const node=document.createElement(tag);if(cls)node.className=cls;node.textContent=text;target.append(node);return node;
+   }
+-  function displayName(room,g,uid){
+-    const mask=hasIdentityTwist(stageFor(g)) && !(g.phase==='lore'||g.phase==='realm-complete'||(g.phase==='result'&&g.success)) && g.identityMask;
+-    const showUid=mask?.[uid] || uid;
+-    return room.players?.[showUid]?.name || 'Player';
+-  }
++  // Discussion and Spotlight always identify the real voter. Only the party
++  // roster in app.js displays the illusion during Reconstruct.
++  function realName(room,uid){return room.players?.[uid]?.name || 'Player';}
+   function render(room) {
+     const g=room.game||{},stage=stageFor(g),chapter=chapterFor(g),panel=el('game-panel');
+     panel.hidden=room.status!=='started'||g.phase==='lobby'||g.phase==='phase1-complete';
+@@ -252,8 +276,14 @@
+     el('game-timer').textContent=g.phase==='choice'?`${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}s`:
+       debating?`Debate ${Math.max(0,Math.ceil((g.debateDeadline-Date.now())/1000))}s`:'—';
+     const chapterIntro=stage?.kind==='encounter' && stage.localIndex===0 && !g.attempt && chapter.opening ? chapter.opening+'\n\n' : '';
+-    el('game-scene').textContent=complete?chapter.victory:plugged?chapter.failure:chapterIntro+(stage?.scene||'');
++    el('game-scene').textContent=complete?chapter.victory:plugged?'Fully Plugged In. Grip will recover to 6. The host can restart this same challenge; your earlier boss victories remain.':chapterIntro+(stage?.scene||'');
+     el('game-question').textContent=complete?`${chapter.realm} complete`:stage?.question||'';
++    const spotlightBanner=el('game-spotlight');
++    spotlightBanner.hidden=!isSpotlight(stage)||complete||plugged;
++    if(!spotlightBanner.hidden){
++      const player=room.players?.[g.spotlightUid];
++      spotlightBanner.textContent=`In the spotlight: ${realName(room,g.spotlightUid)}${player?.class ? ' · '+player.class.charAt(0).toUpperCase()+player.class.slice(1) : ''}`;
++    }
+     el('game-identity-taunt').hidden=!(hasIdentityTwist(stage) && !lore && !(result&&g.success));
+     el('game-identity-taunt').textContent=chapter.identityTwist?.taunt||'';
+     el('game-machine').textContent=machineText(g,stage);
+@@ -273,22 +303,22 @@
+         choices.append(button);
+       }
+     }
+-    el('game-instructions').textContent=complete?(g.realm<realms.length?`The host can open ${realms[g.realm].realm}.`:`${chapter.realm} is finished. The next realm is not yet available.`):plugged?`Host: continue to retry ${chapter.realm}.`:
++    el('game-instructions').textContent=complete?(g.realm<realms.length?`The host can open ${realms[g.realm].realm}.`:`${chapter.realm} is finished. The next realm is not yet available.`):plugged?'Host: restart this challenge with Grip 6.':
+       lore?'Review each stance and the consequence. The host advances.':
+       result?`The check ${g.success?'passed':'failed'}. The host advances after any reroll.`:
+       rolling?`Difficulty Class ${g.dc}. The d20 is tumbling…`:
+       ready?`DC ${g.dc} is set. The host may now roll the d20.`:
+       debating?chapter.debate.prompt:
+-      isSpotlight(stage)&&!eligible?`Spotlight: ${displayName(room,g,g.spotlightUid)} answers. Send one whisper.`:
++      isSpotlight(stage)&&!eligible?`Spotlight: ${realName(room,g.spotlightUid)} answers. Send one whisper.`:
+       already?'Your action is locked until the party reveal.':'Choose what your adventurer does.';
+     // Publicly reveal initial choices on debate, final choices during the roll and afterward.
+     const reveal=el('game-reveal');reveal.replaceChildren();
+     if(debating||ready||rolling||result||lore){
+       const votes=debating?stageVotes(room,g):(g.votes||{});
+       const agrees=consensus(votes);
+-      addText(reveal,'p','consensus',agrees?'Consensus reached':'Party responses revealed');
++      addText(reveal,'p','consensus',isSpotlight(stage)?'Spotlight response':(agrees?'Consensus reached':'Party responses revealed'));
+       for(const [player,choice] of Object.entries(votes)){
+-        const option=stage?.options[choice];const label=displayName(room,g,player);
++        const option=stage?.options[choice];const label=realName(room,player);
+         const div=addText(reveal,'div','reveal',`${label}: ${option?.text||'No answer submitted'}`);
+         if((result||lore)&&option)addText(div,'span','stance-tag '+option.tag.toLowerCase(),option.tag);
+       }
+@@ -296,7 +326,7 @@
+     const debate=el('game-debate');debate.replaceChildren();debate.hidden=!debating;
+     if(debating){
+       const reasons=Object.entries(room.whispers||{}).filter(([,v])=>v.roundId===g.roundId && v.reason);
+-      for(const [player,v] of reasons)addText(debate,'p','debate-reason',`${displayName(room,g,player)}: ${v.reason}`);
++      for(const [player,v] of reasons)addText(debate,'p','debate-reason',`${realName(room,player)}: ${v.reason}`);
+       if(room.whispers?.[uid]?.roundId!==g.roundId){
+         const row=addText(debate,'div','reason-buttons','');
+         for(const reason of chapter.debate.reasons){
+@@ -308,16 +338,18 @@
+         already?'You may change your vote once using the action cards above.':'You did not submit an initial vote.');
+     }
+     const dice=el('game-die');dice.replaceChildren();dice.className='die-stage';
+-    const rollDisplay=el('game-roll');rollDisplay.textContent='';
++    const rollDisplay=el('game-roll');rollDisplay.textContent='';rollDisplay.hidden=true;
+     if(ready||rolling||result||lore){
+       addText(dice,'div','dc-display',`DC ${g.dc}`);
+       if(rolling && Date.now()<g.rollRevealAt){
+         dice.classList.add('tumbling');addText(dice,'div','die-shape','d20');
+         addText(dice,'p','roll-caption','Rolling…');
+-      }else{
++      }else if(Number.isInteger(g.die) && Number.isFinite(g.total) && typeof g.success==='boolean'){
+         dice.classList.add(g.success?'passed':'failed');
+         addText(dice,'div','roll-outcome',g.success?'PASS':'FAIL');
+-        rollDisplay.textContent=`d20 ${g.die} + actions ${g.modifier} + ability ${g.rollBonus||0} = ${g.total}`;
++        const learning=g.learningBonus??3*(g.attempt||0);
++        rollDisplay.textContent=`d20 ${g.die} + party average ${g.modifier} + ability ${g.rollBonus||0} + Second Look ${learning} = ${g.total}`;
++        rollDisplay.hidden=false;
+       }
+     }
+     const lorePanel=el('game-lore');lorePanel.replaceChildren();lorePanel.hidden=!lore;
+@@ -331,7 +363,7 @@
+         addText(card,'p','',option.reflection);
+       }
+       addText(lorePanel,'p','lore-summary',stage?.lore||'');
+-      if(stage?.kind==='encounter' && stage.localIndex===0)
++      if(stage?.kind==='boss' && stage.localIndex===chapter.bossPhases.length-1 && g.insightCards?.[chapter.insight.id])
+         addText(lorePanel,'p','insight-awarded',`Insight earned: ${chapter.insight.title} — ${chapter.insight.description}`);
+     }
+     const abilities=el('game-abilities');abilities.replaceChildren();
+@@ -366,9 +398,15 @@
+       const messages=Object.values(room.whispers||{}).filter(w=>w.roundId===g.roundId&&w.emoji).map(w=>w.emoji).join(' ');
+       if(messages)addText(whispers,'p','whisper-display',messages);
+     }
+-    el('game-next').hidden=!host||!(['ready-to-roll','result','lore','plugged'].includes(g.phase) || (complete&&g.realm<realms.length));
++    const nextButton=el('game-next');
++    const showNext=host && (['ready-to-roll','result','lore','plugged'].includes(g.phase) || (complete&&g.realm<realms.length));
++    nextButton.hidden=!showNext;
++    nextButton.disabled=!showNext;
++    nextButton.tabIndex=showNext?0:-1;
++    nextButton.inert=!showNext;
++    nextButton.setAttribute('aria-hidden',showNext?'false':'true');
+     el('game-next').textContent=ready?'Roll d20 (host)':result?(g.success?'Reveal lore (host)':'Second Look (host)'):
+-      plugged?`Restart ${chapter.realm} (host)`:complete?`Enter ${realms[g.realm]?.realm} (host)`:lore?'Continue (host)':'Continue (host)';
++      plugged?'Retry this challenge (host)':complete?`Enter ${realms[g.realm]?.realm} (host)`:lore?'Continue (host)':'Continue (host)';
+   }
+   let lastUiTickPhase='';
+   function tick(){
