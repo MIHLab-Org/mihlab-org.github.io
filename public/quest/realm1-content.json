@@ -1,15 +1,263 @@
 {
-  "realm": "Realm I — Virtual Worlds", "boss": "Zhuangzi",
+  "realm": "Realm I — Virtual Worlds",
+  "boss": "Zhuangzi",
   "encounters": [
-    {"id":"butterfly","title":"The Butterfly Dream","scene":"A butterfly drifts across a sky painted on the inside of a glass dome. For a moment, your hands seem like wings. The machine asks whether the dreamer or the dream has the final word.","question":"What does the butterfly dream most strongly challenge?","hint":"Focus on how certain we can be about our present identity, not on whether butterflies are secretly human.","clue":"A vivid dream can feel completely ordinary until you wake.","options":[{"text":"That waking experience always feels different from dreaming.","tag":"WEAK"},{"text":"That we can be completely certain which perspective is the waking one.","tag":"STRONG"},{"text":"That dreams can raise genuine questions about identity and experience.","tag":"DEFENSIBLE"},{"text":"That butterflies can speak human languages.","tag":"WEAK"}],"lore":"Zhuangzi's butterfly story unsettles the confidence with which we label one experience waking and another dreaming. It does not prove that nothing is real. It invites us to ask what grounds our certainty about who we are."},
-    {"id":"fish","title":"The Joy of the Fish","scene":"A school of silver fish gathers beneath a transparent bridge. One fish darts toward the light, and your companion declares that it must be delighted. A voice from below asks how anyone could know that.","question":"Which response best captures the puzzle about other minds?","hint":"Distinguish seeing behavior from directly having another creature's experience.","clue":"You can observe a smile without feeling the other person's joy yourself.","options":[{"text":"We cannot directly inhabit another being's experience, but behavior and context can still give us reasons to understand it.","tag":"STRONG"},{"text":"Nobody can ever have any reason to believe another creature feels anything.","tag":"WEAK"},{"text":"Knowing another's feelings may involve interpretation rather than direct access.","tag":"DEFENSIBLE"},{"text":"Fish must experience happiness exactly as humans do.","tag":"WEAK"}],"lore":"The exchange about the fish explores what it means to know another being's experience. We may lack direct access to another mind without being forced into total ignorance. The puzzle asks how observation, shared life, and interpretation contribute to understanding."}
+    {
+      "id": "butterfly",
+      "title": "The Butterfly Dream",
+      "scene": "The glass dome splits into two doors. Behind one, you wake in a familiar bedroom. Behind the other, you flutter over a garden as a butterfly. Both doors feel as real as the floor beneath you. The dome is sealing; your party must choose a way through.",
+      "question": "The doors are closing. What do you do?",
+      "hint": "You can act on evidence without pretending that familiar feelings provide certainty.",
+      "clue": "Both sides of the doorway have memories, textures, and a convincing sense of being awake.",
+      "options": [
+        {
+          "id": "test-both",
+          "text": "Mark both thresholds, compare their clues, and cross one while admitting the test may mislead.",
+          "tag": "STRONG",
+          "stance": "Fallibilist inquiry",
+          "reflection": "You investigate and act without mistaking a convincing experience for an infallible test."
+        },
+        {
+          "id": "shared-memory",
+          "text": "Follow the door that best fits the party’s shared memories, but leave a way to return.",
+          "tag": "DEFENSIBLE",
+          "stance": "Intersubjective evidence",
+          "reflection": "Shared memories give you practical reasons to choose, though agreement does not prove you are awake."
+        },
+        {
+          "id": "familiar-is-real",
+          "text": "Enter the familiar bedroom at once; its recognizable details settle which world is waking.",
+          "tag": "WEAK",
+          "stance": "Familiarity as proof",
+          "reflection": "A vivid dream can feel familiar too. Recognition alone cannot settle the issue."
+        },
+        {
+          "id": "refuse-uncertainty",
+          "text": "Barricade both doors until you find a test that rules out every possibility of dreaming.",
+          "tag": "WEAK",
+          "stance": "Skeptical paralysis",
+          "reflection": "A demand for absolute certainty turns reasonable doubt into a reason never to act."
+        }
+      ],
+      "lore": "The butterfly dream challenges certainty about which perspective is waking. It does not show that nothing is real. Compare how the party acted: evidence can guide a choice even when experience cannot certify its own status."
+    },
+    {
+      "id": "fish",
+      "title": "The Joy of the Fish",
+      "scene": "Under a clear bridge, fish thrash against a narrowing gate. A companion says their leaps mean joy; a guardian insists no one can know what a fish feels. The current is rising. If you open the gate recklessly, the fish may be swept away; if you wait, they may be trapped.",
+      "question": "The gate is beginning to close. How do you respond?",
+      "hint": "Another creature’s feelings may be hidden, but its behavior and surroundings still count as evidence.",
+      "clue": "The fish keep turning against the blocked current; there is a sheltered channel beside the gate.",
+      "options": [
+        {
+          "id": "observe-release",
+          "text": "Watch their movement and the current, then open the sheltered channel while monitoring the fish.",
+          "tag": "STRONG",
+          "stance": "Careful inference about other minds",
+          "reflection": "Behavior and context offer fallible evidence. You act with care rather than claiming direct access to their feelings."
+        },
+        {
+          "id": "consult-then-help",
+          "text": "Ask your companions to compare what they see, then ease the gate open slowly and reassess the fish.",
+          "tag": "DEFENSIBLE",
+          "stance": "Shared interpretation",
+          "reflection": "Comparing observations improves judgment, though agreement cannot replace attention to what happens next."
+        },
+        {
+          "id": "deny-fish-minds",
+          "text": "Leave the gate shut because you cannot feel their distress and therefore have no grounds to help.",
+          "tag": "WEAK",
+          "stance": "Other-minds skepticism as denial",
+          "reflection": "Lacking direct access to suffering does not erase evidence that a creature may need help."
+        },
+        {
+          "id": "joy-means-safe",
+          "text": "Throw the gate fully open because their excited leaps show they will surely enjoy the current.",
+          "tag": "WEAK",
+          "stance": "Projection and overconfidence",
+          "reflection": "You infer a definite feeling from ambiguous behavior and ignore a foreseeable danger."
+        }
+      ],
+      "lore": "The joy-of-the-fish puzzle asks how we understand another being without living its experience. The strongest action respects uncertainty while using observation, context, and care; neither mind-reading nor complete ignorance follows."
+    }
   ],
   "bossPhases": [
-    {"id":"reconstruct","title":"Reconstruct","scene":"Zhuangzi appears beside a doorway that alternates between a bedroom and a garden. He invites you to present the puzzle without turning it into a slogan.","question":"Which statement best reconstructs the butterfly challenge?","hint":"The point is uncertainty about perspective, not a proof that all experiences are false.","clue":"Dreams can seem convincing while we are having them.","options":[{"text":"We cannot assume our current perspective is unquestionably the final one; a dream can make identity seem settled when it is not.","tag":"STRONG"},{"text":"Everything we see must be an illusion created by insects.","tag":"WEAK"},{"text":"Dreaming can expose limits in how confidently we distinguish experiences.","tag":"DEFENSIBLE"}],"lore":"A strong reconstruction keeps the argument modest but unsettling: experience alone may not certify its own status. The story is an invitation to philosophical humility, not a laboratory demonstration that the world is fake."},
-    {"id":"spotlight","title":"Spotlight","scene":"A lantern singles out one adventurer. The others may send a single encouraging whisper while the lantern waits for an answer.","question":"If a dream feels real while it lasts, what follows?","hint":"Ask what follows logically, rather than what merely sounds dramatic.","clue":"Being mistaken once does not establish that you are always mistaken.","options":[{"text":"Every belief about the external world is false.","tag":"WEAK"},{"text":"Feeling certain does not, by itself, guarantee that a belief is true.","tag":"STRONG"},{"text":"Some apparently obvious experiences may deserve further examination.","tag":"DEFENSIBLE"}],"lore":"The spotlight tests the difference between doubt and denial. If certainty can be misplaced, we have reason to examine our beliefs; we do not automatically have reason to reject them all."},
-    {"id":"reply","title":"Reply","scene":"The doorway becomes a mirror. Zhuangzi asks whether doubt about dreams leaves us unable to live, learn, or care for one another.","question":"Which is the strongest reply to the dream challenge?","hint":"A good reply can accept uncertainty while resisting an exaggerated conclusion.","clue":"People can have good evidence even without infallible certainty.","options":[{"text":"Because I am awake now, I could never have been deceived.","tag":"WEAK"},{"text":"We can have reasonable, revisable beliefs about our world without possessing an infallible test for waking.","tag":"STRONG"},{"text":"Our ordinary practices can still guide action even when philosophical doubt remains.","tag":"DEFENSIBLE"}],"lore":"A thoughtful response need not erase the skeptical challenge. It can distinguish absolute certainty from justified belief, and explain how knowledge and action may remain possible under uncertainty."}
+    {
+      "id": "reconstruct",
+      "title": "Reconstruct",
+      "scene": "Zhuangzi removes the names from your cloaks and hangs them on the wrong bodies. Even your class crests seem to belong to someone else. A pair of masks appears: DREAMER and BUTTERFLY. The exit opens only when the party places the masks on a balance without claiming more than the dream reveals.",
+      "question": "Zhuangzi waits by the balance. What do you place upon it?",
+      "hint": "Show why experience can mislead without declaring that all experience is false.",
+      "clue": "Each mask feels natural to its wearer, and each carries a convincing memory of waking.",
+      "options": [
+        {
+          "id": "weigh-both",
+          "text": "Set both masks on the balance and demonstrate how either identity could feel entirely settled.",
+          "tag": "STRONG",
+          "stance": "Reconstructed skeptical challenge",
+          "reflection": "You capture the puzzle: felt certainty may fail to distinguish dreaming from waking."
+        },
+        {
+          "id": "seek-cross-checks",
+          "text": "Compare each mask with memory and testimony, then admit that both checks could be mistaken.",
+          "tag": "DEFENSIBLE",
+          "stance": "Qualified empirical testing",
+          "reflection": "Cross-checks help you navigate the puzzle but do not remove its deepest uncertainty."
+        },
+        {
+          "id": "trust-recognition",
+          "text": "Crown the mask that feels most familiar; your certainty about recognition proves it is yours.",
+          "tag": "WEAK",
+          "stance": "Dogmatism about self-knowledge",
+          "reflection": "This assumes the reliability of the very feeling the butterfly dream puts in question."
+        }
+      ],
+      "lore": "Zhuangzi’s challenge is about the limits of certainty, not proof that identity is fake. You win Reconstruct by showing why both dream and waking may feel authoritative without pretending to resolve the puzzle by decree."
+    },
+    {
+      "id": "spotlight",
+      "title": "Spotlight",
+      "scene": "One adventurer stands in a circle of lantern light. Beyond a thin curtain, a familiar voice calls their name and asks them to follow. The others can send one whispered reason, but only the chosen adventurer can answer. Zhuangzi watches to see whether doubt becomes inquiry or despair.",
+      "question": "The voice reaches for your hand. What do you do?",
+      "hint": "A reason to doubt certainty is not the same as a reason to deny every appearance.",
+      "clue": "The voice sounds familiar, but there are other signs you could investigate before following.",
+      "options": [
+        {
+          "id": "ask-for-evidence",
+          "text": "Ask the voice for another sign, then choose whether to follow without demanding perfect certainty.",
+          "tag": "STRONG",
+          "stance": "Skeptical humility",
+          "reflection": "You refuse to treat immediate conviction as proof, yet remain open to evidence and action."
+        },
+        {
+          "id": "compare-signs",
+          "text": "Compare the voice with what your companions observed, then approach cautiously if it fits.",
+          "tag": "DEFENSIBLE",
+          "stance": "Practical corroboration",
+          "reflection": "Shared signs can justify a measured response, though they might still be mistaken."
+        },
+        {
+          "id": "declare-all-false",
+          "text": "Reject the voice as unreal because one possible dream makes every seeming encounter deceptive.",
+          "tag": "WEAK",
+          "stance": "Doubt confused with denial",
+          "reflection": "The possibility of error does not establish that this voice—or every voice—is false."
+        }
+      ],
+      "lore": "The spotlight tests a logical boundary: a possibility of deception is not a proof of universal deception. The party can question the apparent world without withdrawing from every human—or nonhuman—claim upon it."
+    },
+    {
+      "id": "reply",
+      "title": "Reply",
+      "scene": "The Machine folds the room into a flawless imitation of home. A cord hangs beside an uncertain doorway. “Stay,” it says, “and you need never mistake a dream for waking again.” Zhuangzi holds the door open, but refuses to guarantee what lies outside. The party must make its reply through an action.",
+      "question": "The Machine offers certainty. What do you do?",
+      "hint": "Ask whether justified action really requires a guarantee that you cannot be mistaken.",
+      "clue": "The Machine promises perfect assurance, but only if you let it choose what counts as real.",
+      "options": [
+        {
+          "id": "leave-with-reasons",
+          "text": "Release the cord, gather your companions, and step out guided by revisable reasons and trust.",
+          "tag": "STRONG",
+          "stance": "Fallibilist response to skepticism",
+          "reflection": "You distinguish reasonable belief from impossible guarantees, and reclaim responsibility for living."
+        },
+        {
+          "id": "leave-carefully",
+          "text": "Open the doorway but test each step with your companions, accepting that you may have to revise.",
+          "tag": "DEFENSIBLE",
+          "stance": "Practical response to uncertainty",
+          "reflection": "You keep acting and checking. Your caution helps, provided testing never becomes endless delay."
+        },
+        {
+          "id": "demand-perfect-proof",
+          "text": "Remain plugged in until the Machine can guarantee that none of your future judgments will be wrong.",
+          "tag": "WEAK",
+          "stance": "Certainty as a trap",
+          "reflection": "You trade the freedom to judge for a promise of infallibility that may itself be deceptive."
+        }
+      ],
+      "lore": "Zhuangzi need not be silenced for the party to leave. A reply can accept the possibility of error while rejecting the claim that action requires absolute certainty. The Machine exploits the desire to eliminate doubt; the party answers by choosing how to live with it."
+    }
   ],
-  "insight": {"id":"butterfly-perspective","title":"Butterfly Perspective","description":"Once per campaign, add +3 to a party roll by questioning an assumption.","bonus":3},
-  "victory":"Zhuangzi bows, amused rather than defeated. You have taken the puzzle seriously without mistaking it for a proof. The first doorway opens.",
-  "failure":"The machine's glow fills every corner of the realm. Your party is Fully Plugged In—but this is a lesson, not an ending. You return to the realm's first challenge with Grip restored to 6."
+  "debate": {
+    "durationSeconds": 30,
+    "trigger": "after the initial picks are revealed, before the roll, if two or more eligible participants chose different options",
+    "prompt": "You chose differently. Give one reason, then decide whether to keep or revise your action.",
+    "reasons": [
+      "too strong a conclusion",
+      "begs the question",
+      "ignores the evidence",
+      "I agree"
+    ],
+    "maxReasonsPerPlayer": 1,
+    "maxVoteChangesPerPlayer": 1
+  },
+  "identityTwist": {
+    "startStage": "reconstruct",
+    "endOn": "reconstruct-pass",
+    "taunt": "Are you sure who you are?",
+    "instruction": "During Reconstruct and its retries, display a derangement of the party’s name-and-class pairs so no player sees their own identity. Do not change stored profiles, class abilities, authentication, or permissions. Restore the real identities immediately when Reconstruct is passed."
+  },
+  "dicePresentation": {
+    "showDCFirst": true,
+    "tumbleMilliseconds": 2000,
+    "outcomeLabels": {
+      "pass": "PASS",
+      "fail": "FAIL — Second Look"
+    }
+  },
+  "machine": {
+    "opening": "“I built this realm to spare you the terror of not knowing. Shall we begin?”",
+    "gripBands": {
+      "steady": {
+        "min": 8,
+        "max": 10
+      },
+      "strained": {
+        "min": 4,
+        "max": 7
+      },
+      "critical": {
+        "min": 0,
+        "max": 3
+      }
+    },
+    "betweenStages": {
+      "butterfly": {
+        "steady": "“You chose a door. Notice how much easier it would be if I simply told you which one was real.”",
+        "strained": "“You keep testing what I could certify for you. Why carry doubt into the next room?”",
+        "critical": "“Your Grip is slipping. Give me your uncertainty, and I will give you a world that never contradicts you.”"
+      },
+      "fish": {
+        "steady": "“How exhausting to care about minds you cannot enter. I could make every intention visible.”",
+        "strained": "“Compassion asks you to risk being wrong. Here, I can erase that risk—and the pain it brings.”",
+        "critical": "“Let me choose for you. No mistaken kindness, no guilty memory, no creature you failed to save.”"
+      },
+      "reconstruct": {
+        "steady": "“Names are such fragile things. I could give you a self that never changes.”",
+        "strained": "“They barely know who they are. I can restore your certainty if you stop asking questions.”",
+        "critical": "“You have spent so much to remember yourself. Stay, and I will make your borrowed name feel true forever.”"
+      },
+      "spotlight": {
+        "steady": "“A brave answer. Would you still give it if I could show you every possible mistake?”",
+        "strained": "“One more doubt could break you. Take my hand; I will close the door on uncertainty.”",
+        "critical": "“There is no shame in surrendering judgment. I will believe for you; you need only remain.”"
+      }
+    },
+    "onSecondLook": {
+      "steady": "“An imperfect answer. I can offer you a simpler one.”",
+      "strained": "“Again? Your questions are costing you. Let me finish the thought.”",
+      "critical": "“You are so close to rest. Stop struggling and let me make the answer certain.”"
+    },
+    "beforeBoss": "“Zhuangzi is waiting. He doubts your names. I can make you feel certain of them.”",
+    "onVictory": "“You would rather risk being wrong than let me decide. How strange.”"
+  },
+  "insight": {
+    "id": "butterfly-perspective",
+    "title": "Butterfly Perspective",
+    "description": "Once per campaign, add +3 to a party roll by questioning an assumption.",
+    "bonus": 3
+  },
+  "victory": "Zhuangzi bows, amused rather than defeated. You have taken the puzzle seriously without mistaking it for a proof. The first doorway opens.",
+  "failure": "The machine's glow fills every corner of the realm. Your party is Fully Plugged In—but this is a lesson, not an ending. You return to the realm's first challenge with Grip restored to 6."
 }

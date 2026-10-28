@@ -253,6 +253,10 @@ async function enterRoom(code) {
 }
 
 function renderRoom(room) {
+  const game = room.game || {};
+  const twistActive = game.stageIndex === 2 &&
+    !["lore", "realm-complete"].includes(game.phase) &&
+    !(game.phase === "result" && game.success === true);
   const players = Object.entries(room.players || {}).map(([uid, player]) => ({ uid, ...player }));
   players.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
   const isHost = room.hostUid === currentUser.uid;
@@ -260,7 +264,9 @@ function renderRoom(room) {
   $("room-code-label").textContent = currentRoomCode;
   $("campaign-label").textContent = room.campaign === "full" ? "Full Campaign" : "Short Quest";
   $("player-count").textContent = `${players.length} / ${MAX_PLAYERS} players`;
-  $("host-label").textContent = isHost ? "You are the host" : `Host: ${room.players?.[room.hostUid]?.name || "transferring…"}`;
+  const hostDisplayUid = twistActive ? (game.identityMask?.[room.hostUid] || room.hostUid) : room.hostUid;
+  $("host-label").textContent = isHost ? "You are the host" : `Host: ${room.players?.[hostDisplayUid]?.name || "transferring…"}`;
+  document.querySelector(".class-picker").hidden = room.status === "started";
   $("room-status").textContent = room.status === "started" ? "Realm I is underway." : "Waiting for the party to assemble…";
   $("start-game").hidden = !isHost || room.status === "started";
   $("start-game").disabled = !isHost || players.length < 2;
@@ -270,6 +276,9 @@ function renderRoom(room) {
   const list = $("player-list");
   list.replaceChildren();
   players.forEach((player) => {
+    // Visual identity swap only: no changes to Firebase player names, classes or auth.
+    const identityUid = twistActive ? (game.identityMask?.[player.uid] || player.uid) : player.uid;
+    const displayed = room.players?.[identityUid] || player;
     const li = document.createElement("li");
     li.className = "player-card";
     const main = document.createElement("div");
@@ -277,14 +286,14 @@ function renderRoom(room) {
     const icon = document.createElement("span");
     icon.className = "player-icon";
     icon.setAttribute("aria-hidden", "true");
-    icon.textContent = CLASSES[player.class]?.icon || "◇";
+    icon.textContent = CLASSES[displayed.class]?.icon || "◇";
     const details = document.createElement("div");
     const name = document.createElement("div");
     name.className = "player-name";
-    name.textContent = player.name || "Player";
+    name.textContent = displayed.name || "Player";
     const cls = document.createElement("div");
     cls.className = "player-class";
-    cls.textContent = classLabel(player.class);
+    cls.textContent = classLabel(displayed.class);
     details.append(name, cls);
     main.append(icon, details);
     const badges = document.createElement("div");
