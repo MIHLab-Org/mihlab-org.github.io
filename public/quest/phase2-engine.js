@@ -1,14 +1,20 @@
-// Realm I — host-coordinated, Firebase Spark-friendly gameplay.
+// Realm I + II — host-coordinated, Firebase Spark-friendly gameplay.
 // All authoritative phase transitions, d20 values and timers are host writes at /game.
 // Players may write only their own /ballots, /abilities, and /whispers requests.
 // The host is not a trusted server; ballot contents are readable to all room members in Firebase.
-export function makeEngine({ db, api, getContext, content, notice }) {
+export function makeEngine({ db, api, getContext, content, realm2Content, notice }) {
   const {ref, set, update} = api;
   const el = id => document.getElementById(id);
-  const stages = [
-    ...content.encounters.map((x, i) => ({...x, kind: 'encounter', index: i})),
-    ...content.bossPhases.map((x, i) => ({...x, kind: 'boss', index: i}))
-  ];
+  const realms = [content, realm2Content].filter(Boolean);
+  const stages = realms.flatMap((chapter, chapterIndex) => [
+    ...chapter.encounters.map((x, i) => ({...x, kind:'encounter', localIndex:i, realm:chapterIndex+1})),
+    ...chapter.bossPhases.map((x, i) => ({...x, kind:'boss', localIndex:i, realm:chapterIndex+1}))
+  ]).map((stage,index) => ({...stage,index}));
+  const chapterFor = g => realms[(stageFor(g)?.realm || g?.realm || 1)-1] || content;
+  const chapterStart = realm => stages.findIndex(s => s.realm===realm);
+  const chapterEnd = realm => stages.reduce((last, s, i) => s.realm===realm ? i : last, -1);
+  const isSpotlight = stage => stage?.kind==='boss' && stage.localIndex===1;
+  const hasIdentityTwist = stage => stage?.realm===1 && stage.kind==='boss' && stage.localIndex===0;
   const rand = n => Math.floor(Math.random() * n);
   const roll = () => 1 + rand(20);
   const path = (suffix = '') => ref(db, `rooms/${getContext().code}/game${suffix ? '/' + suffix : ''}`);
@@ -33,18 +39,19 @@ export function makeEngine({ db, api, getContext, content, notice }) {
     const startedAt=Date.now();
     const eligible=getMembers();
     const result={
-      phase:'choice', schemaVersion:1, startedAt, realm:1, stageIndex:index, attempt,
-      roundId:`${index}-${attempt}-${startedAt}-${rand(100000)}`, deadline:startedAt+45000,
+      phase:'choice', schemaVersion:1, startedAt, realm:stage.realm, stageIndex:index, attempt,
+      roundId:`${index}-${attempt}-${startedAt}-${rand(100000)}`,
+      deadline:startedAt+(stage.selectionSeconds || (stage.kind==='boss'?45:60))*1000,
       encounters:{activeId:stage.id}, votes:{}, diceResults:{}, grip:{value:grip},
       insightCards:cards || {}, usedCards:usedCards || {}, abilities:abilities || {}, bossWins,
-      spotlightUid:index===3?(eligible[rand(eligible.length)] || getContext().uid):'',
+      spotlightUid:isSpotlight(stage)?(eligible[rand(eligible.length)] || getContext().uid):'',
       whispers:{}, rollBonus:0, rerollUsed:false, eliminated:false, hintVisible:attempt>0,
       optionOrder:shuffle(stage.options.map((_,i)=>i))
     };
-    if(index===2) result.identityMask=oldMask || identityMask();
+    if(hasIdentityTwist(stage)) result.identityMask=oldMask || identityMask();
     return result;
   }
-  function eligiblePlayers(g){return g.stageIndex===3?[g.spotlightUid]:getMembers();}
+  function eligiblePlayers(g){return isSpotlight(stageFor(g))?[g.spotlightUid]:getMembers();}
   function savedVote(room,g,uid){const b=room.ballots?.[uid]; return b?.roundId===g.roundId ? b.choice : -1;}
   function stageVotes(room,g){return Object.fromEntries(eligiblePlayers(g).map(uid=>[uid,savedVote(room,g,uid)]));}
   const consensus = votes => {
@@ -52,15 +59,16 @@ export function makeEngine({ db, api, getContext, content, notice }) {
     return values.length>0 && new Set(values).size===1 && values.length===Object.values(votes).length;
   };
   const disagreement = votes => new Set(Object.values(votes).filter(x=>x>=0)).size>1;
-  const band = grip => grip>=content.machine.gripBands.steady.min?'steady':grip>=content.machine.gripBands.strained.min?'strained':'critical';
   function machineText(g,stage){
-    if(g.phase==='realm-complete')return content.machine.onVictory;
+    const chapter=chapterFor(g);
+    if(g.phase==='realm-complete')return chapter.machine.onVictory;
     if(g.phase==='plugged')return '';
-    const level=band(g.grip?.value??10);
-    if(g.phase==='lore')return content.machine.betweenStages[stage?.id]?.[level] || '';
-    if(g.phase==='choice' && (g.attempt||0)>0)return content.machine.onSecondLook[level];
-    if(g.phase==='choice' && g.stageIndex===2)return content.machine.beforeBoss;
-    if(g.phase==='choice' && g.stageIndex===0)return content.machine.opening;
+    const grip=g.grip?.value??10;
+    const level=grip>=chapter.machine.gripBands.steady.min?'steady':grip>=chapter.machine.gripBands.strained.min?'strained':'critical';
+    if(g.phase==='lore')return chapter.machine.betweenStages[stage?.id]?.[level] || '';
+    if(g.phase==='choice' && (g.attempt||0)>0)return chapter.machine.onSecondLook[level];
+    if(g.phase==='choice' && stage?.kind==='boss' && stage.localIndex===0)return chapter.machine.beforeBoss;
+    if(g.phase==='choice' && stage?.localIndex===0)return chapter.machine.opening;
     return '';
   }
   async function begin() {
@@ -85,13 +93,13 @@ export function makeEngine({ db, api, getContext, content, notice }) {
   }
   async function giveReason(reason) {
     const {room,uid,code}=getContext(),g=room?.game;
-    if(g?.phase!=='debate'||Date.now()>g.debateDeadline||!content.debate.reasons.includes(reason))return;
+    if(g?.phase!=='debate'||Date.now()>g.debateDeadline||!chapterFor(g).debate.reasons.includes(reason))return;
     if(room.whispers?.[uid]?.roundId===g.roundId)return;
     await set(ref(db,`rooms/${code}/whispers/${uid}`),{roundId:g.roundId,reason});
   }
   async function whisper(emoji) {
     const {room,uid,code}=getContext(),g=room?.game;
-    if(g?.phase!=='choice'||g.stageIndex!==3||uid===g.spotlightUid||Date.now()>g.deadline)return;
+    if(g?.phase!=='choice'||!isSpotlight(stageFor(g))||uid===g.spotlightUid||Date.now()>g.deadline)return;
     if(room.whispers?.[uid]?.roundId===g.roundId)return;
     await set(ref(db,`rooms/${code}/whispers/${uid}`),{roundId:g.roundId,emoji});
   }
@@ -110,8 +118,10 @@ export function makeEngine({ db, api, getContext, content, notice }) {
   }
   async function useCard() {
     const {room,uid,code}=getContext(),g=room?.game;
-    if(g?.phase!=='choice'||!g.insightCards?.[content.insight.id]||g.usedCards?.[content.insight.id])return;
-    await set(ref(db,`rooms/${code}/abilities/${uid}`),{roundId:g.roundId,type:'insight'});
+    if(g?.phase!=='choice')return;
+    const cardId=Object.keys(g.insightCards||{}).find(id=>g.insightCards[id]&&!g.usedCards?.[id]);
+    if(!cardId)return;
+    await set(ref(db,`rooms/${code}/abilities/${uid}`),{roundId:g.roundId,type:'insight',cardId});
   }
   function prepareRoll(room,g){
     return {phase:'ready-to-roll', votes:stageVotes(room,g), dc:g.stageIndex===0?10:12};
@@ -126,7 +136,7 @@ export function makeEngine({ db, api, getContext, content, notice }) {
     const dc=g.dc || (g.stageIndex===0?10:12);
     const die=roll(),total=die+modifier+(g.rollBonus||0),success=total>=dc;
     return {phase:'rolling',votes,dc,die,total,modifier,success,
-      rollRevealAt:Date.now()+(content.dicePresentation.tumbleMilliseconds||2000),
+      rollRevealAt:Date.now()+(chapterFor(g).dicePresentation.tumbleMilliseconds||2000),
       [`diceResults/${g.roundId}`]:{die,total,modifier,dc,success,at:Date.now()}};
   }
   let syncing=false;
@@ -144,15 +154,16 @@ export function makeEngine({ db, api, getContext, content, notice }) {
       if(request.type==='pragmatist'&&klass==='pragmatist'&&g.phase==='result'&&!g.success&&!g.rerollUsed){
         const die=roll(),total=die+g.modifier+(g.rollBonus||0),success=total>=g.dc;
         await update(path(),{phase:'rolling',rerollUsed:true,die,total,success,
-          rollRevealAt:Date.now()+(content.dicePresentation.tumbleMilliseconds||2000),
+          rollRevealAt:Date.now()+(chapterFor(g).dicePresentation.tumbleMilliseconds||2000),
           [`abilities/${uid}`]:true,[`diceResults/${g.roundId}-reroll`]:{die,total,dc:g.dc,success,at:Date.now()}});
       }else if(g.phase==='choice' && Date.now()<g.deadline && (request.type===klass || request.type==='insight')){
         const changes={[`abilities/${uid}`]:true};
         if(klass==='skeptic')changes.eliminated=true;
         if(klass==='empiricist')changes.clueVisible=true;
         if(klass==='rationalist')changes.rollBonus=(g.rollBonus||0)+3;
-        if(request.type==='insight'&&g.insightCards?.[content.insight.id]&&!g.usedCards?.[content.insight.id]){
-          changes.rollBonus=(g.rollBonus||0)+3;changes[`usedCards/${content.insight.id}`]=true;
+        if(request.type==='insight'&&request.cardId&&g.insightCards?.[request.cardId]&&!g.usedCards?.[request.cardId] &&
+          realms.some(chapter=>chapter.insight.id===request.cardId)){
+          changes.rollBonus=(g.rollBonus||0)+3;changes[`usedCards/${request.cardId}`]=true;
         }
         await update(path(),changes);
       }
@@ -166,7 +177,7 @@ export function makeEngine({ db, api, getContext, content, notice }) {
       const votes=stageVotes(room,g);
       if(disagreement(votes)){
         await update(path(),{phase:'debate',votes,debateStartedAt:Date.now(),
-          debateDeadline:Date.now()+(content.debate.durationSeconds||30)*1000});
+          debateDeadline:Date.now()+(chapterFor(g).debate.durationSeconds||30)*1000});
       } else {
         await update(path(),prepareRoll(room,g));
       }
@@ -183,6 +194,10 @@ export function makeEngine({ db, api, getContext, content, notice }) {
   async function next() {
     if(!isHost())return;
     const g=getContext().room?.game;if(!g)return;
+    if(g.phase==='realm-complete' && g.realm<realms.length){
+      await set(path(),newStage(chapterStart(g.realm+1),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards));
+      return;
+    }
     if(g.phase==='ready-to-roll'){
       await update(path(),makeRoll(getContext().room,g));
       return;
@@ -192,20 +207,22 @@ export function makeEngine({ db, api, getContext, content, notice }) {
         const grip=Math.max(0,(g.grip?.value??10)-2);
         if(grip===0){
           const abilities=Object.fromEntries(Object.keys(getContext().room.players||{}).map(uid=>[uid,false]));
-          await set(path(),{...newStage(0,6,abilities,g.insightCards||{},g.usedCards||{}),phase:'plugged',failureText:content.failure});
+          await set(path(),{...newStage(chapterStart(g.realm||1),6,abilities,g.insightCards||{},g.usedCards||{}),phase:'plugged',failureText:chapterFor(g).failure});
           return;
         }
         await set(path(),newStage(g.stageIndex,grip,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask));
         return;
       }
-      const cards=g.stageIndex===0?{...(g.insightCards||{}),[content.insight.id]:true}:g.insightCards||{};
-      await update(path(),{phase:'lore',insightCards:cards,bossWins:g.stageIndex>=2?(g.bossWins||0)+1:(g.bossWins||0)});
+      const stage=stageFor(g),chapter=chapterFor(g);
+      const cards=stage.kind==='encounter'&&stage.localIndex===0?
+        {...(g.insightCards||{}),[chapter.insight.id]:true}:g.insightCards||{};
+      await update(path(),{phase:'lore',insightCards:cards,bossWins:stage.kind==='boss'?(g.bossWins||0)+1:(g.bossWins||0)});
       return;
     }
     if(g.phase==='plugged'){await update(path(),{phase:'choice'});return;}
     if(g.phase!=='lore')return;
-    if(g.stageIndex===4){
-      await update(path(),{phase:'realm-complete',insightCards:{...(g.insightCards||{}),[content.insight.id]:true},completedAt:Date.now()});return;
+    if(g.stageIndex===chapterEnd(g.realm||1)){
+      await update(path(),{phase:'realm-complete',completedAt:Date.now()});return;
     }
     await set(path(),newStage(g.stageIndex+1,g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,g.bossWins||0));
   }
@@ -213,12 +230,12 @@ export function makeEngine({ db, api, getContext, content, notice }) {
     const node=document.createElement(tag);if(cls)node.className=cls;node.textContent=text;target.append(node);return node;
   }
   function displayName(room,g,uid){
-    const mask=g.stageIndex===2 && !(g.phase==='lore'||g.phase==='realm-complete'||(g.phase==='result'&&g.success)) && g.identityMask;
+    const mask=hasIdentityTwist(stageFor(g)) && !(g.phase==='lore'||g.phase==='realm-complete'||(g.phase==='result'&&g.success)) && g.identityMask;
     const showUid=mask?.[uid] || uid;
     return room.players?.[showUid]?.name || 'Player';
   }
   function render(room) {
-    const g=room.game||{},stage=stageFor(g),panel=el('game-panel');
+    const g=room.game||{},stage=stageFor(g),chapter=chapterFor(g),panel=el('game-panel');
     panel.hidden=room.status!=='started'||g.phase==='lobby'||g.phase==='phase1-complete';
     if(panel.hidden)return;
     const {uid}=getContext(),host=isHost(),result=g.phase==='result',lore=g.phase==='lore',
@@ -226,16 +243,19 @@ export function makeEngine({ db, api, getContext, content, notice }) {
     const eligible=eligiblePlayers(g).includes(uid);
     const myBallot=room.ballots?.[uid];const already=myBallot?.roundId===g.roundId;
     panel.dataset.phase=g.phase;
-    el('game-heading').textContent=complete?'Realm I complete':content.realm;
+    panel.dataset.realm=String(g.realm||1);
+    el('game-heading').textContent=complete?`${chapter.realm} complete`:chapter.realm;
     el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}`:'Reset';
     el('game-grip').textContent=`Grip: ${g.grip?.value??10}/10`;
     el('game-conviction').textContent=`Boss Conviction: ${Math.max(0,3-(g.bossWins||0))}/3`;
+    el('game-conviction').hidden=stage?.kind!=='boss';
     el('game-timer').textContent=g.phase==='choice'?`${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}s`:
       debating?`Debate ${Math.max(0,Math.ceil((g.debateDeadline-Date.now())/1000))}s`:'—';
-    el('game-scene').textContent=complete?content.victory:plugged?content.failure:stage?.scene||'';
-    el('game-question').textContent=complete?'Insight unlocked: '+content.insight.title:stage?.question||'';
-    el('game-identity-taunt').hidden=!(g.stageIndex===2 && !lore && !(result&&g.success));
-    el('game-identity-taunt').textContent=content.identityTwist.taunt;
+    const chapterIntro=stage?.kind==='encounter' && stage.localIndex===0 && !g.attempt && chapter.opening ? chapter.opening+'\n\n' : '';
+    el('game-scene').textContent=complete?chapter.victory:plugged?chapter.failure:chapterIntro+(stage?.scene||'');
+    el('game-question').textContent=complete?`${chapter.realm} complete`:stage?.question||'';
+    el('game-identity-taunt').hidden=!(hasIdentityTwist(stage) && !lore && !(result&&g.success));
+    el('game-identity-taunt').textContent=chapter.identityTwist?.taunt||'';
     el('game-machine').textContent=machineText(g,stage);
     el('game-machine').hidden=!machineText(g,stage);
     const choices=el('game-choices');choices.replaceChildren();
@@ -253,13 +273,13 @@ export function makeEngine({ db, api, getContext, content, notice }) {
         choices.append(button);
       }
     }
-    el('game-instructions').textContent=complete?'Realm I is finished.':plugged?'Host: continue to retry Realm I.':
+    el('game-instructions').textContent=complete?(g.realm<realms.length?`The host can open ${realms[g.realm].realm}.`:`${chapter.realm} is finished. The next realm is not yet available.`):plugged?`Host: continue to retry ${chapter.realm}.`:
       lore?'Review each stance and the consequence. The host advances.':
       result?`The check ${g.success?'passed':'failed'}. The host advances after any reroll.`:
       rolling?`Difficulty Class ${g.dc}. The d20 is tumbling…`:
       ready?`DC ${g.dc} is set. The host may now roll the d20.`:
-      debating?content.debate.prompt:
-      g.stageIndex===3&&!eligible?`Spotlight: ${displayName(room,g,g.spotlightUid)} answers. Send one whisper.`:
+      debating?chapter.debate.prompt:
+      isSpotlight(stage)&&!eligible?`Spotlight: ${displayName(room,g,g.spotlightUid)} answers. Send one whisper.`:
       already?'Your action is locked until the party reveal.':'Choose what your adventurer does.';
     // Publicly reveal initial choices on debate, final choices during the roll and afterward.
     const reveal=el('game-reveal');reveal.replaceChildren();
@@ -279,7 +299,7 @@ export function makeEngine({ db, api, getContext, content, notice }) {
       for(const [player,v] of reasons)addText(debate,'p','debate-reason',`${displayName(room,g,player)}: ${v.reason}`);
       if(room.whispers?.[uid]?.roundId!==g.roundId){
         const row=addText(debate,'div','reason-buttons','');
-        for(const reason of content.debate.reasons){
+        for(const reason of chapter.debate.reasons){
           const b=addText(row,'button','reason-button',reason);b.disabled=Date.now()>g.debateDeadline;
           b.addEventListener('click',()=>giveReason(reason).catch(e=>notice('Reason was not saved: '+e.message,'error')));
         }
@@ -311,7 +331,8 @@ export function makeEngine({ db, api, getContext, content, notice }) {
         addText(card,'p','',option.reflection);
       }
       addText(lorePanel,'p','lore-summary',stage?.lore||'');
-      if(g.stageIndex===0)addText(lorePanel,'p','insight-awarded',`Insight earned: ${content.insight.title} — ${content.insight.description}`);
+      if(stage?.kind==='encounter' && stage.localIndex===0)
+        addText(lorePanel,'p','insight-awarded',`Insight earned: ${chapter.insight.title} — ${chapter.insight.description}`);
     }
     const abilities=el('game-abilities');abilities.replaceChildren();
     if(g.phase==='choice' && stage){
@@ -321,8 +342,10 @@ export function makeEngine({ db, api, getContext, content, notice }) {
         const b=addText(abilities,'button','quiet','Use class ability');
         b.addEventListener('click',()=>ability().catch(e=>notice(e.message,'error')));
       }
-      if(g.insightCards?.[content.insight.id]&&!g.usedCards?.[content.insight.id]){
-        const b=addText(abilities,'button','quiet',`Use Insight: ${content.insight.title} (+3)`);
+      const cardId=Object.keys(g.insightCards||{}).find(id=>g.insightCards[id]&&!g.usedCards?.[id]);
+      if(cardId){
+        const card=realms.map(c=>c.insight).find(c=>c.id===cardId);
+        const b=addText(abilities,'button','quiet',`Use Insight: ${card?.title||cardId} (+3)`);
         b.addEventListener('click',()=>useCard().catch(e=>notice(e.message,'error')));
       }
     }
@@ -331,7 +354,7 @@ export function makeEngine({ db, api, getContext, content, notice }) {
       b.addEventListener('click',()=>requestReroll().catch(e=>notice(e.message,'error')));
     }
     const whispers=el('game-whispers');whispers.replaceChildren();
-    if(g.phase==='choice'&&g.stageIndex===3&&uid!==g.spotlightUid){
+    if(g.phase==='choice'&&isSpotlight(stage)&&uid!==g.spotlightUid){
       const alreadyWhispered=room.whispers?.[uid]?.roundId===g.roundId;
       for(const emoji of ['💡','🤔','🦋']){
         const b=addText(whispers,'button','whisper-button',`Whisper ${emoji}`);
@@ -339,13 +362,13 @@ export function makeEngine({ db, api, getContext, content, notice }) {
         b.addEventListener('click',()=>whisper(emoji).catch(e=>notice(e.message,'error')));
       }
     }
-    if(g.stageIndex===3){
+    if(isSpotlight(stage)){
       const messages=Object.values(room.whispers||{}).filter(w=>w.roundId===g.roundId&&w.emoji).map(w=>w.emoji).join(' ');
       if(messages)addText(whispers,'p','whisper-display',messages);
     }
-    el('game-next').hidden=!host||!['ready-to-roll','result','lore','plugged'].includes(g.phase);
+    el('game-next').hidden=!host||!(['ready-to-roll','result','lore','plugged'].includes(g.phase) || (complete&&g.realm<realms.length));
     el('game-next').textContent=ready?'Roll d20 (host)':result?(g.success?'Reveal lore (host)':'Second Look (host)'):
-      plugged?'Restart Realm I (host)':lore?'Continue (host)':'Continue (host)';
+      plugged?`Restart ${chapter.realm} (host)`:complete?`Enter ${realms[g.realm]?.realm} (host)`:lore?'Continue (host)':'Continue (host)';
   }
   let lastUiTickPhase='';
   function tick(){

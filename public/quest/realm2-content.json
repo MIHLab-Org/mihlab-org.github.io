@@ -1,0 +1,271 @@
+{
+  "realm": "Realm II — The Search for Certainty",
+  "boss": "René Descartes",
+  "chapterQuestion": "After the skeptical challenge, what could justify a claim to knowledge?",
+  "opening": "The door from Zhuangzi’s garden closes behind you. A corridor of ordinary things appears: a table, a window, a pair of hands. Each is painfully familiar. The Machine whispers, “You learned to act while doubting. Now tell me what you actually know.”",
+  "encounters": [
+    {
+      "id": "ordinary-hall",
+      "title": "The Hall of Ordinary Things",
+      "scene": "A stone corridor ends at a locked gate. On a shelf lie a key, a warm cup, and a note in your own handwriting. A painted figure says: “Perhaps all of these are illusions.” The Machine offers to certify the shelf as real—but only if you surrender the key to its keeper. The gate mechanism is visible; the objects can be examined and handled.",
+      "question": "The gate will close soon. How does the party proceed?",
+      "hint": "Possibility of deception and evidence of deception are different. What gives ordinary claims their standing?",
+      "clue": "The cup leaves a ring on the shelf. Two companions can test the key independently. The Machine will not explain how its certificate works.",
+      "options": [
+        {
+          "id": "cross-check-key",
+          "text": "Test the key together, use it if the evidence holds, and refuse the Machine’s unexplained certificate.",
+          "tag": "STRONG",
+          "stance": "Common-sense knowledge with public checks",
+          "reflection": "You give ordinary evidence its due without treating appearances as impossible to doubt. The Machine’s certificate offers no independently better grounds."
+        },
+        {
+          "id": "trust-ordinary",
+          "text": "Take the familiar key and open the gate, treating your everyday knowledge as more credible than bare doubt.",
+          "tag": "DEFENSIBLE",
+          "stance": "Moorean common sense",
+          "reflection": "Moore’s response takes everyday knowledge seriously: a distant skeptical possibility need not outweigh what you already have good reason to believe."
+        },
+        {
+          "id": "accept-certificate",
+          "text": "Hand over the key for the Machine’s certificate; its assurance settles what your senses cannot establish.",
+          "tag": "WEAK",
+          "stance": "Borrowed infallibility",
+          "reflection": "You replace a fallible source with an unexplained authority. A promise to certify reality supplies no reason to trust the certifier."
+        },
+        {
+          "id": "reject-every-object",
+          "text": "Leave the key untouched and wait; because the shelf could be illusory, none of its objects can be known.",
+          "tag": "WEAK",
+          "stance": "Possibility mistaken for defeat",
+          "reflection": "The mere possibility of deception does not, without more argument, demonstrate that all ordinary justification has failed."
+        }
+      ],
+      "lore": "G. E. Moore famously appealed to ordinary knowledge, such as knowing that he has hands, in response to skepticism. His move does not automatically persuade the skeptic: it contests which premise is better supported. The party learns to distinguish a possible error from a reason to abandon everyday knowledge.",
+      "selectionSeconds": 60
+    },
+    {
+      "id": "workshop",
+      "title": "The Workshop of Revisable Maps",
+      "scene": "The path leads to a flooded workshop. Three maps of the exit hang above a broken pump. One map is beautifully precise but has never been tested. A second has survived many trials but leaves some passages blank. A third is the Machine’s living map, which changes its markings whenever anyone questions it. Water is rising; the party must choose a route and save the workshop.",
+      "question": "The water reaches your ankles. What do you do?",
+      "hint": "A belief can be responsible without being beyond revision. But success alone does not make every claim true.",
+      "clue": "The tested map shows a dry service passage; its blank areas are marked honestly. The living map cannot be checked against past failures.",
+      "options": [
+        {
+          "id": "tested-revisable",
+          "text": "Follow the tested map, mark new obstacles as they appear, and revise the route when evidence changes.",
+          "tag": "STRONG",
+          "stance": "Fallibilist inquiry",
+          "reflection": "Repeated checks justify trust without guaranteeing success. You keep the map answerable to evidence rather than declaring it immune to correction."
+        },
+        {
+          "id": "experiment-route",
+          "text": "Try the service passage in short stages, record what works, and keep a retreat open if needed.",
+          "tag": "DEFENSIBLE",
+          "stance": "Pragmatic experimentation",
+          "reflection": "Consequences guide inquiry and repair, but a successful route alone does not prove every claim printed on the map."
+        },
+        {
+          "id": "perfect-untested",
+          "text": "Choose the flawless-looking map because its completeness leaves no uncertainty for the party to resolve.",
+          "tag": "WEAK",
+          "stance": "Aesthetic certainty",
+          "reflection": "Precision on paper is not a substitute for tested reliability. The appearance of completeness can disguise unsupported assumptions."
+        },
+        {
+          "id": "success-equals-truth",
+          "text": "Use the Machine’s changing map because any path that gets you through must have been true all along.",
+          "tag": "WEAK",
+          "stance": "Truth confused with usefulness",
+          "reflection": "A procedure can work in one setting while resting on false or incomplete claims. Practical success needs interpretation and further testing."
+        }
+      ],
+      "lore": "Fallibilism allows a person to know something while remaining capable of error; pragmatist inquiry emphasizes testing, consequences, and revision. Neither view says that whatever works is automatically true. The workshop rewards beliefs that can answer to evidence and correction, not ones insulated from challenge.",
+      "selectionSeconds": 60
+    }
+  ],
+  "bossPhases": [
+    {
+      "id": "reconstruct",
+      "title": "The Cogito",
+      "scene": "Descartes sits at a desk in a room without windows. The Machine erases the room’s furniture, then the desk, then every remembered journey. “Suppose an extraordinarily powerful deceiver invented everything you seem to see,” Descartes says. “Do not reach for the room. Reach for what this very attempt at deception cannot take away.” Three lanterns hang above an empty page.",
+      "question": "The world has vanished from view. Which lantern do you light?",
+      "hint": "What does the act of doubting itself establish, and how long does that certainty last?",
+      "clue": "Each attempt to deny that thinking is occurring is itself another act of thinking.",
+      "options": [
+        {
+          "id": "thinking-now",
+          "text": "Light the lantern marked THINKING NOW, since even being deceived requires that a thinker exists while thinking.",
+          "tag": "STRONG",
+          "stance": "Cartesian Cogito",
+          "reflection": "The attempt to doubt your existence performs the thinking that establishes it. This immediate insight does not yet prove the body or external world."
+        },
+        {
+          "id": "experience-now",
+          "text": "Light the lantern marked EXPERIENCE, accepting that some conscious activity occurs without identifying its external cause.",
+          "tag": "DEFENSIBLE",
+          "stance": "Minimal first-person certainty",
+          "reflection": "You identify something the deceiver cannot erase from the present experience, though you do not yet articulate the Cogito’s inference about the thinker."
+        },
+        {
+          "id": "self-forever",
+          "text": "Light the lantern marked PERMANENT SELF, because present thought proves you have always existed and always will.",
+          "tag": "WEAK",
+          "stance": "Overextension of the Cogito",
+          "reflection": "The certainty of being a thinker now does not establish an unchanging self across all time."
+        }
+      ],
+      "lore": "For Descartes, while I think, I cannot coherently doubt that I exist as a thinking thing. This is a narrow starting point, not a demonstration that my memories, body, or surroundings are as they seem. The boss tests whether the party keeps the conclusion within its proper limits.",
+      "selectionSeconds": 45
+    },
+    {
+      "id": "spotlight",
+      "title": "The Foundation",
+      "scene": "One player enters a small chamber while the others watch through smoky glass. A brilliant diagram appears, its steps seeming obvious. The Machine declares: “Everything that feels clear is guaranteed true; I can supply a thousand more foundations.” The isolated player can hear one whispered reason from the party. Descartes asks what would entitle anyone to treat the diagram’s apparent clarity as a guarantee.",
+      "question": "Only the chosen player can touch the diagram. What do they do?",
+      "hint": "A vivid sense of obviousness is not itself a proof that the method of judging is infallible.",
+      "clue": "One diagram has a hidden assumption; its conclusion follows only if that assumption is granted. The Machine offers no independent check.",
+      "options": [
+        {
+          "id": "inspect-foundation",
+          "text": "Trace the steps, expose the hidden assumption, and ask what warrants trusting the method before building higher.",
+          "tag": "STRONG",
+          "stance": "Scrutiny of foundations",
+          "reflection": "You distinguish seeing a conclusion vividly from establishing that your method reliably reaches truth. A foundation must support what rests upon it."
+        },
+        {
+          "id": "begin-cogito",
+          "text": "Begin from the Cogito, accept only limited claims it supports, and leave other conclusions open for examination.",
+          "tag": "DEFENSIBLE",
+          "stance": "Cartesian method, carefully limited",
+          "reflection": "The Cogito is a defensible starting point, but it cannot by itself guarantee that every later clear-seeming idea is correct."
+        },
+        {
+          "id": "clarity-guarantees",
+          "text": "Seal the diagram as certain because its steps feel clear, and use that feeling to certify every later claim.",
+          "tag": "WEAK",
+          "stance": "Unwarranted criterion of certainty",
+          "reflection": "The feeling of clarity is being used to establish the reliability of clarity itself. That risks begging the question."
+        }
+      ],
+      "lore": "Descartes seeks a secure foundation for knowledge and appeals to clear and distinct perception; the reliability of that move becomes philosophically contentious, including worries about circular justification. The challenge is not to dismiss reasoning, but to ask what supports its authority.",
+      "selectionSeconds": 45
+    },
+    {
+      "id": "reply",
+      "title": "The World Beyond the Window",
+      "scene": "The last chamber opens onto a bright city. You can hear bells, smell rain, and see people beckoning from a bridge. “Your thinking is certain,” the Machine says. “But who guarantees those people exist? Stay in my sealed room and I will make every sensation perfectly consistent.” Descartes stands beside a window that opens from the inside only.",
+      "question": "The bridge is waiting. What does the party do?",
+      "hint": "Be careful about the gap between certainty of thinking and knowledge of an external world.",
+      "clue": "The view can be tested with several senses and other witnesses, but no such test simply abolishes skeptical possibilities.",
+      "options": [
+        {
+          "id": "test-and-cross",
+          "text": "Open the window, gather converging evidence, and cross while acknowledging that no test removes every possibility of error.",
+          "tag": "STRONG",
+          "stance": "Fallibilist response to the external world",
+          "reflection": "You give reasons for trusting the world while resisting a false guarantee. This is a response to the skeptic, not a Cartesian deduction of the world from the Cogito."
+        },
+        {
+          "id": "argue-for-world",
+          "text": "Examine Descartes’ proposed route beyond the Cogito, then cross only as far as its arguments genuinely support.",
+          "tag": "DEFENSIBLE",
+          "stance": "Cartesian reconstruction",
+          "reflection": "You take the ambition to rebuild knowledge seriously without pretending that the contested bridge from thought to external reality has been secured."
+        },
+        {
+          "id": "choose-sealed-room",
+          "text": "Stay in the sealed room because certain thinking alone shows every outside appearance must be invented.",
+          "tag": "WEAK",
+          "stance": "Skeptical possibility as proof",
+          "reflection": "The Cogito does not establish the external world, but its limits do not establish that the external world is false."
+        }
+      ],
+      "lore": "The Cogito secures the thinker’s existence in the act of thinking, not the existence of every object experienced. Descartes offers further arguments for trustworthy perception, but these remain debated. Other responses defend ordinary knowledge or fallible justification. The party wins by distinguishing a reasonable response from a guarantee it has not earned.",
+      "selectionSeconds": 45
+    }
+  ],
+  "debate": {
+    "durationSeconds": 30,
+    "trigger": "after the initial picks are revealed, before the roll, if eligible players chose differently",
+    "prompt": "Your actions disagree. Name the weakness you see in the reasoning, then keep or revise your choice.",
+    "reasons": [
+      "too strong a conclusion",
+      "begs the question",
+      "ignores the evidence",
+      "I agree"
+    ],
+    "maxReasonsPerPlayer": 1,
+    "maxVoteChangesPerPlayer": 1
+  },
+  "timing": {
+    "encounterSelectionSeconds": 60,
+    "bossSelectionSeconds": 45,
+    "debateSeconds": 30,
+    "advanceWhenAllSubmitted": true,
+    "finalCountdownEmphasisSeconds": 10
+  },
+  "dicePresentation": {
+    "showDCFirst": true,
+    "tumbleMilliseconds": 2000,
+    "outcomeLabels": {
+      "pass": "PASS",
+      "fail": "FAIL — Second Look"
+    }
+  },
+  "machine": {
+    "opening": "“You survived a dream. Admirable. But surviving uncertainty is not the same as knowing. Let me offer you a firmer floor.”",
+    "gripBands": {
+      "steady": {
+        "min": 8,
+        "max": 10
+      },
+      "strained": {
+        "min": 4,
+        "max": 7
+      },
+      "critical": {
+        "min": 0,
+        "max": 3
+      }
+    },
+    "betweenStages": {
+      "ordinary-hall": {
+        "steady": "“A cup, a key, a hand. So ordinary. I could certify them for you.”",
+        "strained": "“The gate opens, but you are still guessing. My certificate would let you stop guessing.”",
+        "critical": "“Your doubt is costing you. Give me the key, and I will take responsibility for what is real.”"
+      },
+      "workshop": {
+        "steady": "“You are willing to revise the map. I could offer one that never needs correcting.”",
+        "strained": "“How many wrong turns before you ask for a guide who cannot be wrong?”",
+        "critical": "“No more trials. No more blame. I will pick every path and call each one certain.”"
+      },
+      "reconstruct": {
+        "steady": "“So you know you are thinking. A small island. Surely you would like a continent.”",
+        "strained": "“You found one certainty and still feel stranded. I can turn it into a whole world.”",
+        "critical": "“Stop rationing certainty. Let me decide what follows, and you will never have to doubt again.”"
+      },
+      "spotlight": {
+        "steady": "“This diagram is beautiful. Does it really need more proof?”",
+        "strained": "“Questioning the foundation will leave you with nothing to stand on. Trust the light.”",
+        "critical": "“I will make every answer feel self-evident. No one will ever see you hesitate again.”"
+      }
+    },
+    "onSecondLook": {
+      "steady": "“A mistake. Even your best reasons can fail. Mine need not.”",
+      "strained": "“Once more? Every doubt takes something from you. I could end this.”",
+      "critical": "“There is only the next mistake, unless you hand the judgment over to me.”"
+    },
+    "beforeBoss": "“Descartes asks for one indubitable truth. I can give you a thousand, if you stop asking where they came from.”",
+    "onVictory": "“You prefer uncertain reasons to guaranteed feelings. So be it. There are more rooms beyond the window.”"
+  },
+  "insight": {
+    "id": "revisable-knowledge",
+    "title": "Revisable Knowledge",
+    "description": "Once per campaign, add +3 to a party roll by exposing an unsupported assumption and proposing an evidence-sensitive revision.",
+    "bonus": 3
+  },
+  "victory": "Descartes lowers his pen. “You have kept what the argument earns, and refused what it has not earned.” Beyond the window, the bridge holds for now. The Machine watches you cross without its guarantee.",
+  "failure": "The Machine draws the curtains and declares the chamber certain. The party is Fully Plugged In—but can try again. Return to the first challenge of this realm with Grip restored to 6."
+}

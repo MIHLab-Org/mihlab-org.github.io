@@ -192,3 +192,18 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8p
 #game-next {background:var(--realm-brass);color:#13252c;}
 @media(max-width:680px){#game-panel{padding:18px;}#game-panel .choice{padding:14px 15px;}#game-panel .reveal{font-size:.9rem;}}
 @media(prefers-reduced-motion:reduce){#game-die.tumbling .die-shape{animation:none;}}
+
+/* Realm II: a candlelit study dissolving into architectural doubt, CSS-only. */
+#game-panel[data-realm="2"] {
+  --accent: #e5c78a;
+  --accent-ink: #241a13;
+  position: relative;
+  background-image:
+    radial-gradient(ellipse at 80% 8%, rgba(225,183,109,.18), transparent 40%),
+    radial-gradient(ellipse at 5% 85%, rgba(91,96,166,.19), transparent 46%),
+    linear-gradient(135deg, rgba(36,27,40,.88), rgba(13,19,32,.97));
+  border-color: rgba(226,187,124,.3);
+}
+#game-panel[data-realm="2"] .machine-voice { border-left-color: #d4af75; }
+#game-panel[data-realm="2"] .realm-eyebrow { color:#e5c78a; }
+#game-panel[data-realm="2"] .roll-outcome { text-shadow:0 0 25px rgba(213,178,121,.35); }

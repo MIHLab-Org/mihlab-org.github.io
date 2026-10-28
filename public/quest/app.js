@@ -94,9 +94,12 @@ async function initialize() {
     const response = await fetch('./realm1-content.json');
     if (!response.ok) throw new Error('Realm I content failed to load');
     const content = await response.json();
+    const realm2Response = await fetch('./realm2-content.json');
+    if (!realm2Response.ok) throw new Error('Realm II content failed to load');
+    const realm2Content = await realm2Response.json();
     engine = makeEngine({ db, api: { ref, set, update, runTransaction },
       getContext: () => ({ room: localRoom, uid: currentUser?.uid, code: currentRoomCode }),
-      content, notice });
+      content, realm2Content, notice });
     notice("Connected. Create a room or join your party.", "success");
   } catch (error) {
     console.error(error);
@@ -254,7 +257,7 @@ async function enterRoom(code) {
 
 function renderRoom(room) {
   const game = room.game || {};
-  const twistActive = game.stageIndex === 2 &&
+  const twistActive = game.realm === 1 && game.stageIndex === 2 &&
     !["lore", "realm-complete"].includes(game.phase) &&
     !(game.phase === "result" && game.success === true);
   const players = Object.entries(room.players || {}).map(([uid, player]) => ({ uid, ...player }));
@@ -267,7 +270,7 @@ function renderRoom(room) {
   const hostDisplayUid = twistActive ? (game.identityMask?.[room.hostUid] || room.hostUid) : room.hostUid;
   $("host-label").textContent = isHost ? "You are the host" : `Host: ${room.players?.[hostDisplayUid]?.name || "transferring…"}`;
   document.querySelector(".class-picker").hidden = room.status === "started";
-  $("room-status").textContent = room.status === "started" ? "Realm I is underway." : "Waiting for the party to assemble…";
+  $("room-status").textContent = room.status === "started" ? `Realm ${game.realm===2?'II':'I'} is underway.` : "Waiting for the party to assemble…";
   $("start-game").hidden = !isHost || room.status === "started";
   $("start-game").disabled = !isHost || players.length < 2;
   $("start-help").hidden = !isHost || room.status === "started";
