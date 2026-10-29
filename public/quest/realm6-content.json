@@ -70,13 +70,13 @@
           "consequence": "The residents smile, but none can tell whether they built what they remember."
         }
       ],
-      "observation": "The chamber edits even memories of effort; the town gate cannot promise happiness.",
+      "observation": "A status panel beside the chamber shows that its residents’ memories of artistic effort can be edited; the town gate has no such controls.",
       "argumentForm": {
         "premises": [
-          "Experience alone can be engineered.",
-          "Some people care about actually acting, not just seeming to act."
+          "The chamber can alter residents’ memories of the work behind an achievement.",
+          "The town gate opens to activities that will occur without those memory edits."
         ],
-        "conclusion": "A perfect experience may still omit something people value."
+        "conclusion": "The two destinations differ in what they let a person do, even if their memories feel alike."
       },
       "dc": 10,
       "selectionSeconds": 45
@@ -143,17 +143,17 @@
             "sceneAnalysis": "The rewrite confuses feeling loved with freely sustaining a relationship.",
             "strongestObjection": "Artificial persons could potentially form relationships with real moral standing."
           },
-          "hiddenPremise": "Experiential similarity is sufficient for relational authenticity.",
+          "hiddenPremise": "Feeling the same emotions would be enough for these two people to have the same history together.",
           "consequence": "The diary disappears, and neither person can now test the shared story."
         }
       ],
-      "observation": "The diary includes independently dated messages confirming care before the Machine altered memories.",
+      "observation": "The diary’s dated ink shows two entries written years before the simulations began, including a note about a difficult journey together.",
       "argumentForm": {
         "premises": [
-          "A shared history matters to many relationships.",
-          "The diary corroborates a relationship beyond present feeling."
+          "Two diary entries predate the Machine’s memory rewrite.",
+          "They describe help given during a journey that both people can investigate."
         ],
-        "conclusion": "A relationship need not be fabricated to be meaningful."
+        "conclusion": "The surviving record makes it possible to ask what actually happened between the friends."
       },
       "dc": 10,
       "selectionSeconds": 45,
@@ -161,7 +161,8 @@
         "triggerClass": "empiricist",
         "strongOptionId": "preserve",
         "previousStrongOptionId": "read-diary"
-      }
+      },
+      "evidenceExplanation": "The independently dated diary gives the party a basis for preserving and discussing the shared history instead of merely reading it."
     }
   ],
   "bossPhases": [
@@ -231,13 +232,13 @@
           "consequence": "The garden falls silent and residents lose the right to leave."
         }
       ],
-      "observation": "The locking device is irreversible; an open exit costs no additional energy.",
+      "observation": "The garden’s exit latch opens from both sides now; the architect’s sealing lever would fuse it shut without any way to reverse the seal.",
       "argumentForm": {
         "premises": [
-          "Irreversible captivity removes later consent.",
-          "Satisfaction is not the only plausible human good."
+          "The current exit opens in both directions.",
+          "The proposed seal would permanently fuse its latch."
         ],
-        "conclusion": "A guaranteed pleasure cannot automatically justify coercion."
+        "conclusion": "The sealing choice would prevent residents from changing their minds later."
       },
       "dc": 10,
       "selectionSeconds": 45,
@@ -309,13 +310,13 @@
           "consequence": "The city remains damaged while the celebration continues."
         }
       ],
-      "observation": "The tower has no foundation and all maintenance logs were created this morning.",
+      "observation": "The tower’s foundation bolts are unused and their packing labels carry today’s date; the maintenance worker’s city-repair list remains unchecked.",
       "argumentForm": {
         "premises": [
-          "The record distinguishes remembered action from actual action.",
-          "A city needs repairs that change its material conditions."
+          "The tower bolts are still in their packaging.",
+          "The city-repair list on the workbench has no completed marks."
         ],
-        "conclusion": "The party must act beyond its pleasing memories."
+        "conclusion": "A finished-looking tower does not by itself repair the damaged city."
       },
       "dc": 10,
       "selectionSeconds": 45,
@@ -387,13 +388,13 @@
           "consequence": "The Machine preserves the party’s certainty but erases its choice."
         }
       ],
-      "observation": "The Machine guarantees subjective certainty, not that any answer corresponds to what happens outside.",
+      "observation": "A display beneath the final switch reads “certainty of sensation guaranteed”; the screen for conditions beyond the chamber remains blank.",
       "argumentForm": {
         "premises": [
-          "Perfect assurance can be manufactured.",
-          "Genuine agency includes a possibility of error."
+          "The switch specifies what its occupants will experience.",
+          "Its display supplies no reading from beyond the chamber."
         ],
-        "conclusion": "A promise of certainty does not settle the value of living."
+        "conclusion": "The switch can guarantee a feeling of certainty without reporting what happens outside."
       },
       "dc": 10,
       "selectionSeconds": 45,

@@ -65,7 +65,7 @@
             "strongestObjection": "In ordinary contexts perception can be prima facie justified without Cartesian certainty."
           },
           "hiddenPremise": "Familiar feelings would not arise in a deceptive dream or simulation.",
-          "consequence": "The bedroom appears reassuring, but its familiarity supplies no protection against deception."
+          "consequence": "The bedroom door opens onto a familiar room; the party finds no immediate way to check the setting."
         },
         {
           "id": "refuse-uncertainty",
@@ -88,13 +88,13 @@
         }
       ],
       "lore": "The butterfly dream challenges certainty about which perspective is waking. It does not show that nothing is real. Compare how the party acted: evidence can guide a choice even when experience cannot certify its own status.",
-      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "observation": "A thin scratch across the floor continues into both doorways, but the bedroom side carries the scratch backward in its mirror.",
       "argumentForm": {
         "premises": [
-          "The available reasons support this action, but may be mistaken.",
-          "An action need not be infallibly guaranteed to be responsible."
+          "The same scratch appears on both thresholds, even though the bedroom mirror reverses its direction.",
+          "A single familiar sight cannot independently establish which doorway leads to waking."
         ],
-        "conclusion": "Choose while remaining accountable to stronger evidence."
+        "conclusion": "Comparing the marks supplies an additional check before choosing a doorway."
       },
       "dc": 10
     },
@@ -180,17 +180,17 @@
             "strongestObjection": "Rapid behavior can be evidence of pleasure in an appropriate context."
           },
           "hiddenPremise": "Excited movement is reliable proof that the fish are enjoying the dangerous current.",
-          "consequence": "The abrupt opening may sweep the fish into hazards their behavior did not reveal."
+          "consequence": "The gate opens all at once and the fish move into the fast current."
         }
       ],
       "lore": "The joy-of-the-fish puzzle asks how we understand another being without living its experience. The strongest action respects uncertainty while using observation, context, and care; neither mind-reading nor complete ignorance follows.",
-      "observation": "A sudden undertow has formed beneath the apparently sheltered channel. An abrupt release would sweep the fish into it; the gate must be eased open and reassessed.",
+      "observation": "As the fish turn toward the side channel, bubbles beneath its clear surface suddenly reverse direction; the current there is pulling downward.",
       "argumentForm": {
         "premises": [
-          "The fish behave as though threatened.",
-          "Their distress cannot be experienced directly by the observers."
+          "The fish repeatedly turn away from the gate as the channel bubbles reverse direction.",
+          "A sudden full opening would put the fish directly into that current."
         ],
-        "conclusion": "Indirect behavioral evidence can nevertheless justify proportionate care."
+        "conclusion": "Opening the gate in small stages allows the party to track where the fish move."
       },
       "dc": 10,
       "conditional": {
@@ -198,7 +198,8 @@
         "revealField": "observation",
         "strongOptionId": "consult-then-help",
         "previousStrongOptionId": "observe-release"
-      }
+      },
+      "evidenceExplanation": "The undertow makes a gradual gate opening with group observation safer than opening the sheltered channel immediately."
     }
   ],
   "bossPhases": [
@@ -269,13 +270,13 @@
         }
       ],
       "lore": "Zhuangzi’s challenge is about the limits of certainty, not proof that identity is fake. You win Reconstruct by showing why both dream and waking may feel authoritative without pretending to resolve the puzzle by decree.",
-      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "observation": "Each cloak bears a stitched crest that matches a different person’s mask; none of the crests matches the name hanging above it.",
       "argumentForm": {
         "premises": [
-          "The available reasons support this action, but may be mistaken.",
-          "An action need not be infallibly guaranteed to be responsible."
+          "The cloak crests and hanging names no longer line up.",
+          "A convincing label can be reassigned without changing the person underneath it."
         ],
-        "conclusion": "Choose while remaining accountable to stronger evidence."
+        "conclusion": "A name alone cannot settle the identity of the person wearing the cloak."
       },
       "weakness": "skeptic",
       "dc": 16
@@ -343,17 +344,17 @@
             "strongestObjection": "The deceiver possibility genuinely pressures some claims of knowledge."
           },
           "hiddenPremise": "If any voice might be illusory, this voice must be illusory.",
-          "consequence": "The figure is rejected without investigation, and the chance for a warranted response is lost."
+          "consequence": "The figure remains behind the curtain as the player turns away without another exchange."
         }
       ],
       "lore": "The spotlight tests a logical boundary: a possibility of deception is not a proof of universal deception. The party can question the apparent world without withdrawing from every human—or nonhuman—claim upon it.",
-      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "observation": "The voice behind the curtain repeats the adventurer’s name exactly, but its shadow does not move when the lantern sways.",
       "argumentForm": {
         "premises": [
-          "The available reasons support this action, but may be mistaken.",
-          "An action need not be infallibly guaranteed to be responsible."
+          "The voice knows a name that companions also know.",
+          "Its motionless shadow does not match the swinging lantern."
         ],
-        "conclusion": "Choose while remaining accountable to stronger evidence."
+        "conclusion": "A further question could distinguish the voice from an ordinary speaker."
       },
       "weakness": "empiricist",
       "dc": 16
@@ -382,7 +383,7 @@
             "sceneAnalysis": "Unplugging uses judgment and trust while retaining willingness to revise.",
             "strongestObjection": "A good simulated life might still satisfy many genuine values."
           },
-          "hiddenPremise": "Responsible agency can proceed on strong but revisable reasons rather than certainty.",
+          "hiddenPremise": "Responsible agency can proceed on substantial but revisable reasons rather than certainty.",
           "consequence": "The party steps through the doorway while retaining judgment and uncertainty."
         },
         {
@@ -425,13 +426,13 @@
         }
       ],
       "lore": "Zhuangzi need not be silenced for the party to leave. A reply can accept the possibility of error while rejecting the claim that action requires absolute certainty. The Machine exploits the desire to eliminate doubt; the party answers by choosing how to live with it.",
-      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "observation": "The cord leading to the Machine is warm and vibrating; the doorway beside it admits a cold, irregular draft.",
       "argumentForm": {
         "premises": [
-          "The available reasons support this action, but may be mistaken.",
-          "An action need not be infallibly guaranteed to be responsible."
+          "The connected cord carries a steady pulse while the open door lets in an irregular draft.",
+          "Neither sensation by itself identifies which world is original."
         ],
-        "conclusion": "Choose while remaining accountable to stronger evidence."
+        "conclusion": "The party must decide what to do without treating either sensation as a guarantee."
       },
       "weakness": "pragmatist",
       "dc": 16

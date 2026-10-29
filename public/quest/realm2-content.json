@@ -86,20 +86,27 @@
             "strongestObjection": "The Machine’s power may make otherwise remote alternatives relevant."
           },
           "hiddenPremise": "An imagined duplicate is a relevant alternative even without evidence one exists.",
-          "consequence": "The party waits while an unsupported possibility prevents it from using the key."
+          "consequence": "The group waits beside the shelf while the gate remains locked."
         }
       ],
       "lore": "G. E. Moore famously appealed to ordinary knowledge, such as knowing that he has hands, in response to skepticism. His move does not automatically persuade the skeptic: it contests which premise is better supported. The party learns to distinguish a possible error from a reason to abandon everyday knowledge.",
       "selectionSeconds": 60,
-      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "observation": "The warm cup leaves a circular ring on the shelf; beside it, the dust holds two key-shaped impressions with different notches, although only one key remains.",
       "argumentForm": {
         "premises": [
-          "The available reasons support this action, but may be mistaken.",
-          "An action need not be infallibly guaranteed to be responsible."
+          "Two different key-shaped impressions sit in the dust beside the cup.",
+          "Only one key remains to be tried against the visible lock."
         ],
-        "conclusion": "Choose while remaining accountable to stronger evidence."
+        "conclusion": "Testing the surviving key against the lock can resolve which set of notches matters."
       },
-      "dc": 10
+      "dc": 10,
+      "conditional": {
+        "triggerClass": "empiricist",
+        "revealField": "observation",
+        "strongOptionId": "cross-check-key",
+        "previousStrongOptionId": "trust-ordinary"
+      },
+      "evidenceExplanation": "The two impressions create a specific reason to compare and test the key before opening the gate."
     },
     {
       "id": "workshop",
@@ -188,13 +195,13 @@
       ],
       "lore": "Fallibilism allows a person to know something while remaining capable of error; pragmatist inquiry emphasizes testing, consequences, and revision. Neither view says that whatever works is automatically true. The workshop rewards beliefs that can answer to evidence and correction, not ones insulated from challenge.",
       "selectionSeconds": 60,
-      "observation": "The service passage has a live electrical flood across its threshold. Short experimental steps there would be dangerous; the previously tested route remains physically open.",
+      "observation": "Blue sparks jump between the flooded service passage and the broken pump, while the tested map’s upper stairway remains dry.",
       "argumentForm": {
         "premises": [
-          "The available reasons support this action, but may be mistaken.",
-          "An action need not be infallibly guaranteed to be responsible."
+          "The service passage touches an energized pool beside the broken pump.",
+          "The upper stairway marked on the tested map is still dry."
         ],
-        "conclusion": "Choose while remaining accountable to stronger evidence."
+        "conclusion": "The party can use the dry stairway while continuing to revise the map as water rises."
       },
       "dc": 10,
       "conditional": {
@@ -202,7 +209,8 @@
         "revealField": "observation",
         "strongOptionId": "tested-revisable",
         "previousStrongOptionId": "experiment-route"
-      }
+      },
+      "evidenceExplanation": "The sparks make the service-passage experiment unsafe, so the dry tested stairway deserves priority."
     }
   ],
   "bossPhases": [
@@ -269,18 +277,18 @@
             "strongestObjection": "Unity and agency may demand an account deeper than a loose bundle of perceptions."
           },
           "hiddenPremise": "A present conscious thought demonstrates a numerically permanent self.",
-          "consequence": "The permanent-self lantern overstates what survives even radical doubt."
+          "consequence": "The lantern illuminates the player’s present thoughts and a drawing of a future self."
         }
       ],
       "lore": "For Descartes, while I think, I cannot coherently doubt that I exist as a thinking thing. This is a narrow starting point, not a demonstration that my memories, body, or surroundings are as they seem. The boss tests whether the party keeps the conclusion within its proper limits.",
       "selectionSeconds": 45,
-      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "observation": "When the furniture vanishes, a new sentence still appears on the empty page each time someone questions whether it is there.",
       "argumentForm": {
         "premises": [
-          "Thinking is occurring now.",
-          "The occurrence of thought need not presuppose a permanent substantial thinker."
+          "A new question forms on the otherwise empty page whenever the party doubts the room.",
+          "The questioning continues even after visible furnishings disappear."
         ],
-        "conclusion": "At minimum, thinking occurs; the further claim about an enduring “I” requires argument."
+        "conclusion": "The occurrence of questioning survives this particular removal of sensory objects."
       },
       "weakness": "rationalist",
       "dc": 16,
@@ -289,7 +297,8 @@
         "revealField": "argumentForm",
         "strongOptionId": "experience-now",
         "previousStrongOptionId": "thinking-now"
-      }
+      },
+      "evidenceExplanation": "The new argument distinguishes the occurrence of thinking from the further claim that a substantial thinker exists."
     },
     {
       "id": "spotlight",
@@ -359,13 +368,13 @@
       ],
       "lore": "Descartes seeks a secure foundation for knowledge and appeals to clear and distinct perception; the reliability of that move becomes philosophically contentious, including worries about circular justification. The challenge is not to dismiss reasoning, but to ask what supports its authority.",
       "selectionSeconds": 45,
-      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "observation": "The brilliant diagram ends with an arrow looping back to the first line, which cites the final line as its authority.",
       "argumentForm": {
         "premises": [
-          "The available reasons support this action, but may be mistaken.",
-          "An action need not be infallibly guaranteed to be responsible."
+          "The diagram’s first claim points to its last claim for support.",
+          "The last claim relies on the first claim being true."
         ],
-        "conclusion": "Choose while remaining accountable to stronger evidence."
+        "conclusion": "The diagram has not supplied an independent reason for trusting its first claim."
       },
       "weakness": "skeptic",
       "dc": 16
@@ -433,18 +442,18 @@
             "strongestObjection": "A skeptic may still doubt whether the evidence reaches the threshold of knowledge."
           },
           "hiddenPremise": "The mere possibility of simulation proves there is no external world.",
-          "consequence": "The sealed room remains closed because an imagined error is treated as proof of falsehood."
+          "consequence": "The party remains behind the window and the city sounds continue on the other side."
         }
       ],
       "lore": "The Cogito secures the thinker’s existence in the act of thinking, not the existence of every object experienced. Descartes offers further arguments for trustworthy perception, but these remain debated. Other responses defend ordinary knowledge or fallible justification. The party wins by distinguishing a reasonable response from a guarantee it has not earned.",
       "selectionSeconds": 45,
-      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "observation": "Rain strikes the window in irregular bursts while the bells outside continue in different rhythms from the Machine’s repeating pulse.",
       "argumentForm": {
         "premises": [
-          "The available reasons support this action, but may be mistaken.",
-          "An action need not be infallibly guaranteed to be responsible."
+          "The rain and bell sounds vary independently of the room’s repeating mechanical pulse.",
+          "The Machine can still claim to reproduce the same pattern from inside."
         ],
-        "conclusion": "Choose while remaining accountable to stronger evidence."
+        "conclusion": "The sounds supply converging evidence without directly settling their source."
       },
       "weakness": "empiricist",
       "dc": 16

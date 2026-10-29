@@ -162,6 +162,13 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     await set(ref(db,`rooms/${code}/whispers/${uid}`),{roundId:g.roundId,emoji});
   }
   const classNames={skeptic:'Interrogate',empiricist:'Observe',rationalist:'Deduce',pragmatist:'Test'};
+  // Before the lore reveal, show only the player's action, never an internal id, tag or philosophical stance.
+  const shortAction = (value, limit=84) => {
+    const text=String(value || '').trim();
+    if(text.length<=limit)return text;
+    const cut=text.slice(0,limit-1).lastIndexOf(' ');
+    return text.slice(0,cut>35?cut:limit-1).trimEnd()+'…';
+  };
   function reject(reason){notice(reason,'error');return false;}
   async function submitAbility(type,optionId='',cardId='',intent='method') {
     const {room,uid,code}=getContext(),g=room?.game,stage=stageFor(g);
@@ -301,14 +308,19 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
       if(klass==='skeptic'&&!opt)message='Interrogate rejected: choose an available option.';
       else if(klass==='pragmatist'&&!opt)message='Test rejected: choose an available option.';
       else{
-        if(klass==='skeptic')detail=`Hidden premise (${opt.stance}): ${opt.hiddenPremise}`;
+        if(klass==='skeptic')detail=`Hidden premise behind “${shortAction(opt.text)}”: ${opt.hiddenPremise}`;
         else if(klass==='empiricist')detail=`Observation: ${stage.observation}`;
         else if(klass==='rationalist')detail=`Argument: ${stage.argumentForm.premises.map((p,i)=>'P'+(i+1)+': '+p).join(' ')} Conclusion: ${stage.argumentForm.conclusion}`;
-        else if(klass==='pragmatist')detail=`Test consequence (${opt.stance}): ${opt.consequence}`;
+        else if(klass==='pragmatist')detail=`If the party tries “${shortAction(opt.text)}”: ${opt.consequence}`;
         changes[`classUses/${uid}/${realmKey}/${stage.kind}`]=true;
         changes[`abilityReveals/${uid}`]={stageIndex:g.stageIndex,realm:g.realm,type:klass,
           detail,optionId:request.optionId||'',at:Date.now()};
-        if(stage.conditional?.triggerClass===klass){changes[`discoveredStages/s${g.stageIndex}`]=true;}
+        if(stage.conditional?.triggerClass===klass){
+          changes[`discoveredStages/s${g.stageIndex}`]=true;
+          const favored=stage.options.find(o=>o.id===stage.conditional.strongOptionId);
+          if(favored)detail+=` New evidence now favors this action: “${favored.text}”. ${stage.evidenceExplanation||''}`;
+          changes[`abilityReveals/${uid}`].detail=detail;
+        }
         if(stage.kind==='boss'&&g.bossWeakness===klass){
           changes[`weaknessStages/s${g.stageIndex}`]=true;
           detail+=` Boss weakness triggered: +5 to the party check.`;
@@ -332,6 +344,14 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
   async function syncOnce() {
     const {room,code}=getContext(),g=room?.game;
     if(!g || !['reading','choice','debate','rolling','result','epilogue-reading','epilogue-vote'].includes(g.phase))return;
+    // Process class methods during READING too; do not defer the reveal until CHOOSING.
+    const pending=Object.entries(room.abilities||{}).filter(([,r])=>r?.roundId===g.roundId);
+    if(pending.length){
+      const [playerUid,request]=pending[0];
+      await processAbility(room,g,playerUid,request);
+      await set(ref(db,`rooms/${code}/abilities/${playerUid}`),null);
+      return;
+    }
     if(g.phase==='reading'||g.phase==='epilogue-reading'){
       const members=getMembers();
       if(Date.now()<g.readingDeadline && !members.every(uid=>g.readingReady?.[uid]))return;
@@ -350,13 +370,6 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         'epilogue/ending':tied?'':(tally.unplug>tally.stay?'unplug':'stay'),
         'epilogue/decisionMode':tied?'pending-tiebreak':'majority',
         'epilogue/decidedAt':tied?0:Date.now()});
-      return;
-    }
-    const pending=Object.entries(room.abilities||{}).filter(([,r])=>r?.roundId===g.roundId);
-    if(pending.length){
-      const [playerUid,request]=pending[0];
-      await processAbility(room,g,playerUid,request);
-      await set(ref(db,`rooms/${code}/abilities/${playerUid}`),null);
       return;
     }
     if(g.phase==='choice'){
@@ -517,7 +530,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     const already=myBallot?.roundId===g.roundId || pending?.roundId===g.roundId;
     panel.dataset.phase=g.phase;
     panel.dataset.realm=String(g.realm||1);
-    el('game-realm-label').textContent=`SHORT QUEST · REALM ${({1:'I',2:'II',6:'VI'})[g.realm]||'I'}`;
+    el('game-realm-label').textContent=`SHORT QUEST · ${String(chapter.realm||'').toUpperCase()}`;
     el('game-heading').textContent=complete?`${chapter.realm} complete`:chapter.realm;
     el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}${stage.kind==='boss'?' · Weakness: '+classNames[g.bossWeakness||stage.weakness]:''}`:'Reset';
     el('game-grip').textContent=`Grip: ${g.grip?.value??10}/10`;
@@ -558,7 +571,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     }
     el('game-instructions').textContent=g.phase==='reading'?'READING: review the situation and use a method. Tap Ready when finished; choices unlock next.':complete?(nextRealm(g.realm)?`The host can open ${realms[realmNumbers.indexOf(nextRealm(g.realm))].realm}.`:'The last challenge is behind you. The host can open the Epilogue.'):plugged?'Host: restart this challenge with Grip 6.':
       lore?'Review each stance and the consequence. The host advances.':
-      result?`The check ${g.success?'passed':'failed'}. The host advances after any reroll.`:
+      result?(!Object.values(g.votes||{}).some(choice=>Number.isInteger(choice)&&choice>=0)?'No answers submitted — the check fails automatically.':`The check ${g.success?'passed':'failed'}. The host advances after any reroll.`):
       rolling?`Difficulty Class ${g.dc}. The d20 is tumbling…`:
       ready?`DC ${g.dc} is set. The host may now roll the d20.`:
       debating?chapter.debate.prompt:
@@ -573,7 +586,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
       for(const [player,choice] of Object.entries(votes)){
         const option=stage?.options[choice];const label=realName(room,player);
         const div=addText(reveal,'div','reveal',`${label}: ${option?.text||'No answer submitted'}`);
-        if((result||lore)&&option){const tag=effectiveTag(stage,option,g);addText(div,'span','stance-tag '+tag.toLowerCase(),tag);}
+        if(lore&&option){const tag=effectiveTag(stage,option,g);addText(div,'span','stance-tag '+tag.toLowerCase(),tag);}
       }
     }
     const debate=el('game-debate');debate.replaceChildren();debate.hidden=!debating;
@@ -594,7 +607,11 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     const rollDisplay=el('game-roll');rollDisplay.textContent='';rollDisplay.hidden=true;
     if(ready||rolling||result||lore){
       addText(dice,'div','dc-display',`DC ${g.dc}`);
-      if(rolling && Date.now()<g.rollRevealAt){
+      const noAnswers=(rolling||result||lore) && !Object.values(g.votes||{}).some(choice=>Number.isInteger(choice)&&choice>=0);
+      if(noAnswers){
+        dice.classList.add('failed');
+        addText(dice,'p','auto-fail','No answers submitted — the check fails automatically.');
+      }else if(rolling && Date.now()<g.rollRevealAt){
         dice.classList.add('tumbling');addText(dice,'div','die-shape','d20');
         addText(dice,'p','roll-caption','Rolling…');
       }else if(Number.isInteger(g.die) && Number.isFinite(g.total) && typeof g.success==='boolean'){
@@ -634,7 +651,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         if(klass==='skeptic'||klass==='pragmatist'){
           addText(abilities,'p','ability-help',`${classNames[klass]}: choose an option to investigate.`);
           for(const opt of stage.options){
-            const b=addText(abilities,'button','quiet',`${classNames[klass]} — ${opt.stance}`);
+            const b=addText(abilities,'button','quiet',`${classNames[klass]} — ${shortAction(opt.text)}`);
             b.addEventListener('click',()=>ability(opt.id).catch(e=>notice('Ability failed: '+e.message,'error')));
           }
         }else{
@@ -664,8 +681,10 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
       addText(logPanel,'h4','','Party method log');
       for(const [,entry] of log)addText(logPanel,'p','',entry.message);
     }
-    if(stage?.conditional && g.discoveredStages?.['s'+g.stageIndex])
-      addText(abilities,'p','ability-hint','New evidence changes which response is best supported.');
+    if(stage?.conditional && g.discoveredStages?.['s'+g.stageIndex]){
+      const favored=stage.options.find(o=>o.id===stage.conditional.strongOptionId);
+      addText(abilities,'p','ability-hint',`New evidence favors: “${favored?.text||''}”. ${stage.evidenceExplanation||''}`);
+    }
     const whispers=el('game-whispers');whispers.replaceChildren();
     if(g.phase==='choice'&&isSpotlight(stage)&&uid!==g.spotlightUid){
       const alreadyWhispered=room.whispers?.[uid]?.roundId===g.roundId;
