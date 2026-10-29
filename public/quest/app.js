@@ -97,9 +97,12 @@ async function initialize() {
     const realm2Response = await fetch('./realm2-content.json');
     if (!realm2Response.ok) throw new Error('Realm II content failed to load');
     const realm2Content = await realm2Response.json();
+    const epilogueResponse = await fetch('./epilogue-content.json');
+    if (!epilogueResponse.ok) throw new Error('Epilogue content failed to load');
+    const epilogueContent = await epilogueResponse.json();
     engine = makeEngine({ db, api: { ref, set, update, runTransaction },
       getContext: () => ({ room: localRoom, uid: currentUser?.uid, code: currentRoomCode }),
-      content, realm2Content, notice });
+      content, realm2Content, epilogueContent, notice });
     notice("Connected. Create a room or join your party.", "success");
   } catch (error) {
     console.error(error);
@@ -270,7 +273,7 @@ function renderRoom(room) {
   const hostDisplayUid = twistActive ? (game.identityMask?.[room.hostUid] || room.hostUid) : room.hostUid;
   $("host-label").textContent = isHost ? "You are the host" : `Host: ${room.players?.[hostDisplayUid]?.name || "transferring…"}`;
   document.querySelector(".class-picker").hidden = room.status === "started";
-  $("room-status").textContent = room.status === "started" ? `Realm ${game.realm===2?'II':'I'} is underway.` : "Waiting for the party to assemble…";
+  $("room-status").textContent = room.status === "started" ? (game.phase?.startsWith("epilogue-") ? "The party has reached the Exit." : `Realm ${game.realm===2?'II':'I'} is underway.`) : "Waiting for the party to assemble…";
   $("start-game").hidden = !isHost || room.status === "started";
   $("start-game").disabled = !isHost || players.length < 2;
   $("start-help").hidden = !isHost || room.status === "started";

@@ -168,6 +168,12 @@
           },
           "rollRevealAt": {
             ".validate": true
+          },
+          "history": {
+            ".validate": true
+          },
+          "epilogue": {
+            ".validate": true
           }
         },
         "$other": {
@@ -175,7 +181,7 @@
         },
         "ballots": {
           "$uid": {
-            ".write": "auth !== null && auth.uid === $uid && root.child('rooms').child($roomCode).child('expiresAt').val() > now && root.child('rooms').child($roomCode).child('players').child(auth.uid).exists() && root.child('rooms').child($roomCode).child('status').val() === 'started' && newData.child('roundId').val() === root.child('rooms').child($roomCode).child('game').child('roundId').val() && ((root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 3 && root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 8) || root.child('rooms').child($roomCode).child('game').child('spotlightUid').val() === auth.uid) && ((root.child('rooms').child($roomCode).child('game').child('phase').val() === 'choice' && (!data.exists() || data.child('roundId').val() !== newData.child('roundId').val()) && !newData.hasChild('revised') && now <= root.child('rooms').child($roomCode).child('game').child('deadline').val()) || (root.child('rooms').child($roomCode).child('game').child('phase').val() === 'debate' && data.exists() && data.child('roundId').val() === newData.child('roundId').val() && !data.hasChild('revised') && newData.child('revised').val() === true && newData.child('choice').val() !== data.child('choice').val() && now <= root.child('rooms').child($roomCode).child('game').child('debateDeadline').val()))",
+            ".write": "auth !== null && auth.uid === $uid && root.child('rooms').child($roomCode).child('expiresAt').val() > now && root.child('rooms').child($roomCode).child('players').child(auth.uid).exists() && root.child('rooms').child($roomCode).child('status').val() === 'started' && newData.child('roundId').val() === root.child('rooms').child($roomCode).child('game').child('roundId').val() && ((root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 3 && root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 8) || root.child('rooms').child($roomCode).child('game').child('spotlightUid').val() === auth.uid) && ((root.child('rooms').child($roomCode).child('game').child('phase').val() === 'choice' && (!data.exists() || data.child('roundId').val() !== newData.child('roundId').val()) && !newData.hasChild('revised') && now <= root.child('rooms').child($roomCode).child('game').child('deadline').val()) || (root.child('rooms').child($roomCode).child('game').child('phase').val() === 'debate' && data.exists() && data.child('roundId').val() === newData.child('roundId').val() && !data.hasChild('revised') && newData.child('revised').val() === true && newData.child('choice').val() !== data.child('choice').val() && now <= root.child('rooms').child($roomCode).child('game').child('debateDeadline').val()) || (root.child('rooms').child($roomCode).child('game').child('phase').val() === 'epilogue-vote' && (!data.exists() || data.child('roundId').val() !== newData.child('roundId').val()) && !newData.hasChild('revised') && (newData.child('choice').val() === 0 || newData.child('choice').val() === 1) && now <= root.child('rooms').child($roomCode).child('game').child('epilogue').child('deadline').val()))",
             ".validate": "newData.hasChildren(['roundId','choice','at']) && newData.child('roundId').isString() && newData.child('choice').isNumber() && newData.child('choice').val() >= 0 && newData.child('choice').val() <= 3 && newData.child('at').isNumber() && newData.child('at').val() <= now + 60000 && (!newData.hasChild('revised') || newData.child('revised').val() === true)",
             "$other": {
               ".validate": false

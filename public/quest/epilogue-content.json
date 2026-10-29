@@ -1,0 +1,37 @@
+{
+  "id": "the-exit",
+  "title": "The Exit",
+  "subtitle": "EPILOGUE · THE LAST CHOICE",
+  "opening": "At the edge of the Machine, a control panel waits beneath two switches. Nothing here promises to tell you which world is the original. The party has learned how to question appearances and how to defend its beliefs. Now no argument can make this decision for you.",
+  "question": "The Machine will honor one choice. What will your party do?",
+  "selectionSeconds": 75,
+  "options": [
+    {"id": "unplug", "label": "UNPLUG", "text": "Release the connection and step into a world whose risks the Machine cannot control."},
+    {"id": "stay", "label": "STAY", "text": "Keep the connection and build a life with the people and possibilities found here."}
+  ],
+  "votingNote": "Choose for yourself. There is no STRONG or WEAK answer here. Once everyone votes, the result is revealed. A tied vote leaves the host to make the final call after hearing the party.",
+  "tiePrompt": "The vote is tied. Both choices have serious reasons behind them. Discuss the disagreement, then the host chooses the party's ending openly.",
+  "endings": {
+    "unplug": {
+      "title": "UNPLUG · The Unscripted Door",
+      "reflection": "The plug slips free. Air brushes your skin; perhaps it is real, perhaps it is another carefully made sensation. You walk anyway. You have chosen the possibility of an unplanned world, where uncertainty belongs to the life you make together.",
+      "reasons": [
+        "Being able to act without a system designing the terms may matter more than comfort or certainty.",
+        "Discovery, unchosen encounters, and responsibility for consequences can be valuable in themselves."
+      ],
+      "strongestObjection": "The strongest case for STAY: experiences, commitments, and relationships inside a virtual world might still be real and valuable. Leaving does not automatically make a life better."
+    },
+    "stay": {
+      "title": "STAY · The World You Choose",
+      "reflection": "You leave the plug in place. The garden beyond the panel fills with voices you know. Its sky may be computed; that alone does not settle whether the friendship, work, and joy beneath it are genuine. You choose to take responsibility for the life you can live here.",
+      "reasons": [
+        "A life can contain knowledge, care, and meaningful activity even if its environment is virtual.",
+        "The origin of an experience does not by itself determine its worth."
+      ],
+      "strongestObjection": "The strongest case for UNPLUG: the Machine may shape what you can do and whom you can meet. Choosing freely, confronting unscripted risks, and refusing designed limits might matter deeply."
+    }
+  },
+  "closingHeading": "The Paths You Took",
+  "closingNote": "These are the positions the party used in its successful challenges. They describe choices made under pressure, not permanent labels for the players.",
+  "credits": "Structure inspired by David Chalmers, *Reality+: Virtual Worlds and the Problems of Philosophy* (2022). Not affiliated with or endorsed by the author or publisher."
+}

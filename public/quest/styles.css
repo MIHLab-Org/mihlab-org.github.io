@@ -215,3 +215,23 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8p
   border:1px solid rgba(235,197,128,.7); background:rgba(139,95,59,.22);
   color:#f9ebcf; font-weight:800; letter-spacing:.015em;
 }
+
+/* Epilogue: the final control chamber, CSS only. */
+#game-panel[data-realm="epilogue"] {
+  --realm-brass:#e3c99f;
+  border-color:rgba(196,183,226,.58);
+  background:radial-gradient(ellipse at 45% 5%,rgba(128,115,177,.3),transparent 47%),
+    radial-gradient(ellipse at 15% 90%,rgba(68,151,154,.15),transparent 54%),
+    linear-gradient(150deg,#17172c,#101d29 57%,#182033);
+}
+#game-panel[data-realm="epilogue"] .choice {
+  background:rgba(45,41,78,.75);border-color:rgba(197,185,224,.55);font-weight:750;
+}
+#game-panel[data-realm="epilogue"] .choice:hover:not(:disabled) {border-color:#e7c78f;background:rgba(72,60,95,.9);}
+#game-panel[data-realm="epilogue"] .lore {background:rgba(25,30,54,.82);}
+#game-panel .exit-objection {border-left:3px solid #c6b4e6;padding:13px 16px;background:rgba(105,90,145,.19);line-height:1.7;}
+#game-panel .exit-decision-note,#game-panel .epilogue-credits {color:#c0c6d4;font-size:.85rem;line-height:1.6;}
+#game-panel .journey-stage {border-top:1px solid rgba(200,203,221,.26);padding:15px 0;}
+#game-panel .journey-stage h4 {margin:0 0 10px;color:#f2deae;}
+#game-panel .journey-stage p {margin:7px 0;line-height:1.5;color:#d5e2df;overflow-wrap:anywhere;}
+#game-panel .exit-reasons li {margin:7px 0;line-height:1.6;}

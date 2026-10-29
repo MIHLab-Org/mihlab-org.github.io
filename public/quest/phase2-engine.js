@@ -2,7 +2,7 @@
 // All authoritative phase transitions, d20 values and timers are host writes at /game.
 // Players may write only their own /ballots, /abilities, and /whispers requests.
 // The host is not a trusted server; ballot contents are readable to all room members in Firebase.
-export function makeEngine({ db, api, getContext, content, realm2Content, notice }) {
+export function makeEngine({ db, api, getContext, content, realm2Content, epilogueContent, notice }) {
   const {ref, set, update} = api;
   const el = id => document.getElementById(id);
   const realms = [content, realm2Content].filter(Boolean);
@@ -47,7 +47,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
     seen[chosen] = true;
     return {uid:chosen, seen, last:chosen};
   }
-  function newStage(index, grip, abilities, cards, usedCards, attempt=0, bossWins=0, oldMask=null, previousEncounters={}) {
+  function newStage(index, grip, abilities, cards, usedCards, attempt=0, bossWins=0, oldMask=null, previousEncounters={}, history={}) {
     const stage=stages[index];
     const startedAt=Date.now();
     const eligible=getMembers();
@@ -64,7 +64,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
       phase:'choice', schemaVersion:1, startedAt, realm:stage.realm, stageIndex:index, attempt,
       roundId:`${index}-${attempt}-${startedAt}-${rand(100000)}`,
       deadline:startedAt+(stage.selectionSeconds || (stage.kind==='boss'?45:60))*1000,
-      encounters, votes:{}, diceResults:{}, grip:{value:grip},
+      encounters, votes:{}, diceResults:{}, grip:{value:grip}, history,
       insightCards:cards || {}, usedCards:usedCards || {}, abilities:abilities || {}, bossWins,
       spotlightUid:spotlight?.uid || '',
       whispers:{}, rollBonus:0, rerollUsed:false, eliminated:false, hintVisible:attempt>0,
@@ -145,6 +145,49 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
     if(!cardId)return;
     await set(ref(db,`rooms/${code}/abilities/${uid}`),{roundId:g.roundId,type:'insight',cardId});
   }
+  const isEpilogue = g => ['epilogue-vote','epilogue-tie','epilogue-finished'].includes(g?.phase);
+  function epilogueBallots(room,g) {
+    // Count all valid ballots already cast, even if a voter disconnected afterward.
+    return Object.fromEntries(Object.entries(room.ballots||{})
+      .filter(([uid,ballot]) => room.players?.[uid] && ballot.roundId === g.roundId)
+      .map(([uid,ballot]) => [uid,ballot.choice]));
+  }
+  async function epilogueVote(choice) {
+    const {room,uid,code}=getContext(),g=room?.game;
+    if(g?.phase!=='epilogue-vote'||!room.players?.[uid]?.connected||
+       Date.now()>g.epilogue?.deadline||![0,1].includes(choice)||
+       room.ballots?.[uid]?.roundId===g.roundId)return;
+    await set(ref(db,`rooms/${code}/ballots/${uid}`),{
+      roundId:g.roundId,choice,at:Date.now()
+    });
+  }
+  function stageHistory(room,g){
+    const stage=stageFor(g);
+    if(!stage)return null;
+    const choices={};
+    for(const [uid,choice] of Object.entries(g.votes||{})){
+      const option=stage.options?.[choice];
+      if(!option)continue;
+      choices[uid]={choice,stance:option.stance||option.text,tag:option.tag};
+    }
+    return {realm:stage.realm,stageId:stage.id,title:stage.title,choices};
+  }
+  async function beginEpilogue(g){
+    if(!epilogueContent)return notice('The Epilogue content file is missing.','error');
+    const startedAt=Date.now();
+    await update(path(),{
+      phase:'epilogue-vote',roundId:`exit-${startedAt}-${rand(100000)}`,
+      epilogue:{startedAt,deadline:startedAt+(epilogueContent.selectionSeconds||75)*1000,
+        votes:{},tally:{unplug:0,stay:0},ending:'',decisionMode:''}
+    });
+  }
+  async function resolveTie(choice){
+    const {room}=getContext(),g=room?.game;
+    if(!isHost()||g?.phase!=='epilogue-tie'||!['unplug','stay'].includes(choice))return;
+    await update(path(),{phase:'epilogue-finished',
+      'epilogue/ending':choice,'epilogue/decisionMode':'host-tiebreak',
+      'epilogue/decidedAt':Date.now()});
+  }
   function prepareRoll(room,g){
     return {phase:'ready-to-roll', votes:stageVotes(room,g), dc:g.stageIndex===0?10:12};
   }
@@ -172,7 +215,20 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
   }
   async function syncOnce() {
     const {room,code}=getContext(),g=room?.game;
-    if(!g || !['choice','debate','rolling','result'].includes(g.phase))return;
+    if(!g || !['choice','debate','rolling','result','epilogue-vote'].includes(g.phase))return;
+    if(g.phase==='epilogue-vote'){
+      const members=getMembers(),ballots=epilogueBallots(room,g);
+      if(Date.now()<g.epilogue.deadline && members.some(uid=>!(uid in ballots)))return;
+      const tally={unplug:Object.values(ballots).filter(choice=>choice===0).length,
+        stay:Object.values(ballots).filter(choice=>choice===1).length};
+      const tied=tally.unplug===tally.stay;
+      await update(path(),{phase:tied?'epilogue-tie':'epilogue-finished',
+        'epilogue/votes':ballots,'epilogue/tally':tally,
+        'epilogue/ending':tied?'':(tally.unplug>tally.stay?'unplug':'stay'),
+        'epilogue/decisionMode':tied?'pending-tiebreak':'majority',
+        'epilogue/decidedAt':tied?0:Date.now()});
+      return;
+    }
     const pending=Object.entries(room.abilities||{}).filter(([uid,r])=>r.roundId===g.roundId && !g.abilities?.[uid]);
     if(pending.length){
       const [uid,request]=pending[0],klass=room.players?.[uid]?.class;
@@ -219,8 +275,10 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
   async function next() {
     if(!isHost())return;
     const g=getContext().room?.game;if(!g)return;
-    if(g.phase==='realm-complete' && g.realm<realms.length){
-      await set(path(),newStage(chapterStart(g.realm+1),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,0,null,g.encounters));
+    if(g.phase==='realm-complete'){
+      if(g.realm<realms.length){
+        await set(path(),newStage(chapterStart(g.realm+1),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,0,null,g.encounters,g.history||{}));
+      } else await beginEpilogue(g);
       return;
     }
     if(g.phase==='ready-to-roll'){
@@ -236,21 +294,24 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
           await update(path(),{phase:'plugged','grip/value':0});
           return;
         }
-        await set(path(),newStage(g.stageIndex,grip,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters));
+        await set(path(),newStage(g.stageIndex,grip,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters,g.history||{}));
         return;
       }
       const stage=stageFor(g),chapter=chapterFor(g);
       const cards=stage.kind==='boss'&&stage.localIndex===chapter.bossPhases.length-1?
         {...(g.insightCards||{}),[chapter.insight.id]:true}:g.insightCards||{};
-      await update(path(),{phase:'lore',insightCards:cards,bossWins:stage.kind==='boss'?(g.bossWins||0)+1:(g.bossWins||0)});
+      const record=stageHistory(getContext().room,g);
+      const changes={phase:'lore',insightCards:cards,bossWins:stage.kind==='boss'?(g.bossWins||0)+1:(g.bossWins||0)};
+      if(record)changes[`history/r${record.realm}-s${g.stageIndex}`]=record;
+      await update(path(),changes);
       return;
     }
-    if(g.phase==='plugged'){await set(path(),newStage(g.stageIndex,6,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters));return;}
+    if(g.phase==='plugged'){await set(path(),newStage(g.stageIndex,6,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters,g.history||{}));return;}
     if(g.phase!=='lore')return;
     if(g.stageIndex===chapterEnd(g.realm||1)){
       await update(path(),{phase:'realm-complete',completedAt:Date.now()});return;
     }
-    await set(path(),newStage(g.stageIndex+1,g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,g.bossWins||0,null,g.encounters));
+    await set(path(),newStage(g.stageIndex+1,g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,g.bossWins||0,null,g.encounters,g.history||{}));
   }
   function addText(target,tag,cls,text){
     const node=document.createElement(tag);if(cls)node.className=cls;node.textContent=text;target.append(node);return node;
@@ -258,10 +319,84 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
   // Discussion and Spotlight always identify the real voter. Only the party
   // roster in app.js displays the illusion during Reconstruct.
   function realName(room,uid){return room.players?.[uid]?.name || 'Player';}
+  function renderEpilogue(room,g){
+    const ep=epilogueContent,{uid}=getContext(),host=isHost();
+    const voting=g.phase==='epilogue-vote',tie=g.phase==='epilogue-tie',done=g.phase==='epilogue-finished';
+    const myVote=room.ballots?.[uid]?.roundId===g.roundId?room.ballots[uid].choice:null;
+    const tally=g.epilogue?.tally||{unplug:0,stay:0};
+    const clearIds=['game-choices','game-whispers','game-reveal','game-debate','game-die','game-lore','game-abilities'];
+    for(const id of clearIds)el(id).replaceChildren();
+    for(const id of ['game-identity-taunt','game-machine','game-spotlight','game-conviction','game-roll','game-debate','game-lore'])el(id).hidden=true;
+    el('game-panel').dataset.phase=g.phase;el('game-panel').dataset.realm='epilogue';
+    el('game-heading').textContent=ep.title;
+    el('game-stage').textContent=ep.subtitle;
+    el('game-grip').textContent=`Final Grip: ${g.grip?.value??10}/10`;
+    el('game-timer').textContent=voting?`${Math.max(0,Math.ceil((g.epilogue.deadline-Date.now())/1000))}s`:'—';
+    el('game-scene').textContent=ep.opening;
+    el('game-question').textContent=done?ep.endings[g.epilogue.ending]?.title||'The last choice':ep.question;
+    el('game-instructions').textContent=voting?(myVote===null?ep.votingNote:'Your vote is saved. The party’s decision will be revealed together.'):
+      tie?ep.tiePrompt:'The party has decided. Both endings are philosophically defensible.';
+    const choices=el('game-choices');
+    if(voting){
+      for(const [i,option] of ep.options.entries()){
+        const b=addText(choices,'button','choice',`${option.label} — ${option.text}`);
+        if(myVote===i)b.classList.add('selected');
+        b.disabled=myVote!==null||!room.players?.[uid]?.connected||Date.now()>g.epilogue.deadline;
+        b.addEventListener('click',()=>epilogueVote(i).catch(e=>notice('Exit vote was not saved: '+e.message,'error')));
+      }
+    }
+    if(tie||done){
+      const reveal=el('game-reveal');
+      addText(reveal,'p','consensus',`Exit vote — UNPLUG ${tally.unplug} · STAY ${tally.stay}`);
+      for(const [player,choice] of Object.entries(g.epilogue.votes||{})){
+        addText(reveal,'div','reveal',`${realName(room,player)}: ${ep.options[choice]?.label||'No recorded vote'}`);
+      }
+      if(tie){
+        addText(choices,'p','debate-note','A tie means neither ending wins automatically.');
+        if(host)for(const option of ep.options){
+          const b=addText(choices,'button','choice',`Resolve tie: ${option.label}`);
+          b.addEventListener('click',()=>resolveTie(option.id).catch(e=>notice('Unable to resolve tie: '+e.message,'error')));
+        }
+      }
+    }
+    const lore=el('game-lore');lore.hidden=!done;
+    if(done){
+      const ending=ep.endings[g.epilogue.ending];
+      addText(lore,'h3','',ending.title);
+      addText(lore,'p','',ending.reflection);
+      const reasons=addText(lore,'div','exit-reasons','');
+      addText(reasons,'h4','','Reasons for this decision');
+      const list=addText(reasons,'ul','','');
+      for(const reason of ending.reasons)addText(list,'li','',reason);
+      addText(lore,'p','exit-objection',ending.strongestObjection);
+      addText(lore,'p','exit-decision-note',g.epilogue.decisionMode==='host-tiebreak'?'The vote was tied; the host resolved it in the open.':'The party chose by majority vote.');
+      addText(lore,'h3','',ep.closingHeading);
+      addText(lore,'p','',ep.closingNote);
+      const history=Object.values(g.history||{}).sort((a,b)=>a.realm-b.realm || stages.findIndex(s=>s.id===a.stageId&&s.realm===a.realm)-stages.findIndex(s=>s.id===b.stageId&&s.realm===b.realm));
+      if(!history.length)addText(lore,'p','', 'Earlier stage decisions were not recorded in this room. New games will include the full journey.');
+      for(const item of history){
+        const row=addText(lore,'div','journey-stage','');
+        addText(row,'h4','',`Realm ${item.realm} · ${item.title}`);
+        for(const [player,choice] of Object.entries(item.choices||{})){
+          addText(row,'p','',`${realName(room,player)} — ${choice.stance} (${choice.tag})`);
+        }
+      }
+      const credits=addText(lore,'p','epilogue-credits','');
+      const parts=ep.credits.split('*');
+      if(parts.length===3){
+        addText(credits,'span','',parts[0]);
+        addText(credits,'i','',parts[1]);
+        addText(credits,'span','',parts[2]);
+      }else credits.textContent=ep.credits;
+    }
+    const button=el('game-next');button.hidden=true;button.disabled=true;
+    button.inert=true;button.tabIndex=-1;button.setAttribute('aria-hidden','true');
+  }
   function render(room) {
     const g=room.game||{},stage=stageFor(g),chapter=chapterFor(g),panel=el('game-panel');
     panel.hidden=room.status!=='started'||g.phase==='lobby'||g.phase==='phase1-complete';
     if(panel.hidden)return;
+    if(isEpilogue(g)){renderEpilogue(room,g);return;}
     const {uid}=getContext(),host=isHost(),result=g.phase==='result',lore=g.phase==='lore',
       complete=g.phase==='realm-complete',plugged=g.phase==='plugged',debating=g.phase==='debate',rolling=g.phase==='rolling',ready=g.phase==='ready-to-roll';
     const eligible=eligiblePlayers(g).includes(uid);
@@ -303,7 +438,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
         choices.append(button);
       }
     }
-    el('game-instructions').textContent=complete?(g.realm<realms.length?`The host can open ${realms[g.realm].realm}.`:`${chapter.realm} is finished. The next realm is not yet available.`):plugged?'Host: restart this challenge with Grip 6.':
+    el('game-instructions').textContent=complete?(g.realm<realms.length?`The host can open ${realms[g.realm].realm}.`:'The last challenge is behind you. The host can open the Epilogue.'):plugged?'Host: restart this challenge with Grip 6.':
       lore?'Review each stance and the consequence. The host advances.':
       result?`The check ${g.success?'passed':'failed'}. The host advances after any reroll.`:
       rolling?`Difficulty Class ${g.dc}. The d20 is tumbling…`:
@@ -399,20 +534,22 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
       if(messages)addText(whispers,'p','whisper-display',messages);
     }
     const nextButton=el('game-next');
-    const showNext=host && (['ready-to-roll','result','lore','plugged'].includes(g.phase) || (complete&&g.realm<realms.length));
+    const showNext=host && (['ready-to-roll','result','lore','plugged'].includes(g.phase) || complete);
     nextButton.hidden=!showNext;
     nextButton.disabled=!showNext;
     nextButton.tabIndex=showNext?0:-1;
     nextButton.inert=!showNext;
     nextButton.setAttribute('aria-hidden',showNext?'false':'true');
     el('game-next').textContent=ready?'Roll d20 (host)':result?(g.success?'Reveal lore (host)':'Second Look (host)'):
-      plugged?'Retry this challenge (host)':complete?`Enter ${realms[g.realm]?.realm} (host)`:lore?'Continue (host)':'Continue (host)';
+      plugged?'Retry this challenge (host)':complete?(g.realm<realms.length?`Enter ${realms[g.realm]?.realm} (host)`:'Open the Epilogue (host)'):lore?'Continue (host)':'Continue (host)';
   }
   let lastUiTickPhase='';
   function tick(){
     const {room}=getContext();if(!room||room.status!=='started')return;
     const g=room.game||{};
-    if(g.phase==='choice'){
+    if(g.phase==='epilogue-vote'){
+      el('game-timer').textContent=`${Math.max(0,Math.ceil((g.epilogue.deadline-Date.now())/1000))}s`;
+    }else if(g.phase==='choice'){
       el('game-timer').textContent=`${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}s`;
     }else if(g.phase==='debate'){
       el('game-timer').textContent=`Debate ${Math.max(0,Math.ceil((g.debateDeadline-Date.now())/1000))}s`;
@@ -423,7 +560,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, notice
         render(room);
       }
     }
-    if(isHost()&&['choice','debate','rolling','result'].includes(g.phase))hostSync().catch(e=>console.warn('Host sync error',e));
+    if(isHost()&&['choice','debate','rolling','result','epilogue-vote'].includes(g.phase))hostSync().catch(e=>console.warn('Host sync error',e));
   }
   el('game-next').addEventListener('click',()=>next().catch(e=>notice(e.message,'error')));
   setInterval(tick,350);
