@@ -414,3 +414,14 @@ $("join-code").addEventListener("input", (event) => {
 });
 
 initialize();
+
+// A hidden tab has its timers throttled by the browser, which would freeze the
+// host's phase clock for everyone. Report hidden pages as disconnected so a
+// visible player takes over hosting through the existing guarded handoff, and
+// report presence again when the page becomes visible.
+document.addEventListener("visibilitychange", () => {
+  if (!currentUser || !currentRoomCode || !db) return;
+  const visible = document.visibilityState === "visible";
+  update(playerRef(currentRoomCode, currentUser.uid), { connected: visible, lastSeenAt: Date.now() })
+    .catch((error) => console.warn("Presence update failed", error));
+});
