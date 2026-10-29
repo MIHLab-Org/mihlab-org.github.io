@@ -530,7 +530,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     const already=myBallot?.roundId===g.roundId || pending?.roundId===g.roundId;
     panel.dataset.phase=g.phase;
     panel.dataset.realm=String(g.realm||1);
-    el('game-realm-label').textContent=`SHORT QUEST · ${String(chapter.realm||'').toUpperCase()}`;
+    el('game-realm-label').textContent=`SHORT QUEST · ${String(chapter.realm||'').split(' — ')[0].toUpperCase()}`;
     el('game-heading').textContent=complete?`${chapter.realm} complete`:chapter.realm;
     el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}${stage.kind==='boss'?' · Weakness: '+classNames[g.bossWeakness||stage.weakness]:''}`:'Reset';
     el('game-grip').textContent=`Grip: ${g.grip?.value??10}/10`;
