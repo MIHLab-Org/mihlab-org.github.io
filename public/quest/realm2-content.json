@@ -175,7 +175,7 @@
         },
         {
           "id": "success-equals-truth",
-          "text": "Use the Machine’s changing map because any path that gets you through must have been true all along.",
+          "text": "Use the Machine’s changing map because any path that gets you through seems to have been true all along.",
           "tag": "WEAK",
           "stance": "Truth confused with usefulness",
           "reflection": "A procedure can work in one setting while resting on false or incomplete claims. Practical success needs interpretation and further testing.",
@@ -285,10 +285,10 @@
       "observation": "When the furniture vanishes, a new sentence still appears on the empty page each time someone questions whether it is there.",
       "argumentForm": {
         "premises": [
-          "A new question forms on the otherwise empty page whenever the party doubts the room.",
-          "The questioning continues even after visible furnishings disappear."
+          "Doubt is itself a present occurrence of thinking, even if the room and its furnishings are deceptive.",
+          "The further claim that a substantial thinker exists is distinct from the claim that thinking occurs, and needs its own justification."
         ],
-        "conclusion": "The occurrence of questioning survives this particular removal of sensory objects."
+        "conclusion": "Thinking occurs while the party doubts, but that occurrence alone does not establish a substantial thinker."
       },
       "weakness": "rationalist",
       "dc": 16,
@@ -348,7 +348,7 @@
         },
         {
           "id": "clarity-guarantees",
-          "text": "Seal the diagram as certain because its steps feel clear, and use that feeling to certify every later claim.",
+          "text": "Seal the diagram as certain because its steps feel clear, and use that feeling to certify later claims.",
           "tag": "WEAK",
           "stance": "Unwarranted criterion of certainty",
           "reflection": "The feeling of clarity is being used to establish the reliability of clarity itself. That risks begging the question.",
@@ -427,7 +427,7 @@
         },
         {
           "id": "choose-sealed-room",
-          "text": "Stay in the sealed room because certain thinking alone shows every outside appearance must be invented.",
+          "text": "Stay in the sealed room because certain thinking alone suggests outside appearances are invented.",
           "tag": "WEAK",
           "stance": "Skeptical possibility as proof",
           "reflection": "The Cogito does not establish the external world, but its limits do not establish that the external world is false.",

@@ -52,7 +52,7 @@
         },
         {
           "id": "plug-all",
-          "text": "Power the chamber for everyone because perfectly pleasant experiences must be the best possible lives.",
+          "text": "Power the chamber for the town, since lasting happiness and relief from suffering seem worth its uncertain losses.",
           "tag": "WEAK",
           "stance": "Experience-only hedonism",
           "reflection": "This assumes rather than establishes that experience alone exhausts human welfare.",
@@ -129,7 +129,7 @@
         },
         {
           "id": "overwrite",
-          "text": "Accept the memory rewrite because an equally warm feeling makes genuine history unnecessary.",
+          "text": "Accept the memory rewrite to preserve the warmth of this friendship, even if its story becomes harder to verify.",
           "tag": "WEAK",
           "stance": "Simulation equivalence",
           "reflection": "The rewrite confuses feeling loved with freely sustaining a relationship.",
@@ -214,7 +214,7 @@
         },
         {
           "id": "seal-garden",
-          "text": "Seal the garden because nobody could reasonably reject an endless supply of contentment.",
+          "text": "Seal the garden to protect residents from distress, trusting that their lasting contentment compensates for lost choice.",
           "tag": "WEAK",
           "stance": "Paternalistic hedonism",
           "reflection": "This assumes all rational preferences are for pleasant experience.",
@@ -292,7 +292,7 @@
         },
         {
           "id": "celebrate",
-          "text": "Celebrate the tower as your achievement because memories of labor feel indistinguishable from actual work.",
+          "text": "Celebrate the tower for the hope and satisfaction it gives, even if the city still needs work beyond its walls.",
           "tag": "WEAK",
           "stance": "Experiential achievement",
           "reflection": "The manufactured tower cannot repair the city outside the simulation.",
@@ -370,7 +370,7 @@
         },
         {
           "id": "choose-certainty",
-          "text": "Accept the guaranteed answers because freedom to be mistaken can never add value to a good life.",
+          "text": "Accept the offered certainty, since peace of mind and freedom from painful errors may enrich the party’s lives.",
           "tag": "WEAK",
           "stance": "Epistemic paternalism",
           "reflection": "The offer assumes that certainty outranks all other values.",

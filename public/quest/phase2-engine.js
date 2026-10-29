@@ -316,10 +316,8 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         changes[`abilityReveals/${uid}`]={stageIndex:g.stageIndex,realm:g.realm,type:klass,
           detail,optionId:request.optionId||'',at:Date.now()};
         if(stage.conditional?.triggerClass===klass){
+          // Reveal the evidence now; reserve its effect on the strongest action for lore.
           changes[`discoveredStages/s${g.stageIndex}`]=true;
-          const favored=stage.options.find(o=>o.id===stage.conditional.strongOptionId);
-          if(favored)detail+=` New evidence now favors this action: “${favored.text}”. ${stage.evidenceExplanation||''}`;
-          changes[`abilityReveals/${uid}`].detail=detail;
         }
         if(stage.kind==='boss'&&g.bossWeakness===klass){
           changes[`weaknessStages/s${g.stageIndex}`]=true;
@@ -530,7 +528,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     const already=myBallot?.roundId===g.roundId || pending?.roundId===g.roundId;
     panel.dataset.phase=g.phase;
     panel.dataset.realm=String(g.realm||1);
-    el('game-realm-label').textContent=`SHORT QUEST · ${String(chapter.realm||'').split(' — ')[0].toUpperCase()}`;
+    el('game-realm-label').textContent=`SHORT QUEST · ${String(chapter.realm||'').toUpperCase()}`;
     el('game-heading').textContent=complete?`${chapter.realm} complete`:chapter.realm;
     el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}${stage.kind==='boss'?' · Weakness: '+classNames[g.bossWeakness||stage.weakness]:''}`:'Reset';
     el('game-grip').textContent=`Grip: ${g.grip?.value??10}/10`;
@@ -626,6 +624,10 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     if(lore){
       addText(lorePanel,'h3','', 'What your actions revealed');
       const chosen=new Set(Object.values(g.votes||{}).filter(v=>v>=0));
+      // Explain a conditional reassessment in the lore even if nobody picked that action.
+      const evidenceRevealed=!!(stage?.conditional && g.discoveredStages?.['s'+g.stageIndex]);
+      const evidenceIndex=evidenceRevealed?stage.options.findIndex(o=>o.id===stage.conditional.strongOptionId):-1;
+      if(evidenceIndex>=0)chosen.add(evidenceIndex);
       for(const i of chosen){
         const option=stage?.options[i];if(!option)continue;
         const card=addText(lorePanel,'div','lore-stance','');
@@ -634,6 +636,8 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         addText(card,'p','',`Theory — ${lc.theory.name} (${lc.theory.thinker}, ${lc.theory.work})`);
         addText(card,'p','',`Core principle — ${lc.corePrinciple}`);
         addText(card,'p','',`Here — ${lc.sceneAnalysis}`);
+        if(evidenceRevealed && i===evidenceIndex)
+          addText(card,'p','conditional-lore',`With the new evidence, this action is now favored: “${option.text}”. ${stage.evidenceExplanation||''}`);
         addText(card,'p','',`Strongest objection — ${lc.strongestObjection}`);
       }
       addText(lorePanel,'p','lore-summary',stage?.lore||'');
@@ -680,10 +684,6 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
       const logPanel=addText(abilities,'div','ability-log','');
       addText(logPanel,'h4','','Party method log');
       for(const [,entry] of log)addText(logPanel,'p','',entry.message);
-    }
-    if(stage?.conditional && g.discoveredStages?.['s'+g.stageIndex]){
-      const favored=stage.options.find(o=>o.id===stage.conditional.strongOptionId);
-      addText(abilities,'p','ability-hint',`New evidence favors: “${favored?.text||''}”. ${stage.evidenceExplanation||''}`);
     }
     const whispers=el('game-whispers');whispers.replaceChildren();
     if(g.phase==='choice'&&isSpotlight(stage)&&uid!==g.spotlightUid){

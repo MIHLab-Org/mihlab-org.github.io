@@ -62,7 +62,7 @@ run('B rules schema: game/ability/ballot/whisper keys explicitly declared',()=>{
  }
  console.log(`  /game declared keys: ${Object.keys(gameRules).filter(k=>!k.startsWith('.')).length-1}`);
 });
-run('N Firebase rule wildcard topology: no sibling wildcard collisions',()=>{
+run('X Firebase rule wildcard topology: no sibling wildcard collisions',()=>{
  const errors=[];
  const visit=(node,path)=>{
    if(!node || typeof node!=='object' || Array.isArray(node))return;
@@ -122,6 +122,23 @@ run('E option-length tell: STRONG longest in <=60% of present stages',()=>{
  }).length;
  console.log(`  Longest STRONG (including conditional reveals) ${longest}/${stages.length} = ${(100*longest/stages.length).toFixed(1)}%`);
  assert(longest/stages.length<=0.6);
+});
+run('E2 WEAK options do not overuse absolutist language across the Short Quest',()=>{
+ // Count only the requested absolute expressions; ordinary hypothetical 'could' is not an absolute.
+ const absoluteWords=/\b(?:must|never|every)\b|\bnobody\s+could\b/gi;
+ const count=o=>(o.text.match(absoluteWords)||[]).length;
+ const weak=stages.flatMap(s=>s.options.filter(o=>o.tag==='WEAK'));
+ const strong=stages.flatMap(s=>s.options.filter(o=>o.tag==='STRONG'));
+ const weakCount=weak.reduce((sum,o)=>sum+count(o),0);
+ const strongCount=strong.reduce((sum,o)=>sum+count(o),0);
+ const weakFrequency=weakCount/weak.length;
+ const strongFrequency=strongCount/strong.length;
+ console.log(`  WEAK: ${weakCount} absolute expressions in ${weak.length} options (${weakFrequency.toFixed(3)}/option)`);
+ console.log(`  STRONG: ${strongCount} absolute expressions in ${strong.length} options (${strongFrequency.toFixed(3)}/option)`);
+ assert(weakFrequency<=strongFrequency,`WEAK options use absolutist language more often (${weakFrequency.toFixed(3)}) than STRONG options (${strongFrequency.toFixed(3)})`);
+ // Specifically guard the five newly rewritten Nozick traps against regression.
+ for(const s of stages.slice(10,15))for(const o of s.options.filter(o=>o.tag==='WEAK'))
+   assert.equal(count(o),0,`Realm VI WEAK action ${s.id}/${o.id} uses an absolute expression: ${o.text}`);
 });
 run('F 100,000-trial Monte Carlo: real resolveCheck, all DC and weakness cases',()=>{
  const cases=[
@@ -431,12 +448,12 @@ try{
    uid='p2';await useMethod(e,'p2');
    uid='p0';e.render(room);assert(textAll(ui.get('game-abilities')).includes('Player 3 used Deduce: Argument'));
  });
- await runAsync('O release screen: live realm heading changes I → II → VI → Exit, with accessible ending',async()=>{
+ await runAsync('Y release screen: live realm heading changes I → II → VI → Exit, with accessible ending',async()=>{
    const e=setup(2);await e.begin();
    for(const [index,realm,label] of [[0,1,'REALM I'],[5,2,'REALM II'],[10,6,'REALM VI']]){
      room.game.stageIndex=index;room.game.realm=realm;room.game.phase='reading';
      uid='p0';e.render(room);
-     assert.match(ui.get('game-realm-label').textContent,new RegExp(label+'$'),`Wrong chapter label at stage ${index}`);
+     assert.match(ui.get('game-realm-label').textContent,new RegExp('^SHORT QUEST · '+label+' — '),`Wrong chapter label at stage ${index}`);
      assert.equal(ui.get('game-heading').textContent,chapters[[1,2,6].indexOf(realm)].realm);
    }
    room.game.phase='epilogue-finished';room.game.epilogue={ending:'unplug',tally:{unplug:2,stay:0},votes:{p0:0,p1:0},decisionMode:'majority'};
@@ -447,7 +464,7 @@ try{
    assert.equal(ui.get('game-next').hidden,true);
    assert.equal(ui.get('game-next').disabled,true);
  });
- run('P release lobby: only Short Quest selectable; Full Campaign labeled coming soon',()=>{
+ run('Z release lobby: only Short Quest selectable; Full Campaign labeled coming soon',()=>{
    const html=file('index.html'),js=file('app.js');
    const selector=html.match(/<select[^>]*id=["']campaign["'][^>]*>([\s\S]*?)<\/select>/);
    assert(selector,'Campaign selector missing');
@@ -458,7 +475,15 @@ try{
    assert.match(js,/SHORT_REALM_LABELS\[game.realm\]/,'Room status must recognize Realm VI');
    assert(!/<option[^>]*value="full"(?![^>]*disabled)[^>]*>/i.test(selector[1]),'Full Campaign is selectable');
  });
- run('Q Firebase rule scope: short-only new rooms, no late seat claims, validated fields',()=>{
+
+ run('U Realm VI ability reveals and Spotlight whispers permitted by rules',()=>{
+   const abilityIndex=roomRules.game.abilityReveals.$uid.stageIndex['.validate'];
+   assert.match(abilityIndex,/newData\.val\(\) <= 14/, 'Realm VI stage indices 10–14 would be denied');
+   const whisperWrite=roomRules.whispers.$uid['.write'];
+   for(const index of [3,8,13])assert(whisperWrite.includes(`stageIndex').val() === ${index}`),`Spotlight whispers omitted stage ${index}`);
+   assert.equal(roomRules.whispers.$uid.$other['.validate'],false,'Unknown whisper fields must remain rejected');
+ });
+ run('AA Firebase rule scope: short-only new rooms, no late seat claims, validated fields',()=>{
    const r=roomRules;
    assert.match(r['.write'],/newData\.child\('campaign'\)\.val\(\) === 'short'/);
    assert.doesNotMatch(r['.write'],/newData\.child\('campaign'\)\.val\(\) === 'full'/);
@@ -544,6 +569,127 @@ try{
      assert.equal((await fetch(`${base}/quest/database.rules.json`)).status,404,'Rules exposed in quest');
    }finally{server.close();await once(server,'close');}
    console.log(`  Confirmed ${assets.size} relative references and 7 HTTP asset requests`);
+ });
+ await runAsync('N no internal stance, tag or option-id labels before lore reveal',async()=>{
+   const names=[...new Set(stages.flatMap(stage=>stage.options.map(o=>o.stance)).filter(Boolean))];
+   const tabs=['STRONG','DEFENSIBLE','WEAK'];
+   const leaked=(value,stage)=>{
+     const text=String(value||'');
+     const labels=[...names,...tabs];
+     const leakedNames=labels.filter(label=>new RegExp('(?:^|[^\\p{L}])'+label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?:$|[^\\p{L}])','iu').test(text));
+     const hyphenated=stage.options.filter(o=>o.id.includes('-')&&text.toLowerCase().includes(o.id.toLowerCase())).map(o=>o.id);
+     const explicitIds=stage.options.filter(o=>new RegExp('(?:option|target|id)\\s*[#:=]\\s*'+o.id.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i').test(text)).map(o=>o.id);
+     return [...new Set([...leakedNames,...hyphenated,...explicitIds])];
+   };
+   const stageContent=(stage,ch)=>[
+     stage.scene,stage.question,stage.hint,stage.clue,stage.observation,stage.argumentForm.conclusion,
+     ...stage.argumentForm.premises,stage.evidenceExplanation||'',ch.opening,ch.machine?.opening,ch.machine?.beforeBoss,
+     ...Object.values(ch.machine?.onSecondLook||{}),
+     ...Object.values(ch.machine?.betweenStages?.[stage.id]||{}),
+     ...stage.options.flatMap(o=>[o.text,o.hiddenPremise,o.consequence])
+   ].filter(Boolean);
+   let rendered=0,reveals=0;
+   for(let i=0;i<stages.length;i++){
+     const stage=stages[i],ch=chapters[Math.floor(i/5)];
+     for(const text of stageContent(stage,ch))assert.deepEqual(leaked(text,stage),[],`Pre-lore content leak in ${stage.id}: ${text}`);
+     const e=setup(4);await e.begin();room.game.stageIndex=i;room.game.realm=[1,2,6][Math.floor(i/5)];
+     room.game.optionOrder=stage.options.map((_,j)=>j);room.game.bossWeakness=i%5>=2?stage.weakness:'';
+     for(const player of Object.keys(room.players)){
+       uid=player;e.render(room);
+       const ids=['game-realm-label','game-heading','game-stage','game-scene','game-question','game-machine','game-instructions','game-choices','game-abilities','game-reveal'];
+       for(const id of ids){const node=ui.get(id);if(node && !node.hidden)assert.deepEqual(leaked(textAll(node),stage),[],`Pre-lore UI leak ${stage.id} / ${id}: ${textAll(node)}`);}
+       rendered++;
+     }
+     // Exercise the actual Firebase-request processing and reveal UI for every class in every stage.
+     for(const player of ['p0','p1','p2','p3']){
+       await useMethod(e,player);
+       uid=player;e.render(room);
+       assert.deepEqual(leaked(textAll(ui.get('game-abilities')),stage),[],`Ability reveal leak ${stage.id} / ${player}`);
+       reveals++;
+     }
+     // A completed roll is still not the philosophical lore reveal.
+     room.game.phase='result';room.game.votes={p0:0,p1:0};room.game.die=20;room.game.total=27;
+     room.game.success=true;room.game.dc=10;room.game.modifier=7;
+     uid='p1';e.render(room);
+     assert.deepEqual(leaked(textAll(ui.get('game-reveal')),stage),[],`Premature tag on result screen ${stage.id}`);
+   }
+   console.log(`  Audited ${stages.length} stages, ${rendered} rendered player views and ${reveals} class reveals`);
+ });
+ run('O distinct concrete observations and argument forms for all fifteen stages',()=>{
+   const obs=stages.map(s=>s.observation.trim().toLowerCase());
+   const args=stages.map(s=>[...s.argumentForm.premises,s.argumentForm.conclusion].join(' | ').trim().toLowerCase());
+   assert.equal(new Set(obs).size,stages.length,'Repeated observations: '+JSON.stringify(obs));
+   assert.equal(new Set(args).size,stages.length,'Repeated argument forms: '+JSON.stringify(args));
+   for(const s of stages){
+     assert(!/scene contains a physical clue|what changes when you intervene|available reasons support this action/i.test(s.observation+' '+args[stages.indexOf(s)]),`Placeholder in ${s.id}`);
+     assert(s.observation.length>=45&&s.argumentForm.premises.length>=2,`Observation or argument too generic in ${s.id}`);
+     const tokens=text=>new Set((text.toLowerCase().match(/[a-z]{4,}/g)||[]).filter(w=>!['that','with','this','from','into','their','there','which','would','could','when','have','they','only','every','your','where','what','them','some','even','will','were','while','then'].includes(w)));
+     const sceneTokens=tokens(s.scene), observationTokens=tokens(s.observation);
+     assert([...observationTokens].some(t=>sceneTokens.has(t)),`Observation lacks a visible scene anchor: ${s.id}`);
+   }
+   console.log(`  ${new Set(obs).size} observations; ${new Set(args).size} unique premise–conclusion arguments`);
+ });
+ await runAsync('P conditional tags switch only on the named method in the current stage',async()=>{
+   const conditional=stages.map((s,i)=>({s,i})).filter(({s})=>s.conditional);
+   assert(conditional.length>=5,'Expected evidence-based alternatives including Hall of Ordinary Things');
+   for(const {s,i} of conditional){
+     const c=s.conditional,previous=s.options.find(o=>o.id===c.previousStrongOptionId),favored=s.options.find(o=>o.id===c.strongOptionId);
+     assert(previous&&favored,`${s.id}: missing conditional option`);
+     const e=setup(4);await e.begin();room.game.stageIndex=i;room.game.realm=[1,2,6][Math.floor(i/5)];room.game.optionOrder=s.options.map((_,j)=>j);room.game.bossWeakness=(i%5>=2)?s.weakness:'';
+     assert.equal(effectiveTag(s,previous,room.game),'STRONG',`${s.id}: default changed without ability`);
+     assert.equal(effectiveTag(s,favored,room.game),'DEFENSIBLE',`${s.id}: evidence option prematurely strongest`);
+     const other=Object.keys(room.players).find(u=>room.players[u].class!==c.triggerClass);
+     await useMethod(e,other);
+     assert(!room.game.discoveredStages?.['s'+i],`${s.id}: wrong class triggered conditional`);
+     const player=Object.keys(room.players).find(u=>room.players[u].class===c.triggerClass);
+     await useMethod(e,player);
+     assert.equal(room.game.discoveredStages?.['s'+i],true,`${s.id}: named ability did not reveal evidence`);
+     assert.equal(effectiveTag(s,favored,room.game),'STRONG',`${s.id}: favored action did not change`);
+     assert.equal(effectiveTag(s,previous,room.game),'DEFENSIBLE',`${s.id}: former strong response not downgraded`);
+     uid='p0';e.render(room);
+     const panel=textAll(ui.get('game-abilities'));
+     assert(!panel.includes(favored.text),`${s.id}: ability reveal prematurely identifies the favored action`);
+     assert(!panel.includes(s.evidenceExplanation),`${s.id}: ability reveal prematurely explains the favored action`);
+     if(c.triggerClass==='empiricist')assert(panel.includes(s.observation),`${s.id}: Observe evidence absent`);
+     if(c.triggerClass==='rationalist')assert(panel.includes(s.argumentForm.premises[0]),`${s.id}: Deduce argument absent`);
+     room.game.phase='lore';room.game.success=true;room.game.votes={p0:s.options.indexOf(previous)};
+     uid='p0';e.render(room);
+     const lore=textAll(ui.get('game-lore'));
+     assert(lore.includes(favored.text),`${s.id}: lore does not identify the favored action`);
+     assert(lore.includes(s.evidenceExplanation),`${s.id}: lore does not explain how evidence changed the best-supported action`);
+     // Evidence remains tied to this exact stage index, not to another realm's similarly named stage.
+     const anotherIndex=(i+1)%stages.length;
+     const otherGame={...room.game,stageIndex:anotherIndex};
+     if(stages[anotherIndex].conditional){
+       const otherStage=stages[anotherIndex],strong=otherStage.options.find(o=>o.tag==='STRONG');
+       assert.equal(effectiveTag(otherStage,strong,otherGame),'STRONG',`${s.id}: evidence leaked into stage ${anotherIndex}`);
+     }
+     console.log(`  ${s.id}: ${c.triggerClass} changed ${previous.id} → ${favored.id}`);
+   }
+ });
+ run('O2 Cogito Deduce distinguishes thinking from the claim that a thinker exists',()=>{
+   const cogito=chapters[1].bossPhases[0];
+   assert.equal(cogito.id,'reconstruct');
+   const premises=cogito.argumentForm.premises;
+   assert(premises.length>=2,'Cogito has fewer than two premises');
+   assert(premises.some(p=>/thinking (?:occurs|is)|occurrence of thinking|thought occurs/i.test(p)), 'Missing premise that thinking occurs');
+   assert(premises.some(p=>/thinker exists|thinker.*exists|substantial thinker exists/i.test(p)), 'Missing premise distinguishing a thinker from thinking');
+   assert(/thinking occurs|occurrence of thought|occurrence of thinking/i.test(cogito.argumentForm.conclusion),'Conclusion loses the distinction');
+ });
+ await runAsync('Q zero ballots automatically fail without displaying a d20 total',async()=>{
+   const e=setup(2);await e.begin();time=room.game.readingDeadline+1;await sync();
+   assert.equal(room.game.phase,'choice');
+   time=room.game.deadline+1;await sync();assert.equal(room.game.phase,'ready-to-roll');
+   assert(Object.values(room.game.votes||{}).every(x=>x===-1),'Unexpected submitted ballot');
+   dieValue=20;await hostNext(e);assert.equal(room.game.phase,'rolling');assert.equal(room.game.success,false,'No ballots should not pass on natural 20');
+   for(const phase of ['rolling','result']){
+     if(phase==='result'){time=room.game.rollRevealAt+1;await sync();assert.equal(room.game.phase,'result');}
+     uid='p1';e.render(room);
+     const msg=textAll(ui.get('game-die'));
+     assert(msg.includes('No answers submitted — the check fails automatically.'),`Missing no-ballot message during ${phase}`);
+     assert.equal(ui.get('game-roll').hidden,true,`Misleading d20 total exposed during ${phase}`);
+     assert(!/d20\s+\d+|\s=\s\d+/.test(msg),`Misleading total in ${phase}: ${msg}`);
+   }
  });
 }finally{Date.now=realNow;Math.random=realRandom;globalThis.setInterval=realInterval;}
 

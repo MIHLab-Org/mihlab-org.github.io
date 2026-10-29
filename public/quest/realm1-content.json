@@ -69,7 +69,7 @@
         },
         {
           "id": "refuse-uncertainty",
-          "text": "Barricade both doors until you find a test that rules out every possibility of dreaming.",
+          "text": "Barricade both doors until you find a test that rules out the possibility of dreaming.",
           "tag": "WEAK",
           "stance": "Skeptical paralysis",
           "reflection": "A demand for absolute certainty turns reasonable doubt into a reason never to act.",
@@ -329,7 +329,7 @@
         },
         {
           "id": "declare-all-false",
-          "text": "Reject the voice as unreal because one possible dream makes every seeming encounter deceptive.",
+          "text": "Reject the voice as unreal because one possible dream makes seeming encounters deceptive.",
           "tag": "WEAK",
           "stance": "Doubt confused with denial",
           "reflection": "The possibility of error does not establish that this voice—or every voice—is false.",
