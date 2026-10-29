@@ -14,7 +14,7 @@
         <span class="brand-mark" aria-hidden="true">◇</span>
         <span>THE EXPERIENCE MACHINE</span>
       </a>
-      <span class="phase-tag">REALMS I–II + EPILOGUE · THE EXIT</span>
+      <span class="phase-tag">SHORT QUEST · REALMS I → II → VI → THE EXIT</span>
     </header>
 
     <section id="notice" class="notice" role="status" aria-live="polite">Connecting to the game service…</section>
@@ -35,10 +35,10 @@
             <option value="rationalist">The Rationalist</option>
             <option value="pragmatist">The Pragmatist</option>
           </select>
-          <label for="campaign">Campaign length</label>
+          <label for="campaign">Quest mode</label>
           <select id="campaign" name="campaign">
-            <option value="short">Short Quest · 15–20 min</option>
-            <option value="full">Full Campaign · 40–50 min</option>
+            <option value="short">Short Quest · Realms I, II, VI + Epilogue</option>
+            <option value="full" disabled>Full Campaign — coming soon</option>
           </select>
           <button class="primary" type="submit">Create room</button>
         </form>
@@ -93,9 +93,9 @@
       </div>
       <p id="start-help" class="fineprint">The host can start when at least two players have joined.</p>
       <div id="phase1-started" class="started-card" hidden>
-        <p class="eyebrow">LOBBY CHECK PASSED</p>
+        <p class="eyebrow">SHORT QUEST READY</p>
         <h2>Your party is assembled.</h2>
-        <p>Phase 1 is connected and synchronized. Encounter play, dice checks, and the first boss arrive in Phase 2.</p>
+        <p>Realms I, II and VI lead to the final decision at the Exit.</p>
       </div>
     </section>
 
@@ -104,7 +104,7 @@
       <span>Structure inspired by David Chalmers, <i>Reality+</i> (2022).</span>
     </footer>
   <section id="game-panel" hidden aria-live="polite" aria-label="Philosophy adventure game">
-  <p class="realm-eyebrow">REALM I · THE DREAMER AND THE DREAM</p>
+  <p id="game-realm-label" class="realm-eyebrow">REALM I · THE DREAMER AND THE DREAM</p>
   <h2 id="game-heading">Realm I</h2>
   <div class="meta"><span id="game-stage"></span><span id="game-grip"></span><span id="game-timer"></span><span id="game-conviction"></span></div>
   <p id="game-identity-taunt" class="identity-taunt" hidden></p>

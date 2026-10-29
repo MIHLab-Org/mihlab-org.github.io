@@ -12,6 +12,7 @@ const $ = (id) => document.getElementById(id);
 const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // no I or O; letters only
 const ROOM_TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_PLAYERS = 6;
+const SHORT_REALM_LABELS = { 1: "I", 2: "II", 6: "VI" };
 const CLASSES = {
   skeptic: { label: "The Skeptic", icon: "◈" },
   empiricist: { label: "The Empiricist", icon: "⌕" },
@@ -128,8 +129,10 @@ async function createRoom(event) {
   const form = new FormData(event.currentTarget);
   const name = cleanName(form.get("name"));
   const playerClass = String(form.get("class") || "skeptic");
-  const campaign = String(form.get("campaign") || "short");
+  // This release deliberately offers only Short Quest. The full campaign is not built.
+  const campaign = "short";
   if (!validName(name)) return notice("Enter a display name between 1 and 20 characters.", "error");
+  if (!CLASSES[playerClass]) return notice("Choose an available class.", "error");
   setBusy(true);
   notice("Creating your room…");
   try {
@@ -190,6 +193,7 @@ async function joinRoom(event) {
   const playerClass = String(form.get("class") || "skeptic");
   if (!/^[ABCDEFGHJKLMNPQRSTUVWXYZ]{4}$/.test(code)) return notice("Enter a valid four-letter room code (I and O are not used).", "error");
   if (!validName(name)) return notice("Enter a display name between 1 and 20 characters.", "error");
+  if (!CLASSES[playerClass]) return notice("Choose an available class.", "error");
   setBusy(true);
   notice("Looking for your room…");
   try {
@@ -201,6 +205,9 @@ async function joinRoom(event) {
       return;
     }
 
+    // The room is intentionally unreadable until a seat is claimed. Never probe
+    // /status as a nonmember: Firebase would reject that read. The seat write
+    // rule rejects late joining when the quest has already begun.
     // Claim one of six fixed seats. The database rules prevent two players claiming the same seat.
     let claimed = false;
     for (let slot = 1; slot <= MAX_PLAYERS; slot++) {
@@ -220,7 +227,7 @@ async function joinRoom(event) {
     await enterRoom(code);
   } catch (error) {
     console.error(error);
-    if (error.message === "NO_SEAT") notice("That room is full, unavailable, or expired. Check the code and try again.", "error");
+    if (error.message === "NO_SEAT") notice("That room is full, already started, unavailable, or expired. Check the code and try again.", "error");
     else notice(friendlyError(error), "error");
   } finally {
     setBusy(false);
@@ -272,15 +279,26 @@ function renderRoom(room) {
   const isHost = room.hostUid === currentUser.uid;
   $("my-class").value = room.players?.[currentUser.uid]?.class || "skeptic";
   $("room-code-label").textContent = currentRoomCode;
-  $("campaign-label").textContent = room.campaign === "full" ? "Full Campaign" : "Short Quest";
+  $("campaign-label").textContent = room.campaign === "full" ? "Full Campaign — unavailable" : "Short Quest · I → II → VI → Epilogue";
   $("player-count").textContent = `${players.length} / ${MAX_PLAYERS} players`;
   const hostDisplayUid = twistActive ? (game.identityMask?.[room.hostUid] || room.hostUid) : room.hostUid;
   $("host-label").textContent = isHost ? "You are the host" : `Host: ${room.players?.[hostDisplayUid]?.name || "transferring…"}`;
   document.querySelector(".class-picker").hidden = room.status === "started";
-  $("room-status").textContent = room.status === "started" ? (game.phase?.startsWith("epilogue-") ? "The party has reached the Exit." : `Realm ${game.realm===2?'II':'I'} is underway.`) : "Waiting for the party to assemble…";
-  $("start-game").hidden = !isHost || room.status === "started";
-  $("start-game").disabled = !isHost || players.length < 2;
-  $("start-help").hidden = !isHost || room.status === "started";
+  const connectedCount = players.filter(player => player.connected).length;
+  $("room-status").textContent = game.phase === "epilogue-finished"
+    ? "Short Quest complete — the party has reached an ending."
+    : game.phase?.startsWith("epilogue-")
+      ? "The party has reached the Exit."
+      : room.status === "started"
+        ? `Realm ${SHORT_REALM_LABELS[game.realm] || "I"} is underway.`
+        : "Waiting for the party to assemble…";
+  $("start-game").hidden = !isHost || room.status !== "lobby";
+  $("start-game").disabled = !isHost || room.status !== "lobby" || room.campaign !== "short" || connectedCount < 2;
+  $("start-help").hidden = !isHost || room.status !== "lobby";
+  $("start-help").textContent = room.campaign !== "short"
+    ? "Full Campaign is coming soon. Create a new Short Quest room."
+    : connectedCount < 2 ? "Two connected players are required to start the Short Quest."
+    : "Ready: the host can start the Short Quest.";
   $("phase1-started").hidden = true;
 
   const list = $("player-list");
@@ -339,8 +357,18 @@ async function maybeTakeOverHost(room, code) {
 
 async function startGame() {
   if (!engine || !localRoom || localRoom.hostUid !== currentUser.uid) return;
+  if (localRoom.status !== "lobby" || localRoom.campaign !== "short") {
+    notice("Only the Short Quest can be started in this release.", "error");
+    return;
+  }
+  const start = $("start-game");
+  start.disabled = true;
   try { await engine.begin(); }
-  catch (error) { console.error(error); notice(friendlyError(error), 'error'); }
+  catch (error) {
+    console.error(error);
+    notice(friendlyError(error), "error");
+    if (localRoom?.status === "lobby") start.disabled = false;
+  }
 }
 
 async function leaveRoom() {

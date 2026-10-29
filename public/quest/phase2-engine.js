@@ -1,4 +1,4 @@
-// Realm I + II — host-coordinated, Firebase Spark-friendly gameplay.
+// Short Quest (Realms I → II → VI → Epilogue) — host-coordinated Firebase gameplay.
 // All authoritative phase transitions, d20 values and timers are host writes at /game.
 // Players may write only their own /ballots, /abilities, and /whispers requests.
 // The host is not a trusted server; ballot contents are readable to all room members in Firebase.
@@ -123,7 +123,8 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
   async function begin() {
     if(!isHost())return;
     const room=getContext().room;
-    if(Object.keys(room.players||{}).length<2)return notice('Two players are required.','error');
+    if(room.status!=='lobby'||room.campaign!=='short')return notice('Only a new Short Quest room can start.','error');
+    if(Object.values(room.players||{}).filter(p=>p.connected).length<2)return notice('Two connected players are required.','error');
     const abilities=Object.fromEntries(Object.keys(room.players).map(uid=>[uid,false]));
     await set(path(),newStage(0,10,abilities,{},{}));
     await set(ref(db,`rooms/${getContext().code}/status`),'started');
@@ -435,6 +436,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     for(const id of clearIds)el(id).replaceChildren();
     for(const id of ['game-identity-taunt','game-machine','game-spotlight','game-conviction','game-roll','game-debate','game-lore'])el(id).hidden=true;
     el('game-panel').dataset.phase=g.phase;el('game-panel').dataset.realm='epilogue';
+    el('game-realm-label').textContent='SHORT QUEST · THE EXIT';
     el('game-heading').textContent=ep.title;
     el('game-stage').textContent=ep.subtitle;
     el('game-grip').textContent=`Final Grip: ${g.grip?.value??10}/10`;
@@ -515,6 +517,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     const already=myBallot?.roundId===g.roundId || pending?.roundId===g.roundId;
     panel.dataset.phase=g.phase;
     panel.dataset.realm=String(g.realm||1);
+    el('game-realm-label').textContent=`SHORT QUEST · REALM ${({1:'I',2:'II',6:'VI'})[g.realm]||'I'}`;
     el('game-heading').textContent=complete?`${chapter.realm} complete`:chapter.realm;
     el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}${stage.kind==='boss'?' · Weakness: '+classNames[g.bossWeakness||stage.weakness]:''}`:'Reset';
     el('game-grip').textContent=`Grip: ${g.grip?.value??10}/10`;

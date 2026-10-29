@@ -2,6 +2,8 @@
 // Standalone Node 18+ checks. No npm modules, network, or Firebase credentials.
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
+import {createServer} from 'node:http';
+import {once} from 'node:events';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {dirname,resolve,join} from 'node:path';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
@@ -59,6 +61,18 @@ run('B rules schema: game/ability/ballot/whisper keys explicitly declared',()=>{
    assert.equal(schema.$other['.validate'],false,`${target} unknown-field blocker`);
  }
  console.log(`  /game declared keys: ${Object.keys(gameRules).filter(k=>!k.startsWith('.')).length-1}`);
+});
+run('N Firebase rule wildcard topology: no sibling wildcard collisions',()=>{
+ const errors=[];
+ const visit=(node,path)=>{
+   if(!node || typeof node!=='object' || Array.isArray(node))return;
+   const wildcardKeys=Object.keys(node).filter(key=>key.startsWith('$'));
+   if(wildcardKeys.length>1)errors.push(`${path}: ${wildcardKeys.join(', ')}`);
+   for(const [key,value] of Object.entries(node))if(value && typeof value==='object')visit(value,`${path}/${key}`);
+ };
+ visit(rules,'');
+ assert.deepEqual(errors,[],`Conflicting wildcard rules: ${errors.join('; ')}`);
+ assert(!JSON.stringify(rules).includes('numChildren('),'Unsupported numChildren() in Firebase Realtime Database rules');
 });
 run('C content schema: 15 present stages, lore, conditional tags, all epistemic reveals, weaknesses',()=>{
  const errors=[];
@@ -156,7 +170,7 @@ function write(p,value){
 function setup(size){
  ui=new Map();uid='p0';time=1790000000000;dieValue=20;sawWrites=new Set();notices=[];
  const classes=['skeptic','empiricist','rationalist','pragmatist'];
- room={status:'lobby',hostUid:'p0',players:Object.fromEntries(Array.from({length:size},(_,i)=>[`p${i}`,{connected:true,name:`Player ${i+1}`,class:classes[i%4]}]))};
+ room={status:'lobby',campaign:'short',hostUid:'p0',players:Object.fromEntries(Array.from({length:size},(_,i)=>[`p${i}`,{connected:true,name:`Player ${i+1}`,class:classes[i%4]}]))};
  api={ref:(_,p)=>p,set:async(p,v)=>write(p,v),update:async(p,v)=>{for(const [key,val] of Object.entries(v))write(p+'/'+key,val)}};
  return makeEngine({db:{},api,getContext:()=>({room,uid,code:'TEST'}),content:chapters[0],realm2Content:chapters[1],realm6Content:chapters[2],epilogueContent:epilogue,notice:m=>notices.push(m)});
 }
@@ -301,6 +315,14 @@ async function scenario(size,ending){
  }
  assert(didPlug&&didHandoff,'did not exercise plug and handoff');
  assert.equal(Object.keys(room.game.history).length,15,'missing stages in history');
+ const expectedHistory=chapters.flatMap((ch,r)=>stagesOf(ch).map((stage,local)=>({key:`r${[1,2,6][r]}-s${r*5+local}`,realm:[1,2,6][r],title:stage.title,stageId:stage.id})));
+ assert.deepEqual(Object.keys(room.game.history),expectedHistory.map(x=>x.key),'Realm sequence/history unexpectedly changed');
+ for(const item of expectedHistory){
+   const record=room.game.history[item.key];
+   assert.equal(record.realm,item.realm,`Realm mismatch for ${item.key}`);
+   assert.equal(record.stageId,item.stageId,`Stage mismatch for ${item.key}`);
+   assert.equal(record.title,item.title,`Title mismatch for ${item.key}`);
+ }
  for(const p of players)for(const realm of [1,2,6])for(const kind of ['encounter','boss'])assert.equal(room.game.classUses[p]?.['r'+realm]?.[kind],true,`missing ${kind} method for ${p} r${realm}`);
  assert.equal(room.game.insightUses.p0,true);
  assert.equal(room.game.usedCards['butterfly-perspective'],true);
@@ -408,6 +430,120 @@ try{
    }
    uid='p2';await useMethod(e,'p2');
    uid='p0';e.render(room);assert(textAll(ui.get('game-abilities')).includes('Player 3 used Deduce: Argument'));
+ });
+ await runAsync('O release screen: live realm heading changes I → II → VI → Exit, with accessible ending',async()=>{
+   const e=setup(2);await e.begin();
+   for(const [index,realm,label] of [[0,1,'REALM I'],[5,2,'REALM II'],[10,6,'REALM VI']]){
+     room.game.stageIndex=index;room.game.realm=realm;room.game.phase='reading';
+     uid='p0';e.render(room);
+     assert.match(ui.get('game-realm-label').textContent,new RegExp(label+'$'),`Wrong chapter label at stage ${index}`);
+     assert.equal(ui.get('game-heading').textContent,chapters[[1,2,6].indexOf(realm)].realm);
+   }
+   room.game.phase='epilogue-finished';room.game.epilogue={ending:'unplug',tally:{unplug:2,stay:0},votes:{p0:0,p1:0},decisionMode:'majority'};
+   uid='p1';e.render(room);
+   assert.equal(ui.get('game-realm-label').textContent,'SHORT QUEST · THE EXIT');
+   assert.equal(ui.get('game-panel').hidden,false);
+   assert.equal(ui.get('game-lore').hidden,false);
+   assert.equal(ui.get('game-next').hidden,true);
+   assert.equal(ui.get('game-next').disabled,true);
+ });
+ run('P release lobby: only Short Quest selectable; Full Campaign labeled coming soon',()=>{
+   const html=file('index.html'),js=file('app.js');
+   const selector=html.match(/<select[^>]*id=["']campaign["'][^>]*>([\s\S]*?)<\/select>/);
+   assert(selector,'Campaign selector missing');
+   assert.match(selector[1],/<option[^>]*value="short"[^>]*>/);
+   assert.match(selector[1],/<option[^>]*value="full"[^>]*disabled[^>]*>Full Campaign[^<]*coming soon<\/option>/i);
+   assert.match(js,/const campaign = "short";/,'Creation must force short on the client');
+   assert.match(js,/Only the Short Quest can be started/,'Start action must refuse other modes');
+   assert.match(js,/SHORT_REALM_LABELS\[game.realm\]/,'Room status must recognize Realm VI');
+   assert(!/<option[^>]*value="full"(?![^>]*disabled)[^>]*>/i.test(selector[1]),'Full Campaign is selectable');
+ });
+ run('Q Firebase rule scope: short-only new rooms, no late seat claims, validated fields',()=>{
+   const r=roomRules;
+   assert.match(r['.write'],/newData\.child\('campaign'\)\.val\(\) === 'short'/);
+   assert.doesNotMatch(r['.write'],/newData\.child\('campaign'\)\.val\(\) === 'full'/);
+   assert.equal(r.campaign['.validate'],"newData.val() === 'short'");
+   assert.match(r.seats.$slot['.write'],/child\('status'\)\.val\(\) === 'lobby'/);
+   assert.match(r.status['.write'],/data\.val\(\) === 'lobby'/);
+   assert.match(r.status['.write'],/child\('campaign'\)\.val\(\) === 'short'/);
+   // A player with a seat can still rejoin via their own player record.
+   assert.match(r.players.$uid['.write'],/auth\.uid === \$uid/);
+   assert.match(r.game['.write'],/hostUid/);
+   assert.equal(r.game.$other['.validate'],false);
+   const hasValidate=(node)=>!!node&&typeof node==='object'&&(Object.prototype.hasOwnProperty.call(node,'.validate')||Object.values(node).some(hasValidate));
+   for(const [name,entry] of Object.entries(r.game)){
+     if(name.startsWith('.'))continue;
+     if(name==='$other')continue;
+     assert(hasValidate(entry),`/game/${name} missing validator`);
+   }
+ });
+ await runAsync('R Epilogue tie: independent ballots, host-only resolution, all buttons inaccessible afterward',async()=>{
+   const e=setup(2);await e.begin();
+   room.game.phase='epilogue-vote';room.game.roundId='exit-tie-case';
+   room.game.epilogue={startedAt:time,deadline:time+30000,votes:{},tally:{unplug:0,stay:0},ending:'',decisionMode:''};
+   for(const [player,choice] of [['p0',0],['p1',1]]){
+     uid=player;e.render(room);
+     const b=ui.get('game-choices').children.find(b=>b.textContent.startsWith(epilogue.options[choice].label+' —'));
+     assert(b&&!b.disabled);await b.handlers.click();
+   }
+   await sync();assert.equal(room.game.phase,'epilogue-tie');
+   uid='p1';e.render(room);
+   assert.equal(ui.get('game-choices').children.filter(b=>b.textContent.startsWith('Resolve tie:')).length,0,'Non-host got tie controls');
+   uid='p0';e.render(room);
+   const resolve=ui.get('game-choices').children.find(b=>b.textContent==='Resolve tie: STAY');
+   assert(resolve,'Host tie option missing');await resolve.handlers.click();
+   assert.equal(room.game.phase,'epilogue-finished');assert.equal(room.game.epilogue.ending,'stay');
+   assert.equal(room.game.epilogue.decisionMode,'host-tiebreak');
+   uid='p1';e.render(room);assert.match(textAll(ui.get('game-lore')),/host resolved it/i);
+ });
+ await runAsync('S Epilogue dropout: connected voters can finish, results show to all',async()=>{
+   const e=setup(3);await e.begin();
+   room.game.phase='epilogue-vote';room.game.roundId='exit-dropout-case';
+   room.game.epilogue={startedAt:time,deadline:time+30000,votes:{},tally:{unplug:0,stay:0},ending:'',decisionMode:''};
+   room.players.p2.connected=false;
+   for(const player of ['p0','p1']){
+     uid=player;e.render(room);
+     const b=ui.get('game-choices').children.find(b=>b.textContent.startsWith('UNPLUG —'));
+     assert(b&&!b.disabled);await b.handlers.click();
+   }
+   await sync();assert.equal(room.game.phase,'epilogue-finished');
+   assert.equal(room.game.epilogue.ending,'unplug');
+   assert.equal(room.game.epilogue.tally.unplug,2);
+   uid='p0';e.render(room);assert.match(textAll(ui.get('game-lore')),/majority vote/i);
+ });
+ await runAsync('T Vite public/quest assets: all relative imports and content fetches resolve; Firebase rules excluded',async()=>{
+   const html=file('index.html'),app=file('app.js'),js=file('phase2-engine.js');
+   const assets=new Set([...html.matchAll(/(?:src|href)="(\.\/[^"]+)"/g),...app.matchAll(/(?:from\s+["']|fetch\(["'])(\.\/[\w.\/-]+)/g)].map(m=>m[1]));
+   for(const entry of assets){
+     const clean=entry.replace(/^\.\//,'');
+     assert(!clean.includes('..'),`Unsafe relative import ${entry}`);
+     assert(existsSync(join(quest,clean)),`Unresolved deployed asset: ${entry}`);
+   }
+   for(const name of ['index.html','app.js','phase2-engine.js','styles.css','firebase-config.js','realm1-content.json','realm2-content.json','realm6-content.json','epilogue-content.json']){
+     assert(existsSync(join(quest,name)),`Missing deployed file ${name}`);
+   }
+   assert(!existsSync(join(quest,'database.rules.json')),'Rules must not be under public/quest');
+   assert(!existsSync(join(quest,'tests')),'Tests must not be under public/quest');
+   assert(!/fetch\(["']\/firebase-quest\//.test(app),'Game loads private rule path');
+   // Prove static assets can be fetched under /quest/, without Vite or npm.
+   const server=createServer((req,res)=>{
+     const pathname=new URL(req.url,'http://localhost').pathname;
+     if(!pathname.startsWith('/quest/')){res.writeHead(404);res.end();return;}
+     const name=pathname.slice('/quest/'.length)||'index.html';
+     if(name.includes('..')||!existsSync(join(quest,name))){res.writeHead(404);res.end();return;}
+     res.writeHead(200);res.end(readFileSync(join(quest,name)));
+   });
+   server.listen(0,'127.0.0.1');await once(server,'listening');
+   try{
+     const base=`http://127.0.0.1:${server.address().port}`;
+     for(const name of ['index.html','app.js','phase2-engine.js','realm1-content.json','realm2-content.json','realm6-content.json','epilogue-content.json']){
+       const r=await fetch(`${base}/quest/${name}`);assert.equal(r.status,200,`HTTP ${name}`);
+       assert((await r.text()).length>100,`Empty ${name}`);
+     }
+     assert.equal((await fetch(`${base}/firebase-quest/database.rules.json`)).status,404,'Rules exposed in public');
+     assert.equal((await fetch(`${base}/quest/database.rules.json`)).status,404,'Rules exposed in quest');
+   }finally{server.close();await once(server,'close');}
+   console.log(`  Confirmed ${assets.size} relative references and 7 HTTP asset requests`);
  });
 }finally{Date.now=realNow;Math.random=realRandom;globalThis.setInterval=realInterval;}
 
