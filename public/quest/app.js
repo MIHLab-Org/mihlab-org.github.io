@@ -97,12 +97,15 @@ async function initialize() {
     const realm2Response = await fetch('./realm2-content.json');
     if (!realm2Response.ok) throw new Error('Realm II content failed to load');
     const realm2Content = await realm2Response.json();
+    const realm6Response = await fetch('./realm6-content.json');
+    if (!realm6Response.ok) throw new Error('Realm VI content failed to load');
+    const realm6Content = await realm6Response.json();
     const epilogueResponse = await fetch('./epilogue-content.json');
     if (!epilogueResponse.ok) throw new Error('Epilogue content failed to load');
     const epilogueContent = await epilogueResponse.json();
     engine = makeEngine({ db, api: { ref, set, update, runTransaction },
       getContext: () => ({ room: localRoom, uid: currentUser?.uid, code: currentRoomCode }),
-      content, realm2Content, epilogueContent, notice });
+      content, realm2Content, realm6Content, epilogueContent, notice });
     notice("Connected. Create a room or join your party.", "success");
   } catch (error) {
     console.error(error);
@@ -251,6 +254,7 @@ async function enterRoom(code) {
     localRoom = room;
     renderRoom(room);
     engine?.render(room);
+    if ($('notice').textContent.startsWith('Request sent') && room.game?.abilityFeedback?.[currentUser.uid]?.roundId === room.game?.roundId) clearNotice();
     maybeTakeOverHost(room, code).catch((error) => console.warn("Host migration attempt failed", error));
   }, (error) => {
     console.error(error);

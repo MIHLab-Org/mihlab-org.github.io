@@ -7,7 +7,7 @@ import {dirname,resolve,join} from 'node:path';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const quest=join(root,'public/quest');
 const file=name=>readFileSync(join(quest,name),'utf8');
-const chapters=[1,2].map(i=>JSON.parse(file(`realm${i}-content.json`)));
+const chapters=[1,2,6].map(i=>JSON.parse(file(`realm${i}-content.json`)));
 const epilogue=JSON.parse(file('epilogue-content.json'));
 const rules=JSON.parse(readFileSync(join(root,'firebase-quest/database.rules.json'),'utf8'));
 const roomRules=rules.rules.rooms['$roomCode'];
@@ -33,23 +33,23 @@ run('A DOM IDs: all literal JS references exist',()=>{
  console.log(`  IDs in HTML: ${ids.size}`);
 });
 run('B rules schema: game/ability/ballot/whisper keys explicitly declared',()=>{
- const required=['classUses','insightUses','rerollUses','abilityEvents','abilityFeedback','abilityReveals','discoveredStages','weaknessStages'];
+ const required=['readingReady','readingDeadline','readingSeconds','bossWeakness','classUses','insightUses','rerollUses','abilityEvents','abilityFeedback','abilityReveals','discoveredStages','weaknessStages'];
  const missing=required.filter(k=>!(k in gameRules));
  assert.deepEqual(missing,[],`Missing /game rules: ${missing.join(', ')}`);
  const invalid=[];
  for(const key of required){
   const map=gameRules[key];
   const inner=map?.$uid || map?.$stage || map?.$eventId;
-  if(!inner)invalid.push(`${key}: missing per-entry validator`);
-  if(key==='insightUses'||key==='discoveredStages'||key==='weaknessStages'){
+  if(!inner && !['readingDeadline','readingSeconds','bossWeakness'].includes(key))invalid.push(`${key}: missing per-entry validator`);
+  if(key==='insightUses'||key==='discoveredStages'||key==='weaknessStages'||key==='readingReady'){
     if(typeof inner?.['.validate']!=='string')invalid.push(`${key}: missing value validator`);
   }else if(key==='classUses'||key==='rerollUses'){
-    if(!inner?.r1?.['.validate']||!inner?.r2?.['.validate']||inner?.$other?.['.validate']!==false)invalid.push(`${key}: missing per-realm checks or unknown-field denial`);
-  }else{
+    if((key==='classUses' ? ['r1','r2','r6'].some(r=>!inner?.[r]?.encounter?.['.validate']||!inner?.[r]?.boss?.['.validate']||inner?.[r]?.$other?.['.validate']!==false):['r1','r2','r6'].some(r=>!inner?.[r]?.['.validate'])) || inner?.$other?.['.validate']!==false)invalid.push(`${key}: missing per-realm checks or unknown-field denial`);
+  }else if(!['readingDeadline','readingSeconds','bossWeakness'].includes(key)){
     if(!inner?.['.validate']||inner?.$other?.['.validate']!==false)invalid.push(`${key}: record/unknown-field validation missing`);
   }
  }
- for(const key of ['learningBonus','weaknessBonus'])if(!gameRules[key]?.['.validate'])invalid.push(`${key}: missing numeric validator`);
+ for(const key of ['learningBonus','weaknessBonus','readingDeadline','readingSeconds','bossWeakness'])if(!gameRules[key]?.['.validate'])invalid.push(`${key}: missing numeric validator`);
  assert.deepEqual(invalid,[],invalid.join(', '));
  assert.equal(gameRules.$other['.validate'],false);
  for(const [target,fields] of [['abilities',['roundId','type','requestId','optionId','intent','cardId']],['ballots',['roundId','choice','at','revised']],['whispers',['roundId','reason','emoji']]]){
@@ -60,7 +60,7 @@ run('B rules schema: game/ability/ballot/whisper keys explicitly declared',()=>{
  }
  console.log(`  /game declared keys: ${Object.keys(gameRules).filter(k=>!k.startsWith('.')).length-1}`);
 });
-run('C content schema: 10 present stages, lore, conditional tags, all epistemic reveals, weaknesses',()=>{
+run('C content schema: 15 present stages, lore, conditional tags, all epistemic reveals, weaknesses',()=>{
  const errors=[];
  for(let r=0;r<chapters.length;r++) for(const stage of stagesOf(chapters[r])){
    const key=`Realm ${r+1}/${stage.id}`;
@@ -95,7 +95,7 @@ run('D answer diversity: theory-level STRONG counts, <=40% of available stages',
      const key=s.options.find(o=>o.tag==='STRONG').loreCard.theory.name;
      per[key]=(per[key]||0)+1;count[key]=(count[key]||0)+1;
    }
-   console.log(`  Realm ${r+1}: ${Object.entries(per).map(([k,v])=>`${k}=${v}`).join('; ')}`);
+   console.log(`  Realm ${["I","II","VI"][r]}: ${Object.entries(per).map(([k,v])=>`${k}=${v}`).join('; ')}`);
  }
  const offenders=Object.entries(count).filter(([k,v])=>v/total>0.4);
  assert.deepEqual(offenders,[],`Overrepresented: ${JSON.stringify(offenders)}`);
@@ -158,11 +158,11 @@ function setup(size){
  const classes=['skeptic','empiricist','rationalist','pragmatist'];
  room={status:'lobby',hostUid:'p0',players:Object.fromEntries(Array.from({length:size},(_,i)=>[`p${i}`,{connected:true,name:`Player ${i+1}`,class:classes[i%4]}]))};
  api={ref:(_,p)=>p,set:async(p,v)=>write(p,v),update:async(p,v)=>{for(const [key,val] of Object.entries(v))write(p+'/'+key,val)}};
- return makeEngine({db:{},api,getContext:()=>({room,uid,code:'TEST'}),content:chapters[0],realm2Content:chapters[1],epilogueContent:epilogue,notice:m=>notices.push(m)});
+ return makeEngine({db:{},api,getContext:()=>({room,uid,code:'TEST'}),content:chapters[0],realm2Content:chapters[1],realm6Content:chapters[2],epilogueContent:epilogue,notice:m=>notices.push(m)});
 }
 function textAll(node){return [node.textContent,...node.children.flatMap(textAll)].join(' ')}
 const flush=()=>new Promise(r=>setImmediate(r));
-async function sync(){uid=room.hostUid;tick();await flush();}
+async function sync(){for(let i=0;i<4;i++){uid=room.hostUid;tick();await flush();}}
 async function hostNext(e){uid=room.hostUid;e.render(room);const b=ui.get('game-next');assert(b&&!b.hidden&&!b.disabled,`Host next absent in ${room.game?.phase}`);await b.handlers.click();}
 async function cast(e,player,index){
  uid=player;e.render(room);const s=stages[room.game.stageIndex];const button=ui.get('game-choices').children.find(b=>b.textContent===s.options[index].text);
@@ -175,7 +175,7 @@ async function useMethod(e,player){
  const b=ui.get('game-abilities').children.find(b=>b.tag==='button'&&b.textContent.includes(label));
  assert(b,`No ${klass} action in ${room.game.phase}`);
  await b.handlers.click();time+=10;await sync();
- assert(room.game.classUses[player]?.['r'+room.game.realm],`Class ability not consumed for ${player}`);
+ assert(room.game.classUses[player]?.['r'+room.game.realm]?.[room.game.stageIndex%5<2?'encounter':'boss'],`Class ability not consumed for ${player}`);
  assert(room.game.abilityFeedback[player].accepted,room.game.abilityFeedback[player].message);
  assert(Object.values(room.game.abilityEvents).some(ev=>ev.uid===player&&ev.message.includes(label)));
  if(klass==='empiricist' && [1,6].includes(room.game.stageIndex)){
@@ -204,14 +204,16 @@ async function ensureProgress(e){
  while(room.game.phase!=='epilogue-vote'){
    assert(++count<150,`dead end ${room.game.phase} stage ${room.game.stageIndex}`);
    const g=room.game;
-   if(g.phase==='choice'){
+   if(g.phase==='reading'){time=g.readingDeadline+1;await sync();assert.equal(room.game.phase,'choice');}
+   else if(g.phase==='epilogue-reading'){time=g.readingDeadline+1;await sync();assert.equal(room.game.phase,'epilogue-vote');}
+   else if(g.phase==='choice'){
      const s=stages[g.stageIndex],eligible=g.stageIndex%5===3?[g.spotlightUid]:Object.keys(room.players).filter(x=>room.players[x].connected);
      // Class methods only once per realm. Hold Empiricist until fish and Rationalist until the Cogito.
      for(const player of Object.keys(room.players)){
        const klass=room.players[player].class;
-       if(g.classUses?.[player]?.['r'+g.realm])continue;
-       const when=klass==='empiricist'?(g.realm===1?1:6):klass==='rationalist'&&g.realm===2?7:g.realm===1?0:5;
-       if(g.stageIndex===when)await useMethod(e,player);
+       if(g.classUses?.[player]?.['r'+g.realm]?.[(g.stageIndex%5<2?'encounter':'boss')])continue;
+       const when=(g.stageIndex%5>=2)?(g.realm===1?2:g.realm===2?7:12):(klass==='empiricist'?(g.realm===1?1:g.realm===2?6:11):(g.realm===1?0:g.realm===2?5:10));
+       if(g.stageIndex===when || (g.stageIndex%5===2 && (g.stageIndex%5<2?'encounter':'boss')==='boss'))await useMethod(e,player);
      }
      if(g.stageIndex===5&&!g.insightUses?.p0){
        // Using a class method does not prevent campaign Insight, and vice versa.
@@ -236,7 +238,7 @@ async function ensureProgress(e){
  }
 }
 async function scenario(size,ending){
- const e=setup(size);await e.begin();assert.equal(room.game.stageIndex,0);
+ const e=setup(size);await e.begin();assert.equal(room.game.stageIndex,0);time=room.game.readingDeadline+1;await sync();assert.equal(room.game.phase,'choice');
  const players=Object.keys(room.players);
  // First choice: deliberately disagree to enter debate; one ability occurs during debate.
  await cast(e,'p0',0);await cast(e,'p1',2);
@@ -256,9 +258,11 @@ async function scenario(size,ending){
  let didPlug=false,didHandoff=false;
  let guard=0;
  while(room.game.phase!=='epilogue-vote'){
-   assert(++guard<180,`dead end ${room.game.phase} ${room.game.stageIndex}`);
+   assert(++guard<320,`dead end ${room.game.phase} ${room.game.stageIndex}`);
    const g=room.game,stage=stages[g.stageIndex];
-   if(g.phase==='choice'){
+   if(g.phase==='reading'){time=g.readingDeadline+1;await sync();assert.equal(room.game.phase,'choice');}
+   else if(g.phase==='epilogue-reading'){time=g.readingDeadline+1;await sync();assert.equal(room.game.phase,'epilogue-vote');}
+   else if(g.phase==='choice'){
      if(g.stageIndex===2&&!didPlug){
        room.game.grip.value=1;
        const eligible=g.stageIndex%5===3?[g.spotlightUid]:players;
@@ -274,15 +278,15 @@ async function scenario(size,ending){
      }
      for(const player of players){
        const klass=room.players[player].class;
-       if(g.classUses?.[player]?.['r'+g.realm])continue;
-       const when=klass==='empiricist'?(g.realm===1?1:6):klass==='rationalist'&&g.realm===2?7:g.realm===1?0:5;
-       if(g.stageIndex===when)await useMethod(e,player);
+       if(g.classUses?.[player]?.['r'+g.realm]?.[(g.stageIndex%5<2?'encounter':'boss')])continue;
+       const when=(g.stageIndex%5>=2)?(g.realm===1?2:g.realm===2?7:12):(klass==='empiricist'?(g.realm===1?1:g.realm===2?6:11):(g.realm===1?0:g.realm===2?5:10));
+       if(g.stageIndex===when || (g.stageIndex%5===2 && (g.stageIndex%5<2?'encounter':'boss')==='boss'))await useMethod(e,player);
      }
      if(g.stageIndex===5&&!g.insightUses?.p0){
        uid='p0';e.render(room);const b=ui.get('game-abilities').children.find(x=>x.tag==='button'&&x.textContent.startsWith('Use Insight:'));
        assert(b,'Insight unavailable after beating Zhuangzi');await b.handlers.click();await sync();
        assert(room.game.insightUses.p0,'insight flag not set');
-       assert(room.game.classUses.p0.r2,'class and Insight should be independent');
+       assert(room.game.classUses.p0?.r2?.encounter,'class and Insight should be independent');
      }
      const eligible=g.stageIndex%5===3?[g.spotlightUid]:players;
      for(const player of eligible)await cast(e,player,strongIndex(stage,room.game));
@@ -296,29 +300,29 @@ async function scenario(size,ending){
    else throw Error(`Unexpected ${g.phase}`);
  }
  assert(didPlug&&didHandoff,'did not exercise plug and handoff');
- assert.equal(Object.keys(room.game.history).length,10,'missing stages in history');
- for(const p of players)for(const realm of [1,2])assert.equal(room.game.classUses[p]?.['r'+realm],true,`missing method for ${p} r${realm}`);
+ assert.equal(Object.keys(room.game.history).length,15,'missing stages in history');
+ for(const p of players)for(const realm of [1,2,6])for(const kind of ['encounter','boss'])assert.equal(room.game.classUses[p]?.['r'+realm]?.[kind],true,`missing ${kind} method for ${p} r${realm}`);
  assert.equal(room.game.insightUses.p0,true);
  assert.equal(room.game.usedCards['butterfly-perspective'],true);
- assert(room.game.insightCards['revisable-knowledge']);
+ assert(room.game.insightCards['revisable-knowledge']);assert(room.game.insightCards['lived-agency']);
  for(const p of players){uid=p;e.render(room);const b=ui.get('game-choices').children.find(x=>x.textContent.startsWith(epilogue.options[ending].label+' —'));assert(b);await b.handlers.click();}
  await sync();assert.equal(room.game.phase,'epilogue-finished');assert.equal(room.game.epilogue.ending,ending===0?'unplug':'stay');
  uid=room.hostUid;e.render(room);assert(textAll(ui.get('game-lore')).includes('The Unscripted Door')||textAll(ui.get('game-lore')).includes('The World You Choose'));
  // The runtime write recorder includes fields from whole-game set(), newStage(), and update() paths.
  const missing=[...sawWrites].filter(k=>!(k in gameRules));
  assert.deepEqual(missing,[],`Unknown /game keys (including newStage/update()): ${missing.join(', ')}`);
- console.log(`  ${size} players → ${ending===0?'UNPLUG':'STAY'}: stages=10, classUses=${players.length*2}, game writes=${sawWrites.size}, handoff=yes, plug=yes, Insight=yes`);
+ console.log(`  ${size} players → ${ending===0?'UNPLUG':'STAY'}: stages=15, classUses=${players.length*6}, game writes=${sawWrites.size}, handoff=yes, plug=yes, Insight=yes`);
 }
 try{
  Date.now=()=>time;
  Math.random=()=>((dieValue-1)+0.001)/20;
  globalThis.document={getElementById(id){if(!ui.has(id))ui.set(id,element());return ui.get(id)},createElement:element};
  globalThis.setInterval=callback=>{tick=callback;return 1};
- await runAsync('G headless full run CURRENT REALMS (I → II → Epilogue), 2/3/6 players, both endings, flags, debate, retries, plug, handoff',async()=>{
+ await runAsync('G headless full run CURRENT REALMS (I → II → VI → Epilogue), 2/3/6 players, both endings, flags, debate, retries, plug, handoff',async()=>{
    for(const size of [2,3,6])for(const ending of [0,1])await scenario(size,ending);
  });
  await runAsync('H visible ability feedback: accepted and rejected requests, separate cooldowns',async()=>{
-   const e=setup(2);await e.begin();
+   const e=setup(2);await e.begin();time=room.game.readingDeadline+1;await sync();
    await useMethod(e,'p0');
    // A second request in the same realm is rejected by the host with a specific message.
    const g=room.game;
@@ -331,11 +335,81 @@ try{
    // A class use never marks a campaign Insight flag.
    assert.equal(room.game.insightUses?.p0,undefined);
  });
+ await runAsync('I boss weakness drawn only from connected player classes (including absent-class fallback)',async()=>{
+   for(const count of [2,3,6]){
+     const e=setup(count);await e.begin();
+     let seen=0,guard=0;
+     while(room.game.phase!=='epilogue-reading'&&room.game.phase!=='epilogue-vote'){
+       assert(++guard<290,'weakness traversal stalled');
+       const g=room.game,stage=stages[g.stageIndex];
+       if(g.phase==='reading'){
+         if(g.stageIndex%5>=2){
+           const present=new Set(Object.values(room.players).filter(p=>p.connected).map(p=>p.class));
+           assert(present.has(g.bossWeakness),`stage ${stage.id}: absent class ${g.bossWeakness}`);seen++;
+         }
+         time=g.readingDeadline+1;await sync();
+       }else if(g.phase==='choice'){
+         const eligible=g.stageIndex%5===3?[g.spotlightUid]:Object.keys(room.players);
+         for(const player of eligible)await cast(e,player,strongIndex(stage,g));await sync();
+       }else if(g.phase==='debate'){time=g.debateDeadline+1;await sync();}
+       else if(g.phase==='ready-to-roll'){dieValue=20;await hostNext(e);}
+       else if(g.phase==='rolling'){time=g.rollRevealAt+1;await sync();}
+       else if(['result','lore','realm-complete','plugged'].includes(g.phase))await hostNext(e);
+       else throw Error(`unrecognized ${g.phase}`);
+     }
+     assert.equal(seen,9,`Expected 9 boss phases, got ${seen}`);
+   }
+ });
+ await runAsync('J votes reject READING, accept CHOOSING, survive stale-state UI re-renders',async()=>{
+   const e=setup(2);await e.begin();
+   assert.equal(room.game.phase,'reading');
+   uid='p0';e.render(room);
+   assert(ui.get('game-choices').children.filter(x=>x.tag==='button').every(x=>x.disabled));
+   await e.vote(0);assert(!room.ballots?.p0,'reading vote should not be saved');
+   for(const player of ['p0','p1']){uid=player;assert.equal(await e.readyToChoose(),true);}
+   const before=time;await sync();assert.equal(room.game.phase,'choice');assert(time<room.game.readingDeadline,'ready should end reading early');
+   uid='p0';e.render(room);const chosen=stages[0].options[0];
+   const button=ui.get('game-choices').children.find(x=>x.textContent===chosen.text);assert(button&&!button.disabled);
+   await button.handlers.click();const vote=clone(room.ballots.p0);delete room.ballots.p0;
+   e.render(room);const retained=ui.get('game-choices').children.find(x=>x.textContent===chosen.text);
+   assert(retained.className.includes('selected'),'pending selection lost on re-render');
+   assert(retained.disabled,'duplicate submission enabled while vote pending');room.ballots.p0=vote;
+   e.render(room);assert(ui.get('game-choices').children.find(x=>x.textContent===chosen.text).className.includes('selected'));
+ });
+ await runAsync('K Pragmatist Test and failed-roll reroll are independent',async()=>{
+   const e=setup(6);await e.begin();time=room.game.readingDeadline+1;await sync();
+   await useMethod(e,'p3');assert.equal(room.game.classUses.p3.r1.encounter,true);
+   const g=room.game,weak=stages[g.stageIndex].options.findIndex(o=>o.tag==='WEAK');
+   for(const player of Object.keys(room.players))await cast(e,player,weak);
+   await sync();assert.equal(room.game.phase,'ready-to-roll');
+   dieValue=1;await hostNext(e);time=room.game.rollRevealAt+1;await sync();assert.equal(room.game.phase,'result');assert.equal(room.game.success,false);
+   uid='p3';e.render(room);const b=ui.get('game-abilities').children.find(x=>x.tag==='button'&&x.textContent.includes('reroll failed'));
+   assert(b,'Test spent the independent reroll');await b.handlers.click();await sync();
+   assert.equal(room.game.rerollUses.p3.r1,true);assert.equal(room.game.classUses.p3.r1.encounter,true);
+   assert(Object.values(room.game.abilityEvents).some(v=>v.message.includes('Test reroll')));
+ });
+ await runAsync('L READING/CHOOSING clocks and ready transition for encounters and Epilogue',async()=>{
+   const e=setup(3);await e.begin();assert(room.game.readingSeconds>=15&&room.game.readingSeconds<=30);
+   for(const player of Object.keys(room.players)){uid=player;await e.readyToChoose();}
+   await sync();assert.equal(room.game.phase,'choice');assert.equal(room.game.deadline-time,30000);
+   // Epilogue uses the same two phases and separately controlled deadlines.
+   const g=room.game;g.phase='epilogue-reading';g.readingReady={};g.readingDeadline=time+20000;
+   g.epilogue={startedAt:time,deadline:time+50000,votes:{},tally:{stay:0,unplug:0},ending:'',decisionMode:''};
+   for(const player of Object.keys(room.players)){uid=player;await e.readyToChoose();}
+   await sync();assert.equal(room.game.phase,'epilogue-vote');assert.equal(room.game.epilogue.deadline-time,30000);
+ });
+ await runAsync('M information reveals are attributed and visible to every participant',async()=>{
+   const e=setup(3);await e.begin();time=room.game.readingDeadline+1;await sync();
+   await useMethod(e,'p0');
+   for(const player of ['p1','p2']){
+     uid=player;e.render(room);
+     const transcript=textAll(ui.get('game-abilities'));
+     assert(transcript.includes('Player 1 used Interrogate: Hidden premise'),`Reveal hidden from ${player}`);
+   }
+   uid='p2';await useMethod(e,'p2');
+   uid='p0';e.render(room);assert(textAll(ui.get('game-abilities')).includes('Player 3 used Deduce: Argument'));
+ });
 }finally{Date.now=realNow;Math.random=realRandom;globalThis.setInterval=realInterval;}
-// The content for Realm VI is intentionally deferred to Pass 1. Do NOT misreport a complete Short Quest.
-if(!existsSync(join(quest,'realm6-content.json'))){
- deferred('C/D/E Short Quest-wide Realm VI coverage','Realm VI content is Pass 1; current 10 stages checked');
- deferred('G full I → II → VI → Epilogue','Realm VI does not exist until Pass 1; current complete I → II → Epilogue path simulated');
-}
+
 console.log(`TOTAL ${checks-failures} passed, ${failures} failed, ${deferrals} deferred`);
 process.exitCode=failures?1:0;

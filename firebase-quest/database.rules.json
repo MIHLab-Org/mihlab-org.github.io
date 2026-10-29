@@ -74,13 +74,53 @@
             ".validate": true
           },
           "diceResults": {
-            ".validate": true
+            "$round": {
+              ".validate": "newData.hasChildren(['die','modifier','learningBonus','weaknessBonus','total','dc','success','at'])",
+              "die": {
+                ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 20"
+              },
+              "modifier": {
+                ".validate": "newData.isNumber() && newData.val() >= -2 && newData.val() <= 7"
+              },
+              "learningBonus": {
+                ".validate": "newData.isNumber() && newData.val() >= 0"
+              },
+              "weaknessBonus": {
+                ".validate": "newData.val() === 0 || newData.val() === 5"
+              },
+              "total": {
+                ".validate": "newData.isNumber()"
+              },
+              "dc": {
+                ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 30"
+              },
+              "success": {
+                ".validate": "newData.isBoolean()"
+              },
+              "at": {
+                ".validate": "newData.isNumber() && newData.val() >= 0"
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
           },
           "grip": {
             ".validate": true
           },
           "insightCards": {
-            ".validate": true
+            "butterfly-perspective": {
+              ".validate": "newData.val() === true"
+            },
+            "revisable-knowledge": {
+              ".validate": "newData.val() === true"
+            },
+            "lived-agency": {
+              ".validate": "newData.val() === true"
+            },
+            "$other": {
+              ".validate": false
+            }
           },
           "$other": {
             ".validate": false
@@ -146,7 +186,18 @@
             ".validate": true
           },
           "usedCards": {
-            ".validate": true
+            "butterfly-perspective": {
+              ".validate": "newData.val() === true"
+            },
+            "revisable-knowledge": {
+              ".validate": "newData.val() === true"
+            },
+            "lived-agency": {
+              ".validate": "newData.val() === true"
+            },
+            "$other": {
+              ".validate": false
+            }
           },
           "completedAt": {
             ".validate": true
@@ -170,7 +221,38 @@
             ".validate": true
           },
           "history": {
-            ".validate": true
+            "$entry": {
+              ".validate": "newData.hasChildren(['realm','stageId','title','choices'])",
+              "realm": {
+                ".validate": "newData.val() === 1 || newData.val() === 2 || newData.val() === 6"
+              },
+              "stageId": {
+                ".validate": "newData.isString() && newData.val().length <= 100"
+              },
+              "title": {
+                ".validate": "newData.isString() && newData.val().length <= 200"
+              },
+              "choices": {
+                "$uid": {
+                  ".validate": "newData.hasChildren(['choice','stance','tag'])",
+                  "choice": {
+                    ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3"
+                  },
+                  "stance": {
+                    ".validate": "newData.isString() && newData.val().length <= 250"
+                  },
+                  "tag": {
+                    ".validate": "newData.val() === 'STRONG' || newData.val() === 'DEFENSIBLE' || newData.val() === 'WEAK'"
+                  },
+                  "$other": {
+                    ".validate": false
+                  }
+                }
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
           },
           "epilogue": {
             ".validate": true
@@ -178,10 +260,37 @@
           "classUses": {
             "$uid": {
               "r1": {
-                ".validate": "newData.val() === true"
+                "encounter": {
+                  ".validate": "newData.val() === true"
+                },
+                "boss": {
+                  ".validate": "newData.val() === true"
+                },
+                "$other": {
+                  ".validate": false
+                }
               },
               "r2": {
-                ".validate": "newData.val() === true"
+                "encounter": {
+                  ".validate": "newData.val() === true"
+                },
+                "boss": {
+                  ".validate": "newData.val() === true"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              },
+              "r6": {
+                "encounter": {
+                  ".validate": "newData.val() === true"
+                },
+                "boss": {
+                  ".validate": "newData.val() === true"
+                },
+                "$other": {
+                  ".validate": false
+                }
               },
               "$other": {
                 ".validate": false
@@ -198,6 +307,9 @@
               },
               "$other": {
                 ".validate": false
+              },
+              "r6": {
+                ".validate": "newData.val() === true"
               }
             }
           },
@@ -229,7 +341,7 @@
                 ".validate": "newData.isString() && newData.val().length <= 128"
               },
               "realm": {
-                ".validate": "newData.val() === 1 || newData.val() === 2"
+                ".validate": "newData.val() === 1 || newData.val() === 2 || newData.val() === 6"
               },
               "message": {
                 ".validate": "newData.isString() && newData.val().length <= 1800"
@@ -275,7 +387,7 @@
                 ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 9"
               },
               "realm": {
-                ".validate": "newData.val() === 1 || newData.val() === 2"
+                ".validate": "newData.val() === 1 || newData.val() === 2 || newData.val() === 6"
               },
               "type": {
                 ".validate": "newData.val() === 'skeptic' || newData.val() === 'empiricist' || newData.val() === 'rationalist' || newData.val() === 'pragmatist'"
@@ -296,6 +408,21 @@
           },
           "weaknessBonus": {
             ".validate": "newData.val() === 0 || newData.val() === 5"
+          },
+          "readingReady": {
+            "$uid": {
+              ".write": "auth !== null && auth.uid === $uid && root.child('rooms').child($roomCode).child('players').child(auth.uid).exists() && root.child('rooms').child($roomCode).child('expiresAt').val() > now && (root.child('rooms').child($roomCode).child('game').child('phase').val() === 'reading' || root.child('rooms').child($roomCode).child('game').child('phase').val() === 'epilogue-reading') && newData.val() === true && !data.exists()",
+              ".validate": "newData.val() === true"
+            }
+          },
+          "readingDeadline": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "readingSeconds": {
+            ".validate": "newData.isNumber() && newData.val() >= 15 && newData.val() <= 30"
+          },
+          "bossWeakness": {
+            ".validate": "newData.val() === '' || newData.val() === 'skeptic' || newData.val() === 'empiricist' || newData.val() === 'rationalist' || newData.val() === 'pragmatist'"
           }
         },
         "$other": {
@@ -303,7 +430,7 @@
         },
         "ballots": {
           "$uid": {
-            ".write": "auth !== null && auth.uid === $uid && root.child('rooms').child($roomCode).child('expiresAt').val() > now && root.child('rooms').child($roomCode).child('players').child(auth.uid).exists() && root.child('rooms').child($roomCode).child('status').val() === 'started' && newData.child('roundId').val() === root.child('rooms').child($roomCode).child('game').child('roundId').val() && ((root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 3 && root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 8) || root.child('rooms').child($roomCode).child('game').child('spotlightUid').val() === auth.uid) && ((root.child('rooms').child($roomCode).child('game').child('phase').val() === 'choice' && (!data.exists() || data.child('roundId').val() !== newData.child('roundId').val()) && !newData.hasChild('revised') && now <= root.child('rooms').child($roomCode).child('game').child('deadline').val()) || (root.child('rooms').child($roomCode).child('game').child('phase').val() === 'debate' && data.exists() && data.child('roundId').val() === newData.child('roundId').val() && !data.hasChild('revised') && newData.child('revised').val() === true && newData.child('choice').val() !== data.child('choice').val() && now <= root.child('rooms').child($roomCode).child('game').child('debateDeadline').val()) || (root.child('rooms').child($roomCode).child('game').child('phase').val() === 'epilogue-vote' && (!data.exists() || data.child('roundId').val() !== newData.child('roundId').val()) && !newData.hasChild('revised') && (newData.child('choice').val() === 0 || newData.child('choice').val() === 1) && now <= root.child('rooms').child($roomCode).child('game').child('epilogue').child('deadline').val()))",
+            ".write": "auth !== null && auth.uid === $uid && root.child('rooms').child($roomCode).child('expiresAt').val() > now && root.child('rooms').child($roomCode).child('players').child(auth.uid).exists() && root.child('rooms').child($roomCode).child('status').val() === 'started' && newData.child('roundId').val() === root.child('rooms').child($roomCode).child('game').child('roundId').val() && ((root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 3 && root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 8 && root.child('rooms').child($roomCode).child('game').child('stageIndex').val() !== 13) || root.child('rooms').child($roomCode).child('game').child('spotlightUid').val() === auth.uid) && ((root.child('rooms').child($roomCode).child('game').child('phase').val() === 'choice' && (!data.exists() || data.child('roundId').val() !== newData.child('roundId').val()) && !newData.hasChild('revised') && now <= root.child('rooms').child($roomCode).child('game').child('deadline').val()) || (root.child('rooms').child($roomCode).child('game').child('phase').val() === 'debate' && data.exists() && data.child('roundId').val() === newData.child('roundId').val() && !data.hasChild('revised') && newData.child('revised').val() === true && newData.child('choice').val() !== data.child('choice').val() && now <= root.child('rooms').child($roomCode).child('game').child('debateDeadline').val()) || (root.child('rooms').child($roomCode).child('game').child('phase').val() === 'epilogue-vote' && (!data.exists() || data.child('roundId').val() !== newData.child('roundId').val()) && !newData.hasChild('revised') && (newData.child('choice').val() === 0 || newData.child('choice').val() === 1) && now <= root.child('rooms').child($roomCode).child('game').child('epilogue').child('deadline').val()))",
             ".validate": "newData.hasChildren(['roundId','choice','at']) && newData.child('roundId').isString() && newData.child('choice').isNumber() && newData.child('choice').val() >= 0 && newData.child('choice').val() <= 3 && newData.child('at').isNumber() && newData.child('at').val() <= now + 60000 && (!newData.hasChild('revised') || newData.child('revised').val() === true)",
             "$other": {
               ".validate": false
@@ -325,7 +452,7 @@
         "abilities": {
           "$uid": {
             ".write": "auth !== null && auth.uid === $uid && root.child('rooms').child($roomCode).child('expiresAt').val() > now && root.child('rooms').child($roomCode).child('players').child(auth.uid).exists() && root.child('rooms').child($roomCode).child('status').val() === 'started' && (newData.val() !== null && !data.exists() && (newData.child('roundId').val() === root.child('rooms').child($roomCode).child('game').child('roundId').val() && (newData.child('type').val() === 'skeptic' || newData.child('type').val() === 'empiricist' || newData.child('type').val() === 'rationalist' || newData.child('type').val() === 'pragmatist' || newData.child('type').val() === 'insight'))) || auth !== null && root.child('rooms').child($roomCode).child('hostUid').val() === auth.uid && root.child('rooms').child($roomCode).child('expiresAt').val() > now && newData.val() === null",
-            ".validate": "newData.hasChildren(['roundId','type','requestId']) && newData.child('roundId').isString() && newData.child('type').isString() && newData.child('requestId').isString() && (!newData.hasChild('cardId') || (newData.child('type').val() === 'insight' && (newData.child('cardId').val() === 'butterfly-perspective' || newData.child('cardId').val() === 'revisable-knowledge'))) && (!newData.hasChild('optionId') || ((newData.child('type').val() === 'skeptic' || newData.child('type').val() === 'pragmatist') && newData.child('optionId').isString())) && (!newData.hasChild('intent') || (newData.child('type').val() === 'pragmatist' && newData.child('intent').val() === 'reroll'))",
+            ".validate": "newData.hasChildren(['roundId','type','requestId']) && newData.child('roundId').isString() && newData.child('type').isString() && newData.child('requestId').isString() && (!newData.hasChild('cardId') || (newData.child('type').val() === 'insight' && (newData.child('cardId').val() === 'butterfly-perspective' || newData.child('cardId').val() === 'revisable-knowledge' || newData.child('cardId').val() === 'lived-agency'))) && (!newData.hasChild('optionId') || ((newData.child('type').val() === 'skeptic' || newData.child('type').val() === 'pragmatist') && newData.child('optionId').isString())) && (!newData.hasChild('intent') || (newData.child('type').val() === 'pragmatist' && newData.child('intent').val() === 'reroll'))",
             "$other": {
               ".validate": false
             },
@@ -336,7 +463,7 @@
               ".validate": "newData.val() === 'skeptic' || newData.val() === 'empiricist' || newData.val() === 'rationalist' || newData.val() === 'pragmatist' || newData.val() === 'insight'"
             },
             "cardId": {
-              ".validate": "newData.val() === 'butterfly-perspective' || newData.val() === 'revisable-knowledge'"
+              ".validate": "newData.val() === 'butterfly-perspective' || newData.val() === 'revisable-knowledge' || newData.val() === 'lived-agency'"
             },
             "requestId": {
               ".validate": "newData.isString() && newData.val().length <= 128"

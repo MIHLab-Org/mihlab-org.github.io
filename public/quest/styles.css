@@ -256,3 +256,20 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8p
   #game-panel .ability-detail {padding:12px;font-size:.9rem;}
   #game-abilities button {max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left;}
 }
+
+/* Realm VI — the pleasure garden: luminous, inviting, and unsettling. CSS-only. */
+#game-panel[data-realm="6"] {
+  --realm-brass: #f5cb83;
+  --realm-mist: #d7b3ec;
+  background:
+    radial-gradient(ellipse 70% 45% at 95% 5%, rgba(173,113,214,.22), transparent 75%),
+    radial-gradient(ellipse 60% 55% at 0% 100%, rgba(245,203,131,.13), transparent 75%),
+    linear-gradient(152deg,#21172f,#101a29 64%,#1c1b35);
+  border-color: #7a5d9c;
+}
+#game-panel[data-realm="6"] .choice {border-color: #a68abd;background:rgba(54,35,75,.84);}
+#game-panel[data-realm="6"] .choice:hover:not(:disabled){border-color:#f5cb83;background:rgba(84,48,103,.92);}
+#game-panel[data-realm="6"] .choice.selected{outline:2px solid #f5cb83;background:rgba(87,66,62,.9);}
+#game-panel[data-phase="reading"] .choice {cursor:default;opacity:.78;}
+#game-next[hidden] {display:none !important;}
+#game-timer {font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:.025em;}

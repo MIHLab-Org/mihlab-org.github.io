@@ -20,16 +20,18 @@ export function effectiveTag(stage,option,game) {
   if(option.id===c.previousStrongOptionId)return 'DEFENSIBLE';
   return option.tag;
 }
-export function makeEngine({ db, api, getContext, content, realm2Content, epilogueContent, notice }) {
+export function makeEngine({ db, api, getContext, content, realm2Content, realm6Content, epilogueContent, notice }) {
   const {ref, set, update} = api;
   const el = id => document.getElementById(id);
-  const realms = [content, realm2Content].filter(Boolean);
+  const realms = [content, realm2Content, realm6Content].filter(Boolean);
+  const realmNumbers = [1,2,6];
   const stages = realms.flatMap((chapter, chapterIndex) => [
-    ...chapter.encounters.map((x, i) => ({...x, kind:'encounter', localIndex:i, realm:chapterIndex+1})),
-    ...chapter.bossPhases.map((x, i) => ({...x, kind:'boss', localIndex:i, realm:chapterIndex+1}))
+    ...chapter.encounters.map((x, i) => ({...x, kind:'encounter', localIndex:i, realm:realmNumbers[chapterIndex]})),
+    ...chapter.bossPhases.map((x, i) => ({...x, kind:'boss', localIndex:i, realm:realmNumbers[chapterIndex]}))
   ]).map((stage,index) => ({...stage,index}));
-  const chapterFor = g => realms[(stageFor(g)?.realm || g?.realm || 1)-1] || content;
+  const chapterFor = g => realms[realmNumbers.indexOf(stageFor(g)?.realm || g?.realm || 1)] || content;
   const chapterStart = realm => stages.findIndex(s => s.realm===realm);
+  const nextRealm = realm => realmNumbers[realmNumbers.indexOf(realm)+1] || null;
   const chapterEnd = realm => stages.reduce((last, s, i) => s.realm===realm ? i : last, -1);
   const isSpotlight = stage => stage?.kind==='boss' && stage.localIndex===1;
   const hasIdentityTwist = stage => stage?.realm===1 && stage.kind==='boss' && stage.localIndex===0;
@@ -78,10 +80,13 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       if(previousEncounters.spotlightSeen) encounters.spotlightSeen=previousEncounters.spotlightSeen;
       if(previousEncounters.spotlightLast) encounters.spotlightLast=previousEncounters.spotlightLast;
     }
+    const duration=Math.min(30,Math.max(15,Math.ceil((stage.scene.length+stage.options.map(o=>o.text).join('').length)/55)));
+    const weakness=stage.kind==='boss'?(()=>{const represented=[...new Set(eligible.map(uid=>getContext().room?.players?.[uid]?.class).filter(Boolean))];const previous=carried?.stageIndex===index?carried.bossWeakness:null;const available=represented.filter(k=>eligible.some(uid=>getContext().room?.players?.[uid]?.class===k && !carried?.classUses?.[uid]?.['r'+stage.realm]?.boss));const pool=available.length?available:represented;return represented.includes(previous)?previous:pool.includes(stage.weakness)?stage.weakness:pool[index%pool.length]||stage.weakness;})():'';
     const result={
-      phase:'choice', schemaVersion:1, startedAt, realm:stage.realm, stageIndex:index, attempt,
+      readingReady:{},readingDeadline:startedAt+duration*1000,readingSeconds:duration,bossWeakness:weakness,
+      phase:'reading', schemaVersion:1, startedAt, realm:stage.realm, stageIndex:index, attempt,
       roundId:`${index}-${attempt}-${startedAt}-${rand(100000)}`,
-      deadline:startedAt+(stage.selectionSeconds || (stage.kind==='boss'?45:60))*1000,
+      deadline:startedAt+duration*1000+((isSpotlight(stage)?45:30)*1000),
       encounters, votes:{}, diceResults:{}, grip:{value:grip}, history,
       insightCards:cards || {}, usedCards:usedCards || {}, abilities:abilities || {}, bossWins,
       classUses:carried.classUses||{}, insightUses:carried.insightUses||{},rerollUses:carried.rerollUses||{},
@@ -110,9 +115,9 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     const grip=g.grip?.value??10;
     const level=grip>=chapter.machine.gripBands.steady.min?'steady':grip>=chapter.machine.gripBands.strained.min?'strained':'critical';
     if(g.phase==='lore')return chapter.machine.betweenStages[stage?.id]?.[level] || '';
-    if(g.phase==='choice' && (g.attempt||0)>0)return chapter.machine.onSecondLook[level];
-    if(g.phase==='choice' && stage?.kind==='boss' && stage.localIndex===0)return chapter.machine.beforeBoss;
-    if(g.phase==='choice' && stage?.localIndex===0)return chapter.machine.opening;
+    if(['reading','choice'].includes(g.phase) && (g.attempt||0)>0)return chapter.machine.onSecondLook[level];
+    if(['reading','choice'].includes(g.phase) && stage?.kind==='boss' && stage.localIndex===0)return chapter.machine.beforeBoss;
+    if(['reading','choice'].includes(g.phase) && stage?.localIndex===0)return chapter.machine.opening;
     return '';
   }
   async function begin() {
@@ -123,6 +128,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     await set(path(),newStage(0,10,abilities,{},{}));
     await set(ref(db,`rooms/${getContext().code}/status`),'started');
   }
+  const pendingVotes=new Map();
   async function vote(choice) {
     const {room,uid,code}=getContext(), g=room?.game,stage=stageFor(g);
     if(!g || !stage?.options[choice] || !eligiblePlayers(g).includes(uid))return;
@@ -133,7 +139,14 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     if(!initial && !revision)return;
     const ballot={roundId:g.roundId,choice,at:Date.now()};
     if(revision)ballot.revised=true;
-    await set(ref(db,`rooms/${code}/ballots/${uid}`),ballot);
+    pendingVotes.set(uid,{roundId:g.roundId,choice});
+    try{await set(ref(db,`rooms/${code}/ballots/${uid}`),ballot);}
+    catch(error){pendingVotes.delete(uid);throw error;}
+  }
+  async function readyToChoose(){
+    const {room,uid}=getContext(),g=room?.game;
+    if(!['reading','epilogue-reading'].includes(g?.phase)||!room.players?.[uid]?.connected)return false;
+    await set(path(`readingReady/${uid}`),true);return true;
   }
   async function giveReason(reason) {
     const {room,uid,code}=getContext(),g=room?.game;
@@ -152,10 +165,10 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
   async function submitAbility(type,optionId='',cardId='',intent='method') {
     const {room,uid,code}=getContext(),g=room?.game,stage=stageFor(g);
     if(!g||!stage)return reject('No active philosophical challenge.');
-    const allowed=['choice','debate'].includes(g.phase);
+    const allowed=['reading','choice','debate'].includes(g.phase);
     const reroll=intent==='reroll'&&g.phase==='result'&&!g.success;
-    if(!allowed&&!reroll)return reject('Abilities can be used during choice or debate; Test rerolls follow a failed result.');
-    if(allowed&&Date.now()>(g.phase==='choice'?g.deadline:g.debateDeadline))return reject('The answer timer has ended.');
+    if(!allowed&&!reroll)return reject('Abilities can be used during reading, choice or debate; Test rerolls follow a failed result.');
+    if(allowed&&Date.now()>(g.phase==='reading'?g.readingDeadline:g.phase==='choice'?g.deadline:g.debateDeadline))return reject('The answer timer has ended.');
     if(!room.players?.[uid]?.connected)return reject('Reconnect before using an ability.');
     if(room.abilities?.[uid]?.roundId===g.roundId)return reject('Your previous request is still pending.');
     const klass=room.players?.[uid]?.class;
@@ -166,7 +179,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       if(!cardId||!g.insightCards?.[cardId]||g.usedCards?.[cardId])return reject('This Insight card is not available.');
     }else{
       if(type!==klass)return reject('That is not your class method.');
-      if(g.classUses?.[uid]?.['r'+g.realm])return reject('Your class method has already been used in this realm.');
+      if(g.classUses?.[uid]?.['r'+g.realm]?.[stage.kind])return reject('Your class method has already been used in this realm section.');
       if((klass==='skeptic'||klass==='pragmatist')&&!stage.options.some(opt=>opt.id===optionId))return reject('Select one option to investigate.');
     }
     const request={roundId:g.roundId,type,requestId:`${uid.slice(0,8)}-${Date.now()}-${rand(100000)}`};
@@ -188,7 +201,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     const cardId=Object.keys(g?.insightCards||{}).find(id=>g.insightCards[id]&&!g.usedCards?.[id]);
     return submitAbility('insight','',cardId);
   }
-  const isEpilogue = g => ['epilogue-vote','epilogue-tie','epilogue-finished'].includes(g?.phase);
+  const isEpilogue = g => ['epilogue-reading','epilogue-vote','epilogue-tie','epilogue-finished'].includes(g?.phase);
   function epilogueBallots(room,g) {
     // Count all valid ballots already cast, even if a voter disconnected afterward.
     return Object.fromEntries(Object.entries(room.ballots||{})
@@ -218,8 +231,9 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
   async function beginEpilogue(g){
     if(!epilogueContent)return notice('The Epilogue content file is missing.','error');
     const startedAt=Date.now();
+    const readSeconds=Math.min(30,Math.max(15,Math.ceil((epilogueContent.opening.length+epilogueContent.options.map(o=>o.text).join('').length)/55)));
     await update(path(),{
-      phase:'epilogue-vote',roundId:`exit-${startedAt}-${rand(100000)}`,
+      phase:'epilogue-reading',readingReady:{},readingDeadline:startedAt+readSeconds*1000,readingSeconds:readSeconds,roundId:`exit-${startedAt}-${rand(100000)}`,
       epilogue:{startedAt,deadline:startedAt+(epilogueContent.selectionSeconds||75)*1000,
         votes:{},tally:{unplug:0,stay:0},ending:'',decisionMode:''}
     });
@@ -252,8 +266,8 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     const methodNames={skeptic:'Interrogate',empiricist:'Observe',rationalist:'Deduce',pragmatist:'Test',insight:'Insight'};
     let message='',detail='',accepted=false;
     const changes={};
-    const initialOrDebate=['choice','debate'].includes(phase);
-    const timely=initialOrDebate&&Date.now()<=(phase==='choice'?g.deadline:g.debateDeadline);
+    const initialOrDebate=['reading','choice','debate'].includes(phase);
+    const timely=initialOrDebate&&Date.now()<=(phase==='reading'?g.readingDeadline:phase==='choice'?g.deadline:g.debateDeadline);
     if(g.abilityFeedback?.[uid]?.requestId===request.requestId){return;}
     if(!room.players?.[uid]?.connected)message='Ability rejected: your player is disconnected.';
     else if(request.intent==='reroll'){
@@ -280,7 +294,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
         message=`${realName(room,uid)} used Insight.`;detail='Insight granted +3 to the next roll.';accepted=true;
       }
     }else if(request.type!==klass)message='Ability rejected: request does not match your class.';
-    else if(g.classUses?.[uid]?.[realmKey])message='Ability rejected: this class method was already used in this realm.';
+    else if(g.classUses?.[uid]?.[realmKey]?.[stage.kind])message='Ability rejected: this class method was already used in this realm section.';
     else{
       const opt=stage.options.find(o=>o.id===request.optionId);
       if(klass==='skeptic'&&!opt)message='Interrogate rejected: choose an available option.';
@@ -290,11 +304,11 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
         else if(klass==='empiricist')detail=`Observation: ${stage.observation}`;
         else if(klass==='rationalist')detail=`Argument: ${stage.argumentForm.premises.map((p,i)=>'P'+(i+1)+': '+p).join(' ')} Conclusion: ${stage.argumentForm.conclusion}`;
         else if(klass==='pragmatist')detail=`Test consequence (${opt.stance}): ${opt.consequence}`;
-        changes[`classUses/${uid}/${realmKey}`]=true;
+        changes[`classUses/${uid}/${realmKey}/${stage.kind}`]=true;
         changes[`abilityReveals/${uid}`]={stageIndex:g.stageIndex,realm:g.realm,type:klass,
           detail,optionId:request.optionId||'',at:Date.now()};
         if(stage.conditional?.triggerClass===klass){changes[`discoveredStages/s${g.stageIndex}`]=true;}
-        if(stage.kind==='boss'&&stage.weakness===klass){
+        if(stage.kind==='boss'&&g.bossWeakness===klass){
           changes[`weaknessStages/s${g.stageIndex}`]=true;
           detail+=` Boss weakness triggered: +5 to the party check.`;
           changes[`abilityReveals/${uid}`].detail=detail;
@@ -316,7 +330,14 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
   }
   async function syncOnce() {
     const {room,code}=getContext(),g=room?.game;
-    if(!g || !['choice','debate','rolling','result','epilogue-vote'].includes(g.phase))return;
+    if(!g || !['reading','choice','debate','rolling','result','epilogue-reading','epilogue-vote'].includes(g.phase))return;
+    if(g.phase==='reading'||g.phase==='epilogue-reading'){
+      const members=getMembers();
+      if(Date.now()<g.readingDeadline && !members.every(uid=>g.readingReady?.[uid]))return;
+      if(g.phase==='reading'){await update(path(),{phase:'choice',deadline:Date.now()+(isSpotlight(stageFor(g))?45:30)*1000});}
+      else await update(path(),{phase:'epilogue-vote','epilogue/deadline':Date.now()+30*1000});
+      return;
+    }
     if(g.phase==='epilogue-vote'){
       const members=getMembers(),ballots=epilogueBallots(room,g);
       if(Date.now()<g.epilogue.deadline && members.some(uid=>!(uid in ballots)))return;
@@ -362,8 +383,8 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     if(!isHost())return;
     const g=getContext().room?.game;if(!g)return;
     if(g.phase==='realm-complete'){
-      if(g.realm<realms.length){
-        await set(path(),newStage(chapterStart(g.realm+1),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,0,null,g.encounters,g.history||{},g));
+      if(nextRealm(g.realm)){
+        await set(path(),newStage(chapterStart(nextRealm(g.realm)),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,0,null,g.encounters,g.history||{},g));
       } else await beginEpilogue(g);
       return;
     }
@@ -407,7 +428,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
   function realName(room,uid){return room.players?.[uid]?.name || 'Player';}
   function renderEpilogue(room,g){
     const ep=epilogueContent,{uid}=getContext(),host=isHost();
-    const voting=g.phase==='epilogue-vote',tie=g.phase==='epilogue-tie',done=g.phase==='epilogue-finished';
+    const reading=g.phase==='epilogue-reading',voting=g.phase==='epilogue-vote',tie=g.phase==='epilogue-tie',done=g.phase==='epilogue-finished';
     const myVote=room.ballots?.[uid]?.roundId===g.roundId?room.ballots[uid].choice:null;
     const tally=g.epilogue?.tally||{unplug:0,stay:0};
     const clearIds=['game-choices','game-whispers','game-reveal','game-debate','game-die','game-lore','game-abilities'];
@@ -417,17 +438,18 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     el('game-heading').textContent=ep.title;
     el('game-stage').textContent=ep.subtitle;
     el('game-grip').textContent=`Final Grip: ${g.grip?.value??10}/10`;
-    el('game-timer').textContent=voting?`${Math.max(0,Math.ceil((g.epilogue.deadline-Date.now())/1000))}s`:'—';
+    el('game-timer').textContent=reading?`READING ${Math.max(0,Math.ceil((g.readingDeadline-Date.now())/1000))}s`:voting?`CHOOSING ${Math.max(0,Math.ceil((g.epilogue.deadline-Date.now())/1000))}s`:'—';
     el('game-scene').textContent=ep.opening;
     el('game-question').textContent=done?ep.endings[g.epilogue.ending]?.title||'The last choice':ep.question;
-    el('game-instructions').textContent=voting?(myVote===null?ep.votingNote:'Your vote is saved. The party’s decision will be revealed together.'):
+    el('game-instructions').textContent=reading?'READING: review both possible endings. Tap Ready when you have considered them; voting unlocks next.':voting?(myVote===null?ep.votingNote:'Your vote is saved. The party’s decision will be revealed together.'):
       tie?ep.tiePrompt:'The party has decided. Both endings are philosophically defensible.';
     const choices=el('game-choices');
-    if(voting){
+    if(voting||reading){
+      if(reading)addText(choices,'p','debate-note','READING: review both options; voting unlocks when ready or when the reading timer ends.');
       for(const [i,option] of ep.options.entries()){
         const b=addText(choices,'button','choice',`${option.label} — ${option.text}`);
         if(myVote===i)b.classList.add('selected');
-        b.disabled=myVote!==null||!room.players?.[uid]?.connected||Date.now()>g.epilogue.deadline;
+        b.disabled=reading||myVote!==null||!room.players?.[uid]?.connected||Date.now()>g.epilogue.deadline;
         b.addEventListener('click',()=>epilogueVote(i).catch(e=>notice('Exit vote was not saved: '+e.message,'error')));
       }
     }
@@ -475,6 +497,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
         addText(credits,'span','',parts[2]);
       }else credits.textContent=ep.credits;
     }
+    if(reading){const r=addText(choices,'button','quiet','Ready');r.disabled=!!g.readingReady?.[uid];r.addEventListener('click',()=>readyToChoose().catch(e=>notice(e.message,'error')));}
     const button=el('game-next');button.hidden=true;button.disabled=true;
     button.inert=true;button.tabIndex=-1;button.setAttribute('aria-hidden','true');
   }
@@ -486,17 +509,22 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     const {uid}=getContext(),host=isHost(),result=g.phase==='result',lore=g.phase==='lore',
       complete=g.phase==='realm-complete',plugged=g.phase==='plugged',debating=g.phase==='debate',rolling=g.phase==='rolling',ready=g.phase==='ready-to-roll';
     const eligible=eligiblePlayers(g).includes(uid);
-    const myBallot=room.ballots?.[uid];const already=myBallot?.roundId===g.roundId;
+    const myBallot=room.ballots?.[uid];
+    if(myBallot?.roundId===g.roundId)pendingVotes.delete(uid);
+    const pending=pendingVotes.get(uid);
+    const already=myBallot?.roundId===g.roundId || pending?.roundId===g.roundId;
     panel.dataset.phase=g.phase;
     panel.dataset.realm=String(g.realm||1);
     el('game-heading').textContent=complete?`${chapter.realm} complete`:chapter.realm;
-    el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}${stage.weakness?' · Weakness: '+classNames[stage.weakness]+' ('+stage.weakness+')':''}`:'Reset';
+    el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}${stage.kind==='boss'?' · Weakness: '+classNames[g.bossWeakness||stage.weakness]:''}`:'Reset';
     el('game-grip').textContent=`Grip: ${g.grip?.value??10}/10`;
     el('game-conviction').textContent=`Boss Conviction: ${Math.max(0,3-(g.bossWins||0))}/3`;
     el('game-conviction').hidden=stage?.kind!=='boss';
-    el('game-timer').textContent=g.phase==='choice'?`${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}s`:
+    el('game-timer').textContent=g.phase==='reading'?`READING ${Math.max(0,Math.ceil((g.readingDeadline-Date.now())/1000))}s`:g.phase==='choice'?`CHOOSING ${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}s`:
       debating?`Debate ${Math.max(0,Math.ceil((g.debateDeadline-Date.now())/1000))}s`:'—';
-    const chapterIntro=stage?.kind==='encounter' && stage.localIndex===0 && !g.attempt && chapter.opening ? chapter.opening+'\n\n' : '';
+    const represented=[...new Set(getMembers().map(id=>room.players?.[id]?.class).filter(Boolean))];
+    const bossWeaknessList=chapter.bossPhases.map((b,i)=>classNames[represented.includes(b.weakness)?b.weakness:represented[(b.index||0)%represented.length]||b.weakness]).join(' → ');
+    const chapterIntro=stage?.kind==='encounter' && stage.localIndex===0 && !g.attempt && chapter.opening ? chapter.opening+'\n\nBoss methods to watch for: '+bossWeaknessList+' (phase weaknesses will adapt to present classes).\n\n' : '';
     el('game-scene').textContent=complete?chapter.victory:plugged?'Fully Plugged In. Grip will recover to 6. The host can restart this same challenge; your earlier boss victories remain.':chapterIntro+(stage?.scene||'');
     el('game-question').textContent=complete?`${chapter.realm} complete`:stage?.question||'';
     const spotlightBanner=el('game-spotlight');
@@ -510,21 +538,22 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     el('game-machine').textContent=machineText(g,stage);
     el('game-machine').hidden=!machineText(g,stage);
     const choices=el('game-choices');choices.replaceChildren();
-    if((g.phase==='choice'||debating)&&stage){
+    if((g.phase==='reading'||g.phase==='choice'||debating)&&stage){
       const order=Array.isArray(g.optionOrder)?g.optionOrder:stage.options.map((_,i)=>i);
       for(const i of order){
         const option=stage.options[i];if(!option)continue;
         const button=document.createElement('button');button.className='choice';button.textContent=option.text;
         
-        if(already && myBallot.choice===i)button.classList.add('selected');
+        if(already && (myBallot?.roundId===g.roundId?myBallot.choice:pending?.choice)===i)button.classList.add('selected');
         const canInitial=g.phase==='choice'&&!already&&Date.now()<=g.deadline;
-        const canRevise=debating&&already&&!myBallot.revised&&myBallot.choice!==i&&Date.now()<=g.debateDeadline;
+        const canRevise=debating&&already&&myBallot?.roundId===g.roundId&&!myBallot.revised&&myBallot.choice!==i&&Date.now()<=g.debateDeadline;
         button.disabled=!eligible||!(canInitial||canRevise);
+        if(g.phase==='reading')button.title='Reading phase: choices are locked';
         button.addEventListener('click',()=>vote(i).catch(e=>notice('Choice was not saved: '+e.message,'error')));
         choices.append(button);
       }
     }
-    el('game-instructions').textContent=complete?(g.realm<realms.length?`The host can open ${realms[g.realm].realm}.`:'The last challenge is behind you. The host can open the Epilogue.'):plugged?'Host: restart this challenge with Grip 6.':
+    el('game-instructions').textContent=g.phase==='reading'?'READING: review the situation and use a method. Tap Ready when finished; choices unlock next.':complete?(nextRealm(g.realm)?`The host can open ${realms[realmNumbers.indexOf(nextRealm(g.realm))].realm}.`:'The last challenge is behind you. The host can open the Epilogue.'):plugged?'Host: restart this challenge with Grip 6.':
       lore?'Review each stance and the consequence. The host advances.':
       result?`The check ${g.success?'passed':'failed'}. The host advances after any reroll.`:
       rolling?`Difficulty Class ${g.dc}. The d20 is tumbling…`:
@@ -555,7 +584,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
           b.addEventListener('click',()=>giveReason(reason).catch(e=>notice('Reason was not saved: '+e.message,'error')));
         }
       }
-      addText(debate,'p','debate-note',already && myBallot.revised?'You have used your one vote revision.':
+      addText(debate,'p','debate-note',already && myBallot?.revised?'You have used your one vote revision.':
         already?'You may change your vote once using the action cards above.':'You did not submit an initial vote.');
     }
     const dice=el('game-die');dice.replaceChildren();dice.className='die-stage';
@@ -592,10 +621,11 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
         addText(lorePanel,'p','insight-awarded',`Insight earned: ${chapter.insight.title} — ${chapter.insight.description}`);
     }
     const abilities=el('game-abilities');abilities.replaceChildren();
+    if(g.phase==='reading'){const readyButton=addText(abilities,'button','quiet',g.readingReady?.[uid]?'Ready ✓':'Ready to choose');readyButton.disabled=!!g.readingReady?.[uid];readyButton.addEventListener('click',()=>readyToChoose().catch(e=>notice(e.message,'error')));}
     if(g.hintVisible)addText(abilities,'p','encounter-hint',`Second Look hint: ${stage?.hint||''}`);
     const klass=room.players?.[uid]?.class;
-    const canUse=['choice','debate'].includes(g.phase)&&Date.now()<=(g.phase==='choice'?g.deadline:g.debateDeadline);
-    const classAvailable=canUse&&!g.classUses?.[uid]?.['r'+g.realm];
+    const canUse=['reading','choice','debate'].includes(g.phase)&&Date.now()<=(g.phase==='reading'?g.readingDeadline:g.phase==='choice'?g.deadline:g.debateDeadline);
+    const classAvailable=canUse&&!g.classUses?.[uid]?.['r'+g.realm]?.[stage.kind];
     if(canUse && stage){
       if(classAvailable){
         if(klass==='skeptic'||klass==='pragmatist'){
@@ -608,7 +638,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
           const b=addText(abilities,'button','quiet',`Use ${classNames[klass]||'class method'}`);
           b.addEventListener('click',()=>ability().catch(e=>notice('Ability failed: '+e.message,'error')));
         }
-      }else addText(abilities,'p','ability-help',`Class method already used in Realm ${g.realm}.`);
+      }else addText(abilities,'p','ability-help',`Class method already used for this realm’s ${stage.kind} section.`);
       const cardId=Object.keys(g.insightCards||{}).find(id=>g.insightCards[id]&&!g.usedCards?.[id]);
       if(cardId && !g.insightUses?.[uid]){
         const card=realms.map(c=>c.insight).find(c=>c.id===cardId);
@@ -620,10 +650,11 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       const b=addText(abilities,'button','quiet','Pragmatist: reroll failed check');
       b.addEventListener('click',()=>requestReroll().catch(e=>notice('Reroll failed: '+e.message,'error')));
     }
-    const personal=g.abilityReveals?.[uid];
-    if(personal?.stageIndex===g.stageIndex)addText(abilities,'p','ability-detail',personal.detail);
+    for(const [player,entry] of Object.entries(g.abilityReveals||{})){
+      if(entry?.stageIndex===g.stageIndex)addText(abilities,'p','ability-detail',`${realName(room,player)} used ${classNames[entry.type]||entry.type}: ${entry.detail}`);
+    }
     const feedback=g.abilityFeedback?.[uid];
-    if(feedback?.roundId===g.roundId)addText(abilities,'p',feedback.accepted?'ability-ok':'ability-error',feedback.message);
+    if(feedback?.roundId===g.roundId&&!feedback.accepted)addText(abilities,'p','ability-error',feedback.message);
     const log=Object.entries(g.abilityEvents||{}).sort(([a],[b])=>a.localeCompare(b)).slice(-8);
     if(log.length){
       const logPanel=addText(abilities,'div','ability-log','');
@@ -653,16 +684,17 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     nextButton.inert=!showNext;
     nextButton.setAttribute('aria-hidden',showNext?'false':'true');
     el('game-next').textContent=ready?'Roll d20 (host)':result?(g.success?'Reveal lore (host)':'Second Look (host)'):
-      plugged?'Retry this challenge (host)':complete?(g.realm<realms.length?`Enter ${realms[g.realm]?.realm} (host)`:'Open the Epilogue (host)'):lore?'Continue (host)':'Continue (host)';
+      plugged?'Retry this challenge (host)':complete?(nextRealm(g.realm)?`Enter ${realms[realmNumbers.indexOf(nextRealm(g.realm))]?.realm} (host)`:'Open the Epilogue (host)'):lore?'Continue (host)':'Continue (host)';
   }
   let lastUiTickPhase='';
   function tick(){
     const {room}=getContext();if(!room||room.status!=='started')return;
     const g=room.game||{};
-    if(g.phase==='epilogue-vote'){
-      el('game-timer').textContent=`${Math.max(0,Math.ceil((g.epilogue.deadline-Date.now())/1000))}s`;
+    if(g.phase==='epilogue-reading'||g.phase==='reading'){el('game-timer').textContent=`READING ${Math.max(0,Math.ceil((g.readingDeadline-Date.now())/1000))}s`;
+    }else if(g.phase==='epilogue-vote'){
+      el('game-timer').textContent=`CHOOSING ${Math.max(0,Math.ceil((g.epilogue.deadline-Date.now())/1000))}s`;
     }else if(g.phase==='choice'){
-      el('game-timer').textContent=`${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}s`;
+      el('game-timer').textContent=`CHOOSING ${Math.max(0,Math.ceil((g.deadline-Date.now())/1000))}s`;
     }else if(g.phase==='debate'){
       el('game-timer').textContent=`Debate ${Math.max(0,Math.ceil((g.debateDeadline-Date.now())/1000))}s`;
     }
@@ -672,9 +704,9 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
         render(room);
       }
     }
-    if(isHost()&&['choice','debate','rolling','result','epilogue-vote'].includes(g.phase))hostSync().catch(e=>console.warn('Host sync error',e));
+    if(isHost()&&['reading','choice','debate','rolling','result','epilogue-reading','epilogue-vote'].includes(g.phase))hostSync().catch(e=>console.warn('Host sync error',e));
   }
   el('game-next').addEventListener('click',()=>next().catch(e=>notice(e.message,'error')));
   setInterval(tick,350);
-  return {begin,render};
+  return {begin,readyToChoose,vote,render};
 }
