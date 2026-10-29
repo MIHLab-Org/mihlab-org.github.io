@@ -15,31 +15,88 @@
           "text": "Mark both thresholds, compare their clues, and cross one while admitting the test may mislead.",
           "tag": "STRONG",
           "stance": "Fallibilist inquiry",
-          "reflection": "You investigate and act without mistaking a convincing experience for an infallible test."
+          "reflection": "You investigate and act without mistaking a convincing experience for an infallible test.",
+          "loreCard": {
+            "theory": {
+              "name": "Peircean fallibilism",
+              "thinker": "Charles S. Peirce",
+              "work": "The Fixation of Belief"
+            },
+            "corePrinciple": "Inquiry should expose beliefs to correction rather than demand absolute certainty.",
+            "sceneAnalysis": "Testing both doors while choosing makes inquiry compatible with practical action.",
+            "strongestObjection": "A skeptic may argue that every test could itself be part of the dream."
+          },
+          "hiddenPremise": "The physical markings left by tests remain useful even if the experience is dreamlike.",
+          "consequence": "The party leaves a trace at each threshold and chooses a passage while retaining the option to correct course."
         },
         {
           "id": "shared-memory",
           "text": "Follow the door that best fits the party’s shared memories, but leave a way to return.",
           "tag": "DEFENSIBLE",
           "stance": "Intersubjective evidence",
-          "reflection": "Shared memories give you practical reasons to choose, though agreement does not prove you are awake."
+          "reflection": "Shared memories give you practical reasons to choose, though agreement does not prove you are awake.",
+          "loreCard": {
+            "theory": {
+              "name": "Intersubjective corroboration",
+              "thinker": "John Dewey",
+              "work": "Logic: The Theory of Inquiry"
+            },
+            "corePrinciple": "Shared and revisable checks can justify action under uncertainty.",
+            "sceneAnalysis": "Common memories offer reasonable evidence, though the shared memory could be fabricated.",
+            "strongestObjection": "Agreement among multiple dreamers does not establish an independent reality."
+          },
+          "hiddenPremise": "Independent companions can supply at least partly reliable memories of the same world.",
+          "consequence": "The group enters the familiar route but retains a return path if shared recollections fail."
         },
         {
           "id": "familiar-is-real",
           "text": "Enter the familiar bedroom at once; its recognizable details settle which world is waking.",
           "tag": "WEAK",
           "stance": "Familiarity as proof",
-          "reflection": "A vivid dream can feel familiar too. Recognition alone cannot settle the issue."
+          "reflection": "A vivid dream can feel familiar too. Recognition alone cannot settle the issue.",
+          "loreCard": {
+            "theory": {
+              "name": "Naive realism under challenge",
+              "thinker": "René Descartes",
+              "work": "Meditations on First Philosophy, Meditation I"
+            },
+            "corePrinciple": "Familiar sensory appearances are not infallible warrants of reality.",
+            "sceneAnalysis": "Taking recognition as proof overlooks that dreams can mimic the familiar.",
+            "strongestObjection": "In ordinary contexts perception can be prima facie justified without Cartesian certainty."
+          },
+          "hiddenPremise": "Familiar feelings would not arise in a deceptive dream or simulation.",
+          "consequence": "The bedroom appears reassuring, but its familiarity supplies no protection against deception."
         },
         {
           "id": "refuse-uncertainty",
           "text": "Barricade both doors until you find a test that rules out every possibility of dreaming.",
           "tag": "WEAK",
           "stance": "Skeptical paralysis",
-          "reflection": "A demand for absolute certainty turns reasonable doubt into a reason never to act."
+          "reflection": "A demand for absolute certainty turns reasonable doubt into a reason never to act.",
+          "loreCard": {
+            "theory": {
+              "name": "Infallibilism",
+              "thinker": "René Descartes",
+              "work": "Meditations on First Philosophy, Meditation I"
+            },
+            "corePrinciple": "On an infallibilist conception, knowledge excludes every possibility of error.",
+            "sceneAnalysis": "Demanding an impossible guarantee prevents choosing either door despite relevant evidence.",
+            "strongestObjection": "Where stakes are extraordinary, demanding stronger assurance may be reasonable."
+          },
+          "hiddenPremise": "There is a possible test capable of excluding every dream before the doors close.",
+          "consequence": "The doors seal while the party demands a guarantee no offered test can provide."
         }
       ],
-      "lore": "The butterfly dream challenges certainty about which perspective is waking. It does not show that nothing is real. Compare how the party acted: evidence can guide a choice even when experience cannot certify its own status."
+      "lore": "The butterfly dream challenges certainty about which perspective is waking. It does not show that nothing is real. Compare how the party acted: evidence can guide a choice even when experience cannot certify its own status.",
+      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "argumentForm": {
+        "premises": [
+          "The available reasons support this action, but may be mistaken.",
+          "An action need not be infallibly guaranteed to be responsible."
+        ],
+        "conclusion": "Choose while remaining accountable to stronger evidence."
+      },
+      "dc": 10
     },
     {
       "id": "fish",
@@ -54,31 +111,94 @@
           "text": "Watch their movement and the current, then open the sheltered channel while monitoring the fish.",
           "tag": "STRONG",
           "stance": "Careful inference about other minds",
-          "reflection": "Behavior and context offer fallible evidence. You act with care rather than claiming direct access to their feelings."
+          "reflection": "Behavior and context offer fallible evidence. You act with care rather than claiming direct access to their feelings.",
+          "loreCard": {
+            "theory": {
+              "name": "Inference to the best explanation",
+              "thinker": "John Stuart Mill",
+              "work": "An Examination of Sir William Hamilton’s Philosophy"
+            },
+            "corePrinciple": "Observed behavior and analogy can justify fallible claims about other minds.",
+            "sceneAnalysis": "Watching the fish and water supports a careful intervention without mind reading.",
+            "strongestObjection": "Similar behavior might have different causes in creatures unlike us."
+          },
+          "hiddenPremise": "Visible fish behavior and local currents are sufficient to choose a safe release point.",
+          "consequence": "The channel begins to open, but an unseen undertow could make a sudden release dangerous."
         },
         {
           "id": "consult-then-help",
           "text": "Ask your companions to compare what they see, then ease the gate open slowly and reassess the fish.",
           "tag": "DEFENSIBLE",
           "stance": "Shared interpretation",
-          "reflection": "Comparing observations improves judgment, though agreement cannot replace attention to what happens next."
+          "reflection": "Comparing observations improves judgment, though agreement cannot replace attention to what happens next.",
+          "loreCard": {
+            "theory": {
+              "name": "Communal experimental inquiry",
+              "thinker": "John Dewey",
+              "work": "How We Think"
+            },
+            "corePrinciple": "Comparison, action, and feedback can improve practical judgment.",
+            "sceneAnalysis": "Consulting companions and opening slowly tests the interpretation cautiously.",
+            "strongestObjection": "Shared observational habits can reinforce a common mistake."
+          },
+          "hiddenPremise": "Slow release and collective observation can reveal danger before the gate is fully open.",
+          "consequence": "Opening in stages allows the party to stop if the fish are swept toward a hazard."
         },
         {
           "id": "deny-fish-minds",
           "text": "Leave the gate shut because you cannot feel their distress and therefore have no grounds to help.",
           "tag": "WEAK",
           "stance": "Other-minds skepticism as denial",
-          "reflection": "Lacking direct access to suffering does not erase evidence that a creature may need help."
+          "reflection": "Lacking direct access to suffering does not erase evidence that a creature may need help.",
+          "loreCard": {
+            "theory": {
+              "name": "Overextended other-minds skepticism",
+              "thinker": "Zhuangzi and Huizi",
+              "work": "Zhuangzi, chapter 17, Autumn Floods"
+            },
+            "corePrinciple": "Not being another creature limits firsthand verification but not all inference.",
+            "sceneAnalysis": "From lack of direct access the refusal wrongly infers there are no grounds to help.",
+            "strongestObjection": "Anthropomorphic overconfidence remains a genuine risk in attributing feelings."
+          },
+          "hiddenPremise": "If an observer cannot feel an animal’s mental state, there is no evidence of its distress.",
+          "consequence": "The gate remains shut while the fish continue to struggle against the narrowing passage."
         },
         {
           "id": "joy-means-safe",
-          "text": "Throw the gate fully open because their excited leaps show they will surely enjoy the current.",
+          "text": "Throw the gate fully open because their excited leaps show they will surely enjoy the current ahead.",
           "tag": "WEAK",
           "stance": "Projection and overconfidence",
-          "reflection": "You infer a definite feeling from ambiguous behavior and ignore a foreseeable danger."
+          "reflection": "You infer a definite feeling from ambiguous behavior and ignore a foreseeable danger.",
+          "loreCard": {
+            "theory": {
+              "name": "Anthropomorphic projection",
+              "thinker": "John Stuart Mill",
+              "work": "An Examination of Sir William Hamilton’s Philosophy"
+            },
+            "corePrinciple": "Analogical inference is defeasible rather than a license to assume identity of feeling.",
+            "sceneAnalysis": "Treating jumps as proof of enjoyment overlooks threatening currents.",
+            "strongestObjection": "Rapid behavior can be evidence of pleasure in an appropriate context."
+          },
+          "hiddenPremise": "Excited movement is reliable proof that the fish are enjoying the dangerous current.",
+          "consequence": "The abrupt opening may sweep the fish into hazards their behavior did not reveal."
         }
       ],
-      "lore": "The joy-of-the-fish puzzle asks how we understand another being without living its experience. The strongest action respects uncertainty while using observation, context, and care; neither mind-reading nor complete ignorance follows."
+      "lore": "The joy-of-the-fish puzzle asks how we understand another being without living its experience. The strongest action respects uncertainty while using observation, context, and care; neither mind-reading nor complete ignorance follows.",
+      "observation": "A sudden undertow has formed beneath the apparently sheltered channel. An abrupt release would sweep the fish into it; the gate must be eased open and reassessed.",
+      "argumentForm": {
+        "premises": [
+          "The fish behave as though threatened.",
+          "Their distress cannot be experienced directly by the observers."
+        ],
+        "conclusion": "Indirect behavioral evidence can nevertheless justify proportionate care."
+      },
+      "dc": 10,
+      "conditional": {
+        "triggerClass": "empiricist",
+        "revealField": "observation",
+        "strongOptionId": "consult-then-help",
+        "previousStrongOptionId": "observe-release"
+      }
     }
   ],
   "bossPhases": [
@@ -95,24 +215,70 @@
           "text": "Set both masks on the balance and demonstrate how either identity could feel entirely settled.",
           "tag": "STRONG",
           "stance": "Reconstructed skeptical challenge",
-          "reflection": "You capture the puzzle: felt certainty may fail to distinguish dreaming from waking."
+          "reflection": "You capture the puzzle: felt certainty may fail to distinguish dreaming from waking.",
+          "loreCard": {
+            "theory": {
+              "name": "Dream skepticism",
+              "thinker": "Zhuangzi and René Descartes",
+              "work": "Zhuangzi, chapter 2; Meditations, Meditation I"
+            },
+            "corePrinciple": "A vivid experience can fail to determine whether one is waking or dreaming.",
+            "sceneAnalysis": "Balancing the masks demonstrates symmetrical appearances without asserting both are false.",
+            "strongestObjection": "Ordinary experience may still warrant beliefs despite this possibility."
+          },
+          "hiddenPremise": "Either identity could be represented through equally convincing appearances.",
+          "consequence": "Both masks rest in balance; the illusion loses its power to force a single unwarranted identity."
         },
         {
           "id": "seek-cross-checks",
           "text": "Compare each mask with memory and testimony, then admit that both checks could be mistaken.",
           "tag": "DEFENSIBLE",
           "stance": "Qualified empirical testing",
-          "reflection": "Cross-checks help you navigate the puzzle but do not remove its deepest uncertainty."
+          "reflection": "Cross-checks help you navigate the puzzle but do not remove its deepest uncertainty.",
+          "loreCard": {
+            "theory": {
+              "name": "Critical empiricism",
+              "thinker": "David Hume",
+              "work": "An Enquiry Concerning Human Understanding"
+            },
+            "corePrinciple": "Evidence can guide belief without securing an infallible identity test.",
+            "sceneAnalysis": "Comparing memory and testimony is useful while recognizing dependence on fallible sources.",
+            "strongestObjection": "Memory and testimony may both be corrupted by the same deception."
+          },
+          "hiddenPremise": "Memory and testimony remain informative despite the possibility of coordinated error.",
+          "consequence": "The party weighs the evidence, though Zhuangzi can still ask where its trust comes from."
         },
         {
           "id": "trust-recognition",
           "text": "Crown the mask that feels most familiar; your certainty about recognition proves it is yours.",
           "tag": "WEAK",
           "stance": "Dogmatism about self-knowledge",
-          "reflection": "This assumes the reliability of the very feeling the butterfly dream puts in question."
+          "reflection": "This assumes the reliability of the very feeling the butterfly dream puts in question.",
+          "loreCard": {
+            "theory": {
+              "name": "Dogmatic self-recognition",
+              "thinker": "René Descartes",
+              "work": "Meditations, Meditation I"
+            },
+            "corePrinciple": "Felt familiarity does not independently verify what is real.",
+            "sceneAnalysis": "The crown infers an identity from precisely the sensation that may be simulated.",
+            "strongestObjection": "Immediate self-awareness may have a different standing from sensory identification."
+          },
+          "hiddenPremise": "A feeling of recognizing yourself authenticates the mask on its own.",
+          "consequence": "The familiar crown seems convincing, but the false identification may trap the party."
         }
       ],
-      "lore": "Zhuangzi’s challenge is about the limits of certainty, not proof that identity is fake. You win Reconstruct by showing why both dream and waking may feel authoritative without pretending to resolve the puzzle by decree."
+      "lore": "Zhuangzi’s challenge is about the limits of certainty, not proof that identity is fake. You win Reconstruct by showing why both dream and waking may feel authoritative without pretending to resolve the puzzle by decree.",
+      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "argumentForm": {
+        "premises": [
+          "The available reasons support this action, but may be mistaken.",
+          "An action need not be infallibly guaranteed to be responsible."
+        ],
+        "conclusion": "Choose while remaining accountable to stronger evidence."
+      },
+      "weakness": "skeptic",
+      "dc": 16
     },
     {
       "id": "spotlight",
@@ -127,24 +293,70 @@
           "text": "Ask the voice for another sign, then choose whether to follow without demanding perfect certainty.",
           "tag": "STRONG",
           "stance": "Skeptical humility",
-          "reflection": "You refuse to treat immediate conviction as proof, yet remain open to evidence and action."
+          "reflection": "You refuse to treat immediate conviction as proof, yet remain open to evidence and action.",
+          "loreCard": {
+            "theory": {
+              "name": "Relevant-alternatives epistemology",
+              "thinker": "Fred Dretske",
+              "work": "Epistemic Operators"
+            },
+            "corePrinciple": "Possibilities need evidence of relevance before overturning ordinary claims.",
+            "sceneAnalysis": "Seeking another sign tests the particular voice without demanding certainty.",
+            "strongestObjection": "Relevant alternatives can be hard to identify under adversarial deception."
+          },
+          "hiddenPremise": "A specific test could reveal whether this particular voice deserves trust.",
+          "consequence": "The voice must answer a new question before the selected player risks following it."
         },
         {
           "id": "compare-signs",
           "text": "Compare the voice with what your companions observed, then approach cautiously if it fits.",
           "tag": "DEFENSIBLE",
           "stance": "Practical corroboration",
-          "reflection": "Shared signs can justify a measured response, though they might still be mistaken."
+          "reflection": "Shared signs can justify a measured response, though they might still be mistaken.",
+          "loreCard": {
+            "theory": {
+              "name": "Practical corroboration",
+              "thinker": "John Dewey",
+              "work": "Logic: The Theory of Inquiry"
+            },
+            "corePrinciple": "Inquiry coordinates multiple fallible indicators before acting.",
+            "sceneAnalysis": "Companions’ observations warrant cautious approach without promising certainty.",
+            "strongestObjection": "A deceptive system can generate matching signals for the whole party."
+          },
+          "hiddenPremise": "Companions are more likely to supply uncorrupted evidence than the isolated voice.",
+          "consequence": "The player approaches cautiously using corroboration, but false signals remain possible."
         },
         {
           "id": "declare-all-false",
           "text": "Reject the voice as unreal because one possible dream makes every seeming encounter deceptive.",
           "tag": "WEAK",
           "stance": "Doubt confused with denial",
-          "reflection": "The possibility of error does not establish that this voice—or every voice—is false."
+          "reflection": "The possibility of error does not establish that this voice—or every voice—is false.",
+          "loreCard": {
+            "theory": {
+              "name": "Skeptical overreach",
+              "thinker": "René Descartes",
+              "work": "Meditations, Meditation I"
+            },
+            "corePrinciple": "The possibility of error differs from proof of falsity.",
+            "sceneAnalysis": "Concluding every seeming encounter unreal commits the very overreach doubt warns against.",
+            "strongestObjection": "The deceiver possibility genuinely pressures some claims of knowledge."
+          },
+          "hiddenPremise": "If any voice might be illusory, this voice must be illusory.",
+          "consequence": "The figure is rejected without investigation, and the chance for a warranted response is lost."
         }
       ],
-      "lore": "The spotlight tests a logical boundary: a possibility of deception is not a proof of universal deception. The party can question the apparent world without withdrawing from every human—or nonhuman—claim upon it."
+      "lore": "The spotlight tests a logical boundary: a possibility of deception is not a proof of universal deception. The party can question the apparent world without withdrawing from every human—or nonhuman—claim upon it.",
+      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "argumentForm": {
+        "premises": [
+          "The available reasons support this action, but may be mistaken.",
+          "An action need not be infallibly guaranteed to be responsible."
+        ],
+        "conclusion": "Choose while remaining accountable to stronger evidence."
+      },
+      "weakness": "empiricist",
+      "dc": 16
     },
     {
       "id": "reply",
@@ -159,24 +371,70 @@
           "text": "Release the cord, gather your companions, and step out guided by revisable reasons and trust.",
           "tag": "STRONG",
           "stance": "Fallibilist response to skepticism",
-          "reflection": "You distinguish reasonable belief from impossible guarantees, and reclaim responsibility for living."
+          "reflection": "You distinguish reasonable belief from impossible guarantees, and reclaim responsibility for living.",
+          "loreCard": {
+            "theory": {
+              "name": "Peircean fallibilism",
+              "thinker": "Charles S. Peirce",
+              "work": "The Fixation of Belief"
+            },
+            "corePrinciple": "Rational action may rely on corrigible reasons rather than guarantees.",
+            "sceneAnalysis": "Unplugging uses judgment and trust while retaining willingness to revise.",
+            "strongestObjection": "A good simulated life might still satisfy many genuine values."
+          },
+          "hiddenPremise": "Responsible agency can proceed on strong but revisable reasons rather than certainty.",
+          "consequence": "The party steps through the doorway while retaining judgment and uncertainty."
         },
         {
           "id": "leave-carefully",
           "text": "Open the doorway but test each step with your companions, accepting that you may have to revise.",
           "tag": "DEFENSIBLE",
           "stance": "Practical response to uncertainty",
-          "reflection": "You keep acting and checking. Your caution helps, provided testing never becomes endless delay."
+          "reflection": "You keep acting and checking. Your caution helps, provided testing never becomes endless delay.",
+          "loreCard": {
+            "theory": {
+              "name": "Deweyan pragmatism",
+              "thinker": "John Dewey",
+              "work": "The Quest for Certainty"
+            },
+            "corePrinciple": "Inquiry evaluates consequences while remaining answerable to new experience.",
+            "sceneAnalysis": "Testing each step gives action accountability, though it delays the group.",
+            "strongestObjection": "Testing may be impossible in a deliberately deceptive environment."
+          },
+          "hiddenPremise": "Incremental tests make exit safer without converting them into infallible guarantees.",
+          "consequence": "The party moves slowly through the exit, with opportunities to revise its course."
         },
         {
           "id": "demand-perfect-proof",
           "text": "Remain plugged in until the Machine can guarantee that none of your future judgments will be wrong.",
           "tag": "WEAK",
           "stance": "Certainty as a trap",
-          "reflection": "You trade the freedom to judge for a promise of infallibility that may itself be deceptive."
+          "reflection": "You trade the freedom to judge for a promise of infallibility that may itself be deceptive.",
+          "loreCard": {
+            "theory": {
+              "name": "Infallibilist paralysis",
+              "thinker": "René Descartes",
+              "work": "Meditations, Meditation I"
+            },
+            "corePrinciple": "Demanding certainty about every judgment sets an unattainable standard.",
+            "sceneAnalysis": "The Machine gains control by holding action hostage to perfect knowledge.",
+            "strongestObjection": "Some irreversible choices justify demanding exceptionally strong evidence."
+          },
+          "hiddenPremise": "The Machine could furnish perfectly justified beliefs if entrusted with all future decisions.",
+          "consequence": "The cord stays connected and the Machine gains control of what counts as knowledge."
         }
       ],
-      "lore": "Zhuangzi need not be silenced for the party to leave. A reply can accept the possibility of error while rejecting the claim that action requires absolute certainty. The Machine exploits the desire to eliminate doubt; the party answers by choosing how to live with it."
+      "lore": "Zhuangzi need not be silenced for the party to leave. A reply can accept the possibility of error while rejecting the claim that action requires absolute certainty. The Machine exploits the desire to eliminate doubt; the party answers by choosing how to live with it.",
+      "observation": "The scene contains a physical clue that neither memory nor confidence alone can certify. Look for what changes when you intervene.",
+      "argumentForm": {
+        "premises": [
+          "The available reasons support this action, but may be mistaken.",
+          "An action need not be infallibly guaranteed to be responsible."
+        ],
+        "conclusion": "Choose while remaining accountable to stronger evidence."
+      },
+      "weakness": "pragmatist",
+      "dc": 16
     }
   ],
   "debate": {

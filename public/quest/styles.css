@@ -235,3 +235,24 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8p
 #game-panel .journey-stage h4 {margin:0 0 10px;color:#f2deae;}
 #game-panel .journey-stage p {margin:7px 0;line-height:1.5;color:#d5e2df;overflow-wrap:anywhere;}
 #game-panel .exit-reasons li {margin:7px 0;line-height:1.6;}
+
+/* Pass 0: epistemic methods and readable party-visible feedback. */
+#game-panel .ability-help {color:#d4e2da;font-size:.88rem;line-height:1.55;}
+#game-panel .ability-detail {
+  border-left:4px solid #dfbf81;border-radius:7px;padding:13px 15px;
+  background:rgba(35,71,76,.66);color:#f3eee0;line-height:1.65;
+  overflow-wrap:anywhere;white-space:pre-line;
+}
+#game-panel .ability-ok {color:#c3e8d0;font-weight:600;line-height:1.55;}
+#game-panel .ability-error {color:#ffd0c9;font-weight:700;line-height:1.55;}
+#game-panel .ability-log {
+  flex:1 1 100%;min-width:0;padding:12px 15px;border:1px solid rgba(179,205,196,.35);
+  border-radius:9px;background:rgba(15,33,39,.55);
+}
+#game-panel .ability-log h4 {margin:0 0 8px;color:#e5cc9e;font-size:.85rem;}
+#game-panel .ability-log p {margin:5px 0;font-size:.83rem;line-height:1.5;overflow-wrap:anywhere;}
+#game-panel .ability-hint {color:#e8dab1;font-size:.86rem;line-height:1.5;}
+@media(max-width:680px){
+  #game-panel .ability-detail {padding:12px;font-size:.9rem;}
+  #game-abilities button {max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left;}
+}

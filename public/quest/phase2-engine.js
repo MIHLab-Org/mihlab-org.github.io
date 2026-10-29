@@ -2,6 +2,24 @@
 // All authoritative phase transitions, d20 values and timers are host writes at /game.
 // Players may write only their own /ballots, /abilities, and /whispers requests.
 // The host is not a trusted server; ballot contents are readable to all room members in Firebase.
+// Exported and used by the live engine and Node-only Monte Carlo tests.
+export function resolveCheck({tags, dc, attempt=0, die=1+Math.floor(Math.random()*20), rollBonus=0, weaknessBonus=0}) {
+  const score={STRONG:7,DEFENSIBLE:3,WEAK:-2};
+  const modifier=tags.length?Math.floor(tags.reduce((sum,t)=>sum+score[t],0)/tags.length):0;
+  const learningBonus=3*attempt;
+  const total=die+modifier+learningBonus+rollBonus+weaknessBonus;
+  // A unanimously weak argument cannot succeed on luck alone except a natural 20.
+  // The arithmetic modifier remains the party average, regardless of party size.
+  const reasoningGate=tags.length>0&&(tags.some(tag=>tag==='STRONG'||tag==='DEFENSIBLE')||die===20);
+  return {die,modifier,learningBonus,weaknessBonus,total,dc,success:total>=dc&&reasoningGate};
+}
+export function effectiveTag(stage,option,game) {
+  const c=stage?.conditional;
+  if(!c||!game?.discoveredStages?.['s'+game.stageIndex]) return option.tag;
+  if(option.id===c.strongOptionId)return 'STRONG';
+  if(option.id===c.previousStrongOptionId)return 'DEFENSIBLE';
+  return option.tag;
+}
 export function makeEngine({ db, api, getContext, content, realm2Content, epilogueContent, notice }) {
   const {ref, set, update} = api;
   const el = id => document.getElementById(id);
@@ -47,7 +65,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     seen[chosen] = true;
     return {uid:chosen, seen, last:chosen};
   }
-  function newStage(index, grip, abilities, cards, usedCards, attempt=0, bossWins=0, oldMask=null, previousEncounters={}, history={}) {
+  function newStage(index, grip, abilities, cards, usedCards, attempt=0, bossWins=0, oldMask=null, previousEncounters={}, history={}, carried={}) {
     const stage=stages[index];
     const startedAt=Date.now();
     const eligible=getMembers();
@@ -66,6 +84,10 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       deadline:startedAt+(stage.selectionSeconds || (stage.kind==='boss'?45:60))*1000,
       encounters, votes:{}, diceResults:{}, grip:{value:grip}, history,
       insightCards:cards || {}, usedCards:usedCards || {}, abilities:abilities || {}, bossWins,
+      classUses:carried.classUses||{}, insightUses:carried.insightUses||{},rerollUses:carried.rerollUses||{},
+      abilityEvents:carried.abilityEvents||{},abilityFeedback:carried.abilityFeedback||{},
+      abilityReveals:carried.abilityReveals||{},discoveredStages:carried.discoveredStages||{},
+      weaknessStages:carried.weaknessStages||{},
       spotlightUid:spotlight?.uid || '',
       whispers:{}, rollBonus:0, rerollUsed:false, eliminated:false, hintVisible:attempt>0,
       optionOrder:shuffle(stage.options.map((_,i)=>i))
@@ -125,25 +147,46 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     if(room.whispers?.[uid]?.roundId===g.roundId)return;
     await set(ref(db,`rooms/${code}/whispers/${uid}`),{roundId:g.roundId,emoji});
   }
-  async function ability() {
-    const {room,uid,code}=getContext(),g=room?.game;
-    if(g?.phase!=='choice'||g.abilities?.[uid]||Date.now()>g.deadline)return;
+  const classNames={skeptic:'Interrogate',empiricist:'Observe',rationalist:'Deduce',pragmatist:'Test'};
+  function reject(reason){notice(reason,'error');return false;}
+  async function submitAbility(type,optionId='',cardId='',intent='method') {
+    const {room,uid,code}=getContext(),g=room?.game,stage=stageFor(g);
+    if(!g||!stage)return reject('No active philosophical challenge.');
+    const allowed=['choice','debate'].includes(g.phase);
+    const reroll=intent==='reroll'&&g.phase==='result'&&!g.success;
+    if(!allowed&&!reroll)return reject('Abilities can be used during choice or debate; Test rerolls follow a failed result.');
+    if(allowed&&Date.now()>(g.phase==='choice'?g.deadline:g.debateDeadline))return reject('The answer timer has ended.');
+    if(!room.players?.[uid]?.connected)return reject('Reconnect before using an ability.');
+    if(room.abilities?.[uid]?.roundId===g.roundId)return reject('Your previous request is still pending.');
     const klass=room.players?.[uid]?.class;
-    if(['skeptic','empiricist','rationalist'].includes(klass)){
-      await set(ref(db,`rooms/${code}/abilities/${uid}`),{roundId:g.roundId,type:klass});
-    } else if(klass==='pragmatist')notice('Pragmatist reroll becomes available after a failed roll.','info');
+    if(intent==='reroll'){
+      if(klass!=='pragmatist'||g.rerollUsed||g.rerollUses?.[uid]?.['r'+g.realm])return reject('Your Test reroll is unavailable or already used in this realm.');
+    }else if(type==='insight'){
+      if(g.insightUses?.[uid])return reject('Your one campaign Insight use is already spent.');
+      if(!cardId||!g.insightCards?.[cardId]||g.usedCards?.[cardId])return reject('This Insight card is not available.');
+    }else{
+      if(type!==klass)return reject('That is not your class method.');
+      if(g.classUses?.[uid]?.['r'+g.realm])return reject('Your class method has already been used in this realm.');
+      if((klass==='skeptic'||klass==='pragmatist')&&!stage.options.some(opt=>opt.id===optionId))return reject('Select one option to investigate.');
+    }
+    const request={roundId:g.roundId,type,requestId:`${uid.slice(0,8)}-${Date.now()}-${rand(100000)}`};
+    if(optionId)request.optionId=optionId;
+    if(cardId)request.cardId=cardId;
+    if(intent==='reroll')request.intent='reroll';
+    try { await set(ref(db,`rooms/${code}/abilities/${uid}`),request); }
+    catch (error) { return reject('Ability request denied: the choice window may have closed, or another request is still pending. '+error.message); }
+    notice('Request sent; the party will see the result when the host processes it.','info');
+    return true;
   }
-  async function requestReroll() {
-    const {room,uid,code}=getContext(),g=room?.game;
-    if(g?.phase!=='result'||g.success||g.rerollUsed||g.abilities?.[uid]||room.players?.[uid]?.class!=='pragmatist')return;
-    await set(ref(db,`rooms/${code}/abilities/${uid}`),{roundId:g.roundId,type:'pragmatist'});
+  async function ability(optionId=''){
+    const klass=getContext().room?.players?.[getContext().uid]?.class;
+    return submitAbility(klass,optionId);
   }
-  async function useCard() {
-    const {room,uid,code}=getContext(),g=room?.game;
-    if(g?.phase!=='choice')return;
-    const cardId=Object.keys(g.insightCards||{}).find(id=>g.insightCards[id]&&!g.usedCards?.[id]);
-    if(!cardId)return;
-    await set(ref(db,`rooms/${code}/abilities/${uid}`),{roundId:g.roundId,type:'insight',cardId});
+  async function requestReroll(){return submitAbility('pragmatist','','','reroll');}
+  async function useCard(){
+    const g=getContext().room?.game;
+    const cardId=Object.keys(g?.insightCards||{}).find(id=>g.insightCards[id]&&!g.usedCards?.[id]);
+    return submitAbility('insight','',cardId);
   }
   const isEpilogue = g => ['epilogue-vote','epilogue-tie','epilogue-finished'].includes(g?.phase);
   function epilogueBallots(room,g) {
@@ -168,7 +211,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     for(const [uid,choice] of Object.entries(g.votes||{})){
       const option=stage.options?.[choice];
       if(!option)continue;
-      choices[uid]={choice,stance:option.stance||option.text,tag:option.tag};
+      choices[uid]={choice,stance:option.stance||option.text,tag:effectiveTag(stage,option,g)};
     }
     return {realm:stage.realm,stageId:stage.id,title:stage.title,choices};
   }
@@ -189,23 +232,81 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       'epilogue/decidedAt':Date.now()});
   }
   function prepareRoll(room,g){
-    return {phase:'ready-to-roll', votes:stageVotes(room,g), dc:g.stageIndex===0?10:12};
+    const stage=stageFor(g);
+    return {phase:'ready-to-roll', votes:stageVotes(room,g), dc:stage.kind==='boss'?16:(stage.dc||10)};
   }
   function makeRoll(room,g){
     const stage=stageFor(g),votes=stageVotes(room,g);
-    const values=Object.values(votes).map(choice=>stage.options[choice]?.tag).filter(Boolean);
-    // Average of ACTUAL submitted votes; an absent vote never supplies free points.
-    // One Spotlight vote is a one-person average, not a party consensus.
-    const score={STRONG:7, DEFENSIBLE:3, WEAK:-2};
-    const modifier=values.length
-      ? Math.floor(values.reduce((sum,tag)=>sum+(score[tag]??0),0)/values.length)
-      : 0;
-    const dc=g.dc || (g.stageIndex===0?10:12);
-    const learningBonus=3*(g.attempt||0);
-    const die=roll(),total=die+modifier+(g.rollBonus||0)+learningBonus,success=total>=dc;
-    return {phase:'rolling',votes,dc,die,total,modifier,learningBonus,success,
+    const tags=Object.values(votes).map(choice=>stage.options[choice]&&effectiveTag(stage,stage.options[choice],g)).filter(Boolean);
+    const dc=g.dc||(stage.kind==='boss'?16:(stage.dc||10));
+    const weaknessBonus=stage.kind==='boss'&&g.weaknessStages?.['s'+g.stageIndex]?5:0;
+    const result=resolveCheck({tags,dc,attempt:g.attempt||0,rollBonus:g.rollBonus||0,weaknessBonus});
+    return {phase:'rolling',votes,...result,
       rollRevealAt:Date.now()+(chapterFor(g).dicePresentation.tumbleMilliseconds||2000),
-      [`diceResults/${g.roundId}`]:{die,total,modifier,learningBonus,dc,success,at:Date.now()}};
+      [`diceResults/${g.roundId}`]:{...result,at:Date.now()}};
+  }
+  async function processAbility(room,g,uid,request){
+    const stage=stageFor(g),klass=room.players?.[uid]?.class;
+    const realmKey='r'+g.realm,phase=g.phase;
+    const eventId=`e${Date.now()}_${rand(100000)}`;
+    const methodNames={skeptic:'Interrogate',empiricist:'Observe',rationalist:'Deduce',pragmatist:'Test',insight:'Insight'};
+    let message='',detail='',accepted=false;
+    const changes={};
+    const initialOrDebate=['choice','debate'].includes(phase);
+    const timely=initialOrDebate&&Date.now()<=(phase==='choice'?g.deadline:g.debateDeadline);
+    if(g.abilityFeedback?.[uid]?.requestId===request.requestId){return;}
+    if(!room.players?.[uid]?.connected)message='Ability rejected: your player is disconnected.';
+    else if(request.intent==='reroll'){
+      if(klass!=='pragmatist'||phase!=='result'||g.success||g.rerollUsed||g.rerollUses?.[uid]?.[realmKey])
+        message='Test reroll rejected: no failed check or reroll already spent this realm.';
+      else{
+        const votes=g.votes||{},tags=Object.values(votes).map(i=>stage.options[i]&&effectiveTag(stage,stage.options[i],g)).filter(Boolean);
+        const weaknessBonus=stage.kind==='boss'&&g.weaknessStages?.['s'+g.stageIndex]?5:0;
+        const result=resolveCheck({tags,dc:g.dc,attempt:g.attempt||0,rollBonus:g.rollBonus||0,weaknessBonus});
+        Object.assign(changes,{phase:'rolling',rerollUsed:true,...result,
+          rollRevealAt:Date.now()+(chapterFor(g).dicePresentation.tumbleMilliseconds||2000),
+          [`rerollUses/${uid}/${realmKey}`]:true,
+          [`diceResults/${g.roundId}-reroll`]:{...result,at:Date.now()}});
+        message=`${realName(room,uid)} used Test reroll.`;
+        detail='Your one reroll for this realm has been used.';accepted=true;
+      }
+    }else if(!timely)message='Ability rejected: this challenge is no longer accepting methods.';
+    else if(request.type==='insight'){
+      if(g.insightUses?.[uid])message='Insight rejected: you have already used Insight this campaign.';
+      else if(!request.cardId||!g.insightCards?.[request.cardId]||g.usedCards?.[request.cardId])message='Insight rejected: the card is unavailable or already used.';
+      else{
+        changes[`insightUses/${uid}`]=true;changes[`usedCards/${request.cardId}`]=true;
+        changes.rollBonus=(g.rollBonus||0)+3;
+        message=`${realName(room,uid)} used Insight.`;detail='Insight granted +3 to the next roll.';accepted=true;
+      }
+    }else if(request.type!==klass)message='Ability rejected: request does not match your class.';
+    else if(g.classUses?.[uid]?.[realmKey])message='Ability rejected: this class method was already used in this realm.';
+    else{
+      const opt=stage.options.find(o=>o.id===request.optionId);
+      if(klass==='skeptic'&&!opt)message='Interrogate rejected: choose an available option.';
+      else if(klass==='pragmatist'&&!opt)message='Test rejected: choose an available option.';
+      else{
+        if(klass==='skeptic')detail=`Hidden premise (${opt.stance}): ${opt.hiddenPremise}`;
+        else if(klass==='empiricist')detail=`Observation: ${stage.observation}`;
+        else if(klass==='rationalist')detail=`Argument: ${stage.argumentForm.premises.map((p,i)=>'P'+(i+1)+': '+p).join(' ')} Conclusion: ${stage.argumentForm.conclusion}`;
+        else if(klass==='pragmatist')detail=`Test consequence (${opt.stance}): ${opt.consequence}`;
+        changes[`classUses/${uid}/${realmKey}`]=true;
+        changes[`abilityReveals/${uid}`]={stageIndex:g.stageIndex,realm:g.realm,type:klass,
+          detail,optionId:request.optionId||'',at:Date.now()};
+        if(stage.conditional?.triggerClass===klass){changes[`discoveredStages/s${g.stageIndex}`]=true;}
+        if(stage.kind==='boss'&&stage.weakness===klass){
+          changes[`weaknessStages/s${g.stageIndex}`]=true;
+          detail+=` Boss weakness triggered: +5 to the party check.`;
+          changes[`abilityReveals/${uid}`].detail=detail;
+        }
+        message=`${realName(room,uid)} used ${methodNames[klass]}.`;accepted=true;
+      }
+    }
+    changes[`abilityFeedback/${uid}`]={requestId:request.requestId||'',roundId:g.roundId,
+      accepted,message:accepted?detail:message,at:Date.now()};
+    changes[`abilityEvents/${eventId}`]={uid,roundId:g.roundId,realm:g.realm,
+      message:accepted?message:`${realName(room,uid)}: ${message}`,accepted,at:Date.now()};
+    await update(path(),changes);
   }
   let syncing=false;
   async function hostSync() {
@@ -229,26 +330,11 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
         'epilogue/decidedAt':tied?0:Date.now()});
       return;
     }
-    const pending=Object.entries(room.abilities||{}).filter(([uid,r])=>r.roundId===g.roundId && !g.abilities?.[uid]);
+    const pending=Object.entries(room.abilities||{}).filter(([,r])=>r?.roundId===g.roundId);
     if(pending.length){
-      const [uid,request]=pending[0],klass=room.players?.[uid]?.class;
-      if(request.type==='pragmatist'&&klass==='pragmatist'&&g.phase==='result'&&!g.success&&!g.rerollUsed){
-        const die=roll(),total=die+g.modifier+(g.rollBonus||0)+(g.learningBonus??3*(g.attempt||0)),success=total>=g.dc;
-        await update(path(),{phase:'rolling',rerollUsed:true,die,total,success,
-          rollRevealAt:Date.now()+(chapterFor(g).dicePresentation.tumbleMilliseconds||2000),
-          [`abilities/${uid}`]:true,[`diceResults/${g.roundId}-reroll`]:{die,total,modifier:g.modifier,learningBonus:g.learningBonus??3*(g.attempt||0),dc:g.dc,success,at:Date.now()}});
-      }else if(g.phase==='choice' && Date.now()<g.deadline && (request.type===klass || request.type==='insight')){
-        const changes={[`abilities/${uid}`]:true};
-        if(klass==='skeptic')changes.eliminated=true;
-        if(klass==='empiricist')changes.clueVisible=true;
-        if(klass==='rationalist')changes.rollBonus=(g.rollBonus||0)+3;
-        if(request.type==='insight'&&request.cardId&&g.insightCards?.[request.cardId]&&!g.usedCards?.[request.cardId] &&
-          realms.some(chapter=>chapter.insight.id===request.cardId)){
-          changes.rollBonus=(g.rollBonus||0)+3;changes[`usedCards/${request.cardId}`]=true;
-        }
-        await update(path(),changes);
-      }
-      await set(ref(db,`rooms/${code}/abilities/${uid}`),null);
+      const [playerUid,request]=pending[0];
+      await processAbility(room,g,playerUid,request);
+      await set(ref(db,`rooms/${code}/abilities/${playerUid}`),null);
       return;
     }
     if(g.phase==='choice'){
@@ -277,7 +363,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     const g=getContext().room?.game;if(!g)return;
     if(g.phase==='realm-complete'){
       if(g.realm<realms.length){
-        await set(path(),newStage(chapterStart(g.realm+1),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,0,null,g.encounters,g.history||{}));
+        await set(path(),newStage(chapterStart(g.realm+1),g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,0,null,g.encounters,g.history||{},g));
       } else await beginEpilogue(g);
       return;
     }
@@ -294,7 +380,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
           await update(path(),{phase:'plugged','grip/value':0});
           return;
         }
-        await set(path(),newStage(g.stageIndex,grip,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters,g.history||{}));
+        await set(path(),newStage(g.stageIndex,grip,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters,g.history||{},g));
         return;
       }
       const stage=stageFor(g),chapter=chapterFor(g);
@@ -306,12 +392,12 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       await update(path(),changes);
       return;
     }
-    if(g.phase==='plugged'){await set(path(),newStage(g.stageIndex,6,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters,g.history||{}));return;}
+    if(g.phase==='plugged'){await set(path(),newStage(g.stageIndex,6,g.abilities,g.insightCards,g.usedCards,(g.attempt||0)+1,g.bossWins||0,g.identityMask,g.encounters,g.history||{},g));return;}
     if(g.phase!=='lore')return;
     if(g.stageIndex===chapterEnd(g.realm||1)){
       await update(path(),{phase:'realm-complete',completedAt:Date.now()});return;
     }
-    await set(path(),newStage(g.stageIndex+1,g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,g.bossWins||0,null,g.encounters,g.history||{}));
+    await set(path(),newStage(g.stageIndex+1,g.grip?.value??10,g.abilities,g.insightCards,g.usedCards,0,g.bossWins||0,null,g.encounters,g.history||{},g));
   }
   function addText(target,tag,cls,text){
     const node=document.createElement(tag);if(cls)node.className=cls;node.textContent=text;target.append(node);return node;
@@ -404,7 +490,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
     panel.dataset.phase=g.phase;
     panel.dataset.realm=String(g.realm||1);
     el('game-heading').textContent=complete?`${chapter.realm} complete`:chapter.realm;
-    el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}`:'Reset';
+    el('game-stage').textContent=complete?'Victory':stage?`${stage.kind==='boss'?'Boss: ':''}${stage.title}${stage.weakness?' · Weakness: '+classNames[stage.weakness]+' ('+stage.weakness+')':''}`:'Reset';
     el('game-grip').textContent=`Grip: ${g.grip?.value??10}/10`;
     el('game-conviction').textContent=`Boss Conviction: ${Math.max(0,3-(g.bossWins||0))}/3`;
     el('game-conviction').hidden=stage?.kind!=='boss';
@@ -429,7 +515,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       for(const i of order){
         const option=stage.options[i];if(!option)continue;
         const button=document.createElement('button');button.className='choice';button.textContent=option.text;
-        if(g.eliminated&&option.tag==='WEAK')button.classList.add('eliminated');
+        
         if(already && myBallot.choice===i)button.classList.add('selected');
         const canInitial=g.phase==='choice'&&!already&&Date.now()<=g.deadline;
         const canRevise=debating&&already&&!myBallot.revised&&myBallot.choice!==i&&Date.now()<=g.debateDeadline;
@@ -455,7 +541,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       for(const [player,choice] of Object.entries(votes)){
         const option=stage?.options[choice];const label=realName(room,player);
         const div=addText(reveal,'div','reveal',`${label}: ${option?.text||'No answer submitted'}`);
-        if((result||lore)&&option)addText(div,'span','stance-tag '+option.tag.toLowerCase(),option.tag);
+        if((result||lore)&&option){const tag=effectiveTag(stage,option,g);addText(div,'span','stance-tag '+tag.toLowerCase(),tag);}
       }
     }
     const debate=el('game-debate');debate.replaceChildren();debate.hidden=!debating;
@@ -483,7 +569,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
         dice.classList.add(g.success?'passed':'failed');
         addText(dice,'div','roll-outcome',g.success?'PASS':'FAIL');
         const learning=g.learningBonus??3*(g.attempt||0);
-        rollDisplay.textContent=`d20 ${g.die} + party average ${g.modifier} + ability ${g.rollBonus||0} + Second Look ${learning} = ${g.total}`;
+        rollDisplay.textContent=`d20 ${g.die} + party average ${g.modifier} + Insight ${g.rollBonus||0} + weakness ${g.weaknessBonus||0} + Second Look ${learning} = ${g.total}`;
         rollDisplay.hidden=false;
       }
     }
@@ -494,32 +580,58 @@ export function makeEngine({ db, api, getContext, content, realm2Content, epilog
       for(const i of chosen){
         const option=stage?.options[i];if(!option)continue;
         const card=addText(lorePanel,'div','lore-stance','');
-        addText(card,'div','stance-head',`${option.tag} · ${option.stance}`);
-        addText(card,'p','',option.reflection);
+        const tag=effectiveTag(stage,option,g),lc=option.loreCard;
+        addText(card,'div','stance-head',`${tag} · ${option.stance}`);
+        addText(card,'p','',`Theory — ${lc.theory.name} (${lc.theory.thinker}, ${lc.theory.work})`);
+        addText(card,'p','',`Core principle — ${lc.corePrinciple}`);
+        addText(card,'p','',`Here — ${lc.sceneAnalysis}`);
+        addText(card,'p','',`Strongest objection — ${lc.strongestObjection}`);
       }
       addText(lorePanel,'p','lore-summary',stage?.lore||'');
       if(stage?.kind==='boss' && stage.localIndex===chapter.bossPhases.length-1 && g.insightCards?.[chapter.insight.id])
         addText(lorePanel,'p','insight-awarded',`Insight earned: ${chapter.insight.title} — ${chapter.insight.description}`);
     }
     const abilities=el('game-abilities');abilities.replaceChildren();
-    if(g.phase==='choice' && stage){
-      if(g.hintVisible)addText(abilities,'p','encounter-hint',`Second Look hint: ${stage.hint}`);
-      if(g.clueVisible)addText(abilities,'p','encounter-hint',`Empiricist clue: ${stage.clue}`);
-      if(!g.abilities?.[uid]){
-        const b=addText(abilities,'button','quiet','Use class ability');
-        b.addEventListener('click',()=>ability().catch(e=>notice(e.message,'error')));
-      }
+    if(g.hintVisible)addText(abilities,'p','encounter-hint',`Second Look hint: ${stage?.hint||''}`);
+    const klass=room.players?.[uid]?.class;
+    const canUse=['choice','debate'].includes(g.phase)&&Date.now()<=(g.phase==='choice'?g.deadline:g.debateDeadline);
+    const classAvailable=canUse&&!g.classUses?.[uid]?.['r'+g.realm];
+    if(canUse && stage){
+      if(classAvailable){
+        if(klass==='skeptic'||klass==='pragmatist'){
+          addText(abilities,'p','ability-help',`${classNames[klass]}: choose an option to investigate.`);
+          for(const opt of stage.options){
+            const b=addText(abilities,'button','quiet',`${classNames[klass]} — ${opt.stance}`);
+            b.addEventListener('click',()=>ability(opt.id).catch(e=>notice('Ability failed: '+e.message,'error')));
+          }
+        }else{
+          const b=addText(abilities,'button','quiet',`Use ${classNames[klass]||'class method'}`);
+          b.addEventListener('click',()=>ability().catch(e=>notice('Ability failed: '+e.message,'error')));
+        }
+      }else addText(abilities,'p','ability-help',`Class method already used in Realm ${g.realm}.`);
       const cardId=Object.keys(g.insightCards||{}).find(id=>g.insightCards[id]&&!g.usedCards?.[id]);
-      if(cardId){
+      if(cardId && !g.insightUses?.[uid]){
         const card=realms.map(c=>c.insight).find(c=>c.id===cardId);
         const b=addText(abilities,'button','quiet',`Use Insight: ${card?.title||cardId} (+3)`);
-        b.addEventListener('click',()=>useCard().catch(e=>notice(e.message,'error')));
+        b.addEventListener('click',()=>useCard().catch(e=>notice('Insight failed: '+e.message,'error')));
       }
     }
-    if(result&&!g.success&&!g.rerollUsed&&room.players?.[uid]?.class==='pragmatist'&&!g.abilities?.[uid]){
+    if(result&&!g.success&&!g.rerollUsed&&klass==='pragmatist'&&!g.rerollUses?.[uid]?.['r'+g.realm]){
       const b=addText(abilities,'button','quiet','Pragmatist: reroll failed check');
-      b.addEventListener('click',()=>requestReroll().catch(e=>notice(e.message,'error')));
+      b.addEventListener('click',()=>requestReroll().catch(e=>notice('Reroll failed: '+e.message,'error')));
     }
+    const personal=g.abilityReveals?.[uid];
+    if(personal?.stageIndex===g.stageIndex)addText(abilities,'p','ability-detail',personal.detail);
+    const feedback=g.abilityFeedback?.[uid];
+    if(feedback?.roundId===g.roundId)addText(abilities,'p',feedback.accepted?'ability-ok':'ability-error',feedback.message);
+    const log=Object.entries(g.abilityEvents||{}).sort(([a],[b])=>a.localeCompare(b)).slice(-8);
+    if(log.length){
+      const logPanel=addText(abilities,'div','ability-log','');
+      addText(logPanel,'h4','','Party method log');
+      for(const [,entry] of log)addText(logPanel,'p','',entry.message);
+    }
+    if(stage?.conditional && g.discoveredStages?.['s'+g.stageIndex])
+      addText(abilities,'p','ability-hint','New evidence changes which response is best supported.');
     const whispers=el('game-whispers');whispers.replaceChildren();
     if(g.phase==='choice'&&isSpotlight(stage)&&uid!==g.spotlightUid){
       const alreadyWhispered=room.whispers?.[uid]?.roundId===g.roundId;
