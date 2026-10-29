@@ -1,0 +1,59 @@
+  IDs in HTML: 45
+PASS A DOM IDs: all literal JS references exist
+  /game declared keys: 52
+PASS B rules schema: game/ability/ballot/whisper keys explicitly declared
+PASS X Firebase rule wildcard topology: no sibling wildcard collisions
+PASS C content schema: 15 present stages, lore, conditional tags, all epistemic reveals, weaknesses
+  Realm I: Peircean fallibilism=2; Inference to the best explanation=1; Dream skepticism=1; Relevant-alternatives epistemology=1
+  Realm II: Moorean common sense=1; Deweyan experimentalism=1; Cartesian Cogito=1; Cartesian Circle critique=1; Inference to the best explanation=1
+  Realm VI: Reality and achievement=1; Relational authenticity=1; Agency and choice=1; Achievement and reality=1; Living rather than seeming=1
+PASS D answer diversity: theory-level STRONG counts, <=40% of available stages
+  Longest STRONG (including conditional reveals) 7/15 = 46.7%
+PASS E option-length tell: STRONG longest in <=60% of present stages
+  WEAK: 0 absolute expressions in 19 options (0.000/option)
+  STRONG: 1 absolute expressions in 15 options (0.067/option)
+PASS E2 WEAK options do not overuse absolutist language across the Short Quest
+  STRONG DC10: 90.07% (90074/100000)
+  STRONG DC12: 79.97% (79966/100000)
+  STRONG boss DC16: 60.02% (60020/100000)
+  STRONG boss DC16 + weakness: 85.01% (85010/100000)
+  mixed STRONG/DEFENSIBLE DC10: 79.99% (79986/100000)
+  mixed STRONG/DEFENSIBLE boss DC16: 49.73% (49727/100000)
+  all WEAK DC10: 5.08% (5077/100000)
+  all WEAK boss DC16: 5.04% (5035/100000)
+  STRONG Second Look+3 DC16: 74.87% (74870/100000)
+PASS F 100,000-trial Monte Carlo: real resolveCheck, all DC and weakness cases
+  2 players → UNPLUG: stages=15, classUses=12, game writes=49, handoff=yes, plug=yes, Insight=yes
+  2 players → STAY: stages=15, classUses=12, game writes=49, handoff=yes, plug=yes, Insight=yes
+  3 players → UNPLUG: stages=15, classUses=18, game writes=49, handoff=yes, plug=yes, Insight=yes
+  3 players → STAY: stages=15, classUses=18, game writes=49, handoff=yes, plug=yes, Insight=yes
+  6 players → UNPLUG: stages=15, classUses=36, game writes=49, handoff=yes, plug=yes, Insight=yes
+  6 players → STAY: stages=15, classUses=36, game writes=49, handoff=yes, plug=yes, Insight=yes
+PASS G headless full run CURRENT REALMS (I → II → VI → Epilogue), 2/3/6 players, both endings, flags, debate, retries, plug, handoff
+PASS H visible ability feedback: accepted and rejected requests, separate cooldowns
+PASS I boss weakness drawn only from connected player classes (including absent-class fallback)
+PASS J votes reject READING, accept CHOOSING, survive stale-state UI re-renders
+PASS K Pragmatist Test and failed-roll reroll are independent
+PASS L READING/CHOOSING clocks and ready transition for encounters and Epilogue
+PASS M information reveals are attributed and visible to every participant
+PASS Y release screen: live realm heading changes I → II → VI → Exit, with accessible ending
+PASS Z release lobby: only Short Quest selectable; Full Campaign labeled coming soon
+PASS U Realm VI ability reveals and Spotlight whispers permitted by rules
+PASS AA Firebase rule scope: short-only new rooms, no late seat claims, validated fields
+PASS R Epilogue tie: independent ballots, host-only resolution, all buttons inaccessible afterward
+PASS S Epilogue dropout: connected voters can finish, results show to all
+  Confirmed 8 relative references and 7 HTTP asset requests
+PASS T Vite public/quest assets: all relative imports and content fetches resolve; Firebase rules excluded
+  Audited 15 stages, 60 rendered player views and 60 class reveals
+PASS N no internal stance, tag or option-id labels before lore reveal
+  15 observations; 15 unique premise–conclusion arguments
+PASS O distinct concrete observations and argument forms for all fifteen stages
+  fish: empiricist changed observe-release → consult-then-help
+  ordinary-hall: empiricist changed trust-ordinary → cross-check-key
+  workshop: empiricist changed experiment-route → tested-revisable
+  reconstruct: rationalist changed thinking-now → experience-now
+  friendship-record: empiricist changed read-diary → preserve
+PASS P conditional tags switch only on the named method in the current stage
+PASS O2 Cogito Deduce distinguishes thinking from the claim that a thinker exists
+PASS Q zero ballots automatically fail without displaying a d20 total
+TOTAL 27 passed, 0 failed, 0 deferred
