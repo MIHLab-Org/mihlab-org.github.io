@@ -539,7 +539,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
       debating?`Debate ${Math.max(0,Math.ceil((g.debateDeadline-Date.now())/1000))}s`:'—';
     const represented=[...new Set(getMembers().map(id=>room.players?.[id]?.class).filter(Boolean))];
     const bossWeaknessList=chapter.bossPhases.map((b,i)=>classNames[represented.includes(b.weakness)?b.weakness:represented[(b.index||0)%represented.length]||b.weakness]).join(' → ');
-    const chapterIntro=stage?.kind==='encounter' && stage.localIndex===0 && !g.attempt && chapter.opening ? chapter.opening+'\n\nBoss methods to watch for: '+bossWeaknessList+' (phase weaknesses will adapt to present classes).\n\n' : '';
+    const chapterIntro=stage?.kind==='encounter' && stage.localIndex===0 && !g.attempt && chapter.opening ? chapter.opening+'\n\nMethods that work best against '+(String(chapter.boss||'the boss').trim().split(/\s+/).pop())+': '+bossWeaknessList.split(' → ').join(', then ')+'.\n\n' : '';
     el('game-scene').textContent=complete?chapter.victory:plugged?'Fully Plugged In. Grip will recover to 6. The host can restart this same challenge; your earlier boss victories remain.':chapterIntro+(stage?.scene||'');
     el('game-question').textContent=complete?`${chapter.realm} complete`:stage?.question||'';
     const spotlightBanner=el('game-spotlight');
@@ -638,7 +638,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         addText(card,'p','',`Core principle — ${lc.corePrinciple}`);
         addText(card,'p','',`Here — ${lc.sceneAnalysis}`);
         if(evidenceRevealed && i===evidenceIndex)
-          addText(card,'p','conditional-lore',`With the new evidence, this action is now favored: “${option.text}”. ${stage.evidenceExplanation||''}`);
+          addText(card,'p','conditional-lore',`With the new evidence, this action is now favored: “${option.text.replace(/[.!?]+$/,'')}.” ${stage.evidenceExplanation||''}`);
         addText(card,'p','',`Strongest objection — ${lc.strongestObjection}`);
       }
       addText(lorePanel,'p','lore-summary',stage?.lore||'');

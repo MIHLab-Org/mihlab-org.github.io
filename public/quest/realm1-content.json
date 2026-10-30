@@ -22,9 +22,9 @@
               "thinker": "Charles S. Peirce",
               "work": "The Fixation of Belief"
             },
-            "corePrinciple": "Inquiry should expose beliefs to correction rather than demand absolute certainty.",
+            "corePrinciple": "Keep your beliefs open to correction instead of waiting for total certainty.",
             "sceneAnalysis": "Testing both doors lets you act without waiting for certainty.",
-            "strongestObjection": "A skeptic may argue that every test could itself be part of the dream."
+            "strongestObjection": "A skeptic could say every test you run might be part of the dream too."
           },
           "hiddenPremise": "Marks you make on the doors still count as evidence, even in a dream.",
           "consequence": "You mark each door, pick one, and keep the option to turn back."
@@ -41,9 +41,9 @@
               "thinker": "John Dewey",
               "work": "Logic: The Theory of Inquiry"
             },
-            "corePrinciple": "Shared and revisable checks can justify action under uncertainty.",
+            "corePrinciple": "Checks you share and can revise are enough to act on, even when you're unsure.",
             "sceneAnalysis": "Shared memory is reasonable evidence, though it could be fabricated too.",
-            "strongestObjection": "Agreement among multiple dreamers does not establish an independent reality."
+            "strongestObjection": "Several dreamers agreeing doesn't prove there's a real world behind the dream."
           },
           "hiddenPremise": "Your companions' memories are at least partly reliable.",
           "consequence": "You take the familiar route, with a way back if your memories turn out wrong."
@@ -60,9 +60,9 @@
               "thinker": "René Descartes",
               "work": "Meditations on First Philosophy, Meditation I"
             },
-            "corePrinciple": "Familiar sensory appearances are not infallible warrants of reality.",
+            "corePrinciple": "Something looking familiar doesn't guarantee it's real.",
             "sceneAnalysis": "Treating \"it looks familiar\" as proof ignores that dreams copy the familiar.",
-            "strongestObjection": "In ordinary contexts perception can be prima facie justified without Cartesian certainty."
+            "strongestObjection": "In everyday life, seeing is usually a good enough reason to believe, even without certainty."
           },
           "hiddenPremise": "A dream couldn't feel this familiar.",
           "consequence": "You step into the bedroom with no way to check where you are."
@@ -79,9 +79,9 @@
               "thinker": "René Descartes",
               "work": "Meditations on First Philosophy, Meditation I"
             },
-            "corePrinciple": "On an infallibilist conception, knowledge excludes every possibility of error.",
+            "corePrinciple": "If knowing means ruling out every chance of error, almost nothing counts as knowledge.",
             "sceneAnalysis": "Demanding an impossible guarantee keeps you from using the evidence you have.",
-            "strongestObjection": "Where stakes are extraordinary, demanding stronger assurance may be reasonable."
+            "strongestObjection": "When the stakes are huge, asking for stronger proof can be reasonable."
           },
           "hiddenPremise": "Somewhere there's a test that could rule out dreaming before the doors close.",
           "consequence": "The doors seal while you wait for a proof that doesn't come."
@@ -118,9 +118,9 @@
               "thinker": "John Stuart Mill",
               "work": "An Examination of Sir William Hamilton’s Philosophy"
             },
-            "corePrinciple": "Observed behavior and analogy can justify fallible claims about other minds.",
+            "corePrinciple": "Behavior and similarity to us can give good, if fallible, reasons to believe what another creature feels.",
             "sceneAnalysis": "Watching the fish and the water supports careful help without mind-reading.",
-            "strongestObjection": "Similar behavior might have different causes in creatures unlike us."
+            "strongestObjection": "Behavior that looks like ours could have very different causes in creatures unlike us."
           },
           "hiddenPremise": "What the fish do and how the water moves are enough to pick a safe opening.",
           "consequence": "The side channel starts to open, but a hidden undertow could make a fast release dangerous."
@@ -137,9 +137,9 @@
               "thinker": "John Dewey",
               "work": "How We Think"
             },
-            "corePrinciple": "Comparison, action, and feedback can improve practical judgment.",
+            "corePrinciple": "Comparing notes, acting, and watching the results can improve practical judgment.",
             "sceneAnalysis": "Checking with others and opening slowly tests your reading of the fish.",
-            "strongestObjection": "Shared observational habits can reinforce a common mistake."
+            "strongestObjection": "People who look at things the same way can all make the same mistake."
           },
           "hiddenPremise": "Opening slowly with everyone watching will show the danger before it's too late.",
           "consequence": "You open in stages, so you can stop if the fish get pulled toward danger."
@@ -156,9 +156,9 @@
               "thinker": "Zhuangzi and Huizi",
               "work": "Zhuangzi, chapter 17, Autumn Floods"
             },
-            "corePrinciple": "Not being another creature limits firsthand verification but not all inference.",
+            "corePrinciple": "You can't feel what a fish feels, but you can still reason about it.",
             "sceneAnalysis": "It jumps from \"we can't feel it\" to \"there's no reason to help.\"",
-            "strongestObjection": "Anthropomorphic overconfidence remains a genuine risk in attributing feelings."
+            "strongestObjection": "Projecting human feelings onto animals is a real risk."
           },
           "hiddenPremise": "If you can't feel an animal's state, you have no evidence about it.",
           "consequence": "The gate stays shut and the fish keep struggling."
@@ -175,9 +175,9 @@
               "thinker": "John Stuart Mill",
               "work": "An Examination of Sir William Hamilton’s Philosophy"
             },
-            "corePrinciple": "Analogical inference is defeasible rather than a license to assume identity of feeling.",
+            "corePrinciple": "Similar behavior is a clue, not proof that the feeling is the same.",
             "sceneAnalysis": "Treating jumping as proof of joy ignores the dangerous current.",
-            "strongestObjection": "Rapid behavior can be evidence of pleasure in an appropriate context."
+            "strongestObjection": "In the right setting, quick, lively movement really can be a sign of pleasure."
           },
           "hiddenPremise": "Leaping shows the fish are enjoying themselves.",
           "consequence": "The gate swings wide and the fish are carried into the fast current."
@@ -223,9 +223,9 @@
               "thinker": "Zhuangzi and René Descartes",
               "work": "Zhuangzi, chapter 2; Meditations, Meditation I"
             },
-            "corePrinciple": "A vivid experience can fail to determine whether one is waking or dreaming.",
+            "corePrinciple": "However vivid an experience is, it may not tell you whether you're awake or dreaming.",
             "sceneAnalysis": "Balancing the masks shows the two seem equal, without saying both are false.",
-            "strongestObjection": "Ordinary experience may still warrant beliefs despite this possibility."
+            "strongestObjection": "Everyday experience may still justify beliefs, even if dreaming is possible."
           },
           "hiddenPremise": "Either identity could come with equally convincing experiences.",
           "consequence": "The masks balance, and the illusion can't force a single answer on you."
@@ -242,9 +242,9 @@
               "thinker": "David Hume",
               "work": "An Enquiry Concerning Human Understanding"
             },
-            "corePrinciple": "Evidence can guide belief without securing an infallible identity test.",
+            "corePrinciple": "Evidence can guide what you believe without giving you a foolproof test of who you are.",
             "sceneAnalysis": "Memory and testimony help, as long as you remember they can fail.",
-            "strongestObjection": "Memory and testimony may both be corrupted by the same deception."
+            "strongestObjection": "The same trick could corrupt both memory and what other people tell you."
           },
           "hiddenPremise": "Memory and testimony still tell you something, even if they could be faked together.",
           "consequence": "You weigh the evidence, but Zhuangzi can still ask why you trust it."
@@ -261,9 +261,9 @@
               "thinker": "René Descartes",
               "work": "Meditations, Meditation I"
             },
-            "corePrinciple": "Felt familiarity does not independently verify what is real.",
+            "corePrinciple": "Feeling that something is familiar doesn't prove it's real.",
             "sceneAnalysis": "It relies on exactly the feeling that might be simulated.",
-            "strongestObjection": "Immediate self-awareness may have a different standing from sensory identification."
+            "strongestObjection": "Knowing yourself from the inside may be more secure than recognizing things by sight."
           },
           "hiddenPremise": "Feeling like yourself is enough to prove which mask is yours.",
           "consequence": "The crown feels right, but a wrong identity could trap the party."
@@ -301,9 +301,9 @@
               "thinker": "Fred Dretske",
               "work": "Epistemic Operators"
             },
-            "corePrinciple": "Possibilities need evidence of relevance before overturning ordinary claims.",
+            "corePrinciple": "A mere possibility needs some evidence behind it before it overturns everyday beliefs.",
             "sceneAnalysis": "Asking for another sign tests this voice without demanding certainty.",
-            "strongestObjection": "Relevant alternatives can be hard to identify under adversarial deception."
+            "strongestObjection": "When someone is deliberately deceiving you, it's hard to tell which possibilities matter."
           },
           "hiddenPremise": "The right question could show whether this voice can be trusted.",
           "consequence": "The voice has to answer a new question before the player follows."
@@ -320,9 +320,9 @@
               "thinker": "John Dewey",
               "work": "Logic: The Theory of Inquiry"
             },
-            "corePrinciple": "Inquiry coordinates multiple fallible indicators before acting.",
+            "corePrinciple": "Good inquiry checks several imperfect signs before acting.",
             "sceneAnalysis": "Your friends' observations justify a careful approach, not certainty.",
-            "strongestObjection": "A deceptive system can generate matching signals for the whole party."
+            "strongestObjection": "A deceptive system could fake matching signs for the whole party."
           },
           "hiddenPremise": "Your companions are less likely to be fooled than a lone voice.",
           "consequence": "The player moves closer carefully, though false signals are still possible."
@@ -339,9 +339,9 @@
               "thinker": "René Descartes",
               "work": "Meditations, Meditation I"
             },
-            "corePrinciple": "The possibility of error differs from proof of falsity.",
+            "corePrinciple": "Being possibly wrong is not the same as being proven wrong.",
             "sceneAnalysis": "Calling every encounter unreal is the overreach that doubt warns against.",
-            "strongestObjection": "The deceiver possibility genuinely pressures some claims of knowledge."
+            "strongestObjection": "The possibility of a deceiver really does put pressure on some things we claim to know."
           },
           "hiddenPremise": "If a voice might be an illusion, this one is an illusion.",
           "consequence": "The player turns away, and the figure stays behind the curtain."
@@ -379,9 +379,9 @@
               "thinker": "Charles S. Peirce",
               "work": "The Fixation of Belief"
             },
-            "corePrinciple": "Rational action may rely on corrigible reasons rather than guarantees.",
+            "corePrinciple": "You can act on reasons that might turn out wrong; you don't need guarantees.",
             "sceneAnalysis": "Leaving relies on judgment and trust while staying open to correction.",
-            "strongestObjection": "A good simulated life might still satisfy many genuine values."
+            "strongestObjection": "A good simulated life might still offer many things worth valuing."
           },
           "hiddenPremise": "You can act responsibly on good reasons you might later revise.",
           "consequence": "The party walks out, still thinking for itself and still unsure."
@@ -398,9 +398,9 @@
               "thinker": "John Dewey",
               "work": "The Quest for Certainty"
             },
-            "corePrinciple": "Inquiry evaluates consequences while remaining answerable to new experience.",
+            "corePrinciple": "Good inquiry weighs consequences and stays open to new experience.",
             "sceneAnalysis": "Testing each step keeps you accountable, at the cost of time.",
-            "strongestObjection": "Testing may be impossible in a deliberately deceptive environment."
+            "strongestObjection": "In a world built to fool you, testing may not be possible."
           },
           "hiddenPremise": "Testing each step makes leaving safer without making it certain.",
           "consequence": "The party edges out slowly, ready to change course."
@@ -417,9 +417,9 @@
               "thinker": "René Descartes",
               "work": "Meditations, Meditation I"
             },
-            "corePrinciple": "Demanding certainty about every judgment sets an unattainable standard.",
+            "corePrinciple": "Asking for certainty about every judgment sets a bar no one can reach.",
             "sceneAnalysis": "Holding out for perfect knowledge hands the Machine control.",
-            "strongestObjection": "Some irreversible choices justify demanding exceptionally strong evidence."
+            "strongestObjection": "Some choices can't be undone, and those may deserve much stronger evidence."
           },
           "hiddenPremise": "The Machine could give you perfectly reliable beliefs if you let it decide.",
           "consequence": "The cord stays in, and the Machine decides what counts as knowledge."
