@@ -24,9 +24,9 @@
               "thinker": "Bertrand Russell",
               "work": "The Problems of Philosophy, chapter 2"
             },
-            "corePrinciple": "Independent, convergent appearances support belief about ordinary objects.",
+            "corePrinciple": "When independent checks agree, that supports belief in ordinary things.",
             "sceneAnalysis": "Checking the key helps, but it can give endless doubt more ground than it deserves.",
-            "strongestObjection": "If all checks share a deceptive source, corroboration may add little."
+            "strongestObjection": "If every check comes from the same deceptive source, agreement adds little."
           },
           "hiddenPremise": "Several people checking separately makes the key more trustworthy.",
           "consequence": "After testing, the key opens the gate, but the checking costs time."
@@ -43,9 +43,9 @@
               "thinker": "G. E. Moore",
               "work": "Proof of an External World (1939)"
             },
-            "corePrinciple": "Some everyday claims to knowledge stand more securely than speculative doubts.",
+            "corePrinciple": "Some everyday knowledge is more secure than any far-fetched doubt.",
             "sceneAnalysis": "Using the key trusts ordinary knowledge without handing over your judgment.",
-            "strongestObjection": "Moore may insist he knows while failing to explain how that knowledge defeats the skeptic."
+            "strongestObjection": "Moore may insist he knows without explaining how that defeats the skeptic."
           },
           "hiddenPremise": "You know this ordinary key better than you know any imagined copy.",
           "consequence": "You open the gate yourself and keep the key out of the Machine's hands."
@@ -62,9 +62,9 @@
               "thinker": "René Descartes",
               "work": "Meditations, Meditation III"
             },
-            "corePrinciple": "An assurance is justified only when its source is not itself in question.",
+            "corePrinciple": "A guarantee is only as good as its source, and here the source is in question.",
             "sceneAnalysis": "The certificate assumes the very trust it's supposed to earn.",
-            "strongestObjection": "Reliable testimony can normally justify knowledge when its source is independently warranted."
+            "strongestObjection": "Normally, trusted testimony can give knowledge, if the source has earned that trust."
           },
           "hiddenPremise": "The Machine is trustworthy, even though it's the source of the doubt.",
           "consequence": "The key leaves your hands, and the “proof” depends on the suspected deceiver."
@@ -81,9 +81,9 @@
               "thinker": "J. L. Austin and Fred Dretske",
               "work": "Other Minds; Epistemic Operators"
             },
-            "corePrinciple": "A bare possibility of mistake need not be a relevant defeater.",
+            "corePrinciple": "A bare chance that you're wrong isn't always a reason to doubt.",
             "sceneAnalysis": "A merely possible fake isn't enough reason to reject the key.",
-            "strongestObjection": "The Machine’s power may make otherwise remote alternatives relevant."
+            "strongestObjection": "The Machine's power might make far-fetched possibilities worth taking seriously."
           },
           "hiddenPremise": "An imagined copy counts as a real alternative, even with no sign of one.",
           "consequence": "The party waits by the shelf while the gate stays locked."
@@ -128,9 +128,9 @@
               "thinker": "Charles S. Peirce",
               "work": "The Fixation of Belief"
             },
-            "corePrinciple": "Provisional claims survive testing while remaining open to revision.",
+            "corePrinciple": "Beliefs that keep passing tests can stand, while staying open to change.",
             "sceneAnalysis": "Following the tested map is sensible, but it skips a chance to gather fresh evidence.",
-            "strongestObjection": "Past reliability can fail when the route has materially changed."
+            "strongestObjection": "A map that worked before can fail once the route has changed."
           },
           "hiddenPremise": "Past tests still hold even as the workshop changes.",
           "consequence": "The tested map leads you along an open path, though it may need updates."
@@ -147,9 +147,9 @@
               "thinker": "John Dewey",
               "work": "Logic: The Theory of Inquiry"
             },
-            "corePrinciple": "Inquiry intervenes, measures consequences, and revises hypotheses.",
+            "corePrinciple": "Inquiry tries things, measures the results, and revises its guesses.",
             "sceneAnalysis": "Short trials produce fresh evidence about a changing situation.",
-            "strongestObjection": "Experimentation can expose the party to needless risk under time pressure."
+            "strongestObjection": "Experimenting can put the party at needless risk when time is short."
           },
           "hiddenPremise": "The service passage is safe enough to test before the water catches up.",
           "consequence": "Short trials give you new information, unless something hidden makes them dangerous."
@@ -166,9 +166,9 @@
               "thinker": "René Descartes",
               "work": "Meditations, Meditation I"
             },
-            "corePrinciple": "Psychological clarity is not itself an external guarantee of truth.",
+            "corePrinciple": "Feeling sure of something isn't the same as its being true.",
             "sceneAnalysis": "The pretty map hasn't earned trust by being tried.",
-            "strongestObjection": "Coherence can be evidence when reliable mapmaking practices underpin it."
+            "strongestObjection": "Coherence can count as evidence when the map was made carefully."
           },
           "hiddenPremise": "A map that looks complete is accurate.",
           "consequence": "The elegant map leads you toward something it didn't show."
@@ -185,9 +185,9 @@
               "thinker": "William James (criticized by Bertrand Russell)",
               "work": "Pragmatism; Philosophical Essays"
             },
-            "corePrinciple": "Pragmatists connect truth to practices of verification, not mere convenient payoff.",
+            "corePrinciple": "For pragmatists, truth is tied to checking, not to whatever happens to pay off.",
             "sceneAnalysis": "Picking whatever works right now confuses comfort with truth.",
-            "strongestObjection": "Some pragmatist formulations risk conflating successful action and objective fact."
+            "strongestObjection": "Some versions of pragmatism do blur working well and being true."
           },
           "hiddenPremise": "If a map gets you through, it describes reality correctly.",
           "consequence": "The Machine reshapes its map to keep you obedient, not to tell the truth."
@@ -234,9 +234,9 @@
               "thinker": "René Descartes",
               "work": "Meditations on First Philosophy, Meditation II"
             },
-            "corePrinciple": "Even radical doubt cannot eliminate the occurrence of thinking while it is performed.",
+            "corePrinciple": "Even the most extreme doubt can't erase the fact that thinking is happening while you doubt.",
             "sceneAnalysis": "THINKING NOW names what Descartes says can't be doubted, without claiming a permanent self.",
-            "strongestObjection": "Lichtenberg objects that this may warrant thinking occurs, not an enduring thinker."
+            "strongestObjection": "Lichtenberg objects that this shows only that thinking occurs, not that a lasting thinker exists."
           },
           "hiddenPremise": "Thinking happening now is enough to show I exist now.",
           "consequence": "The lantern shows present thinking, but not a self that lasts forever."
@@ -253,9 +253,9 @@
               "thinker": "Georg Christoph Lichtenberg",
               "work": "Aphorisms (Sudelbücher)"
             },
-            "corePrinciple": "The occurrence of thought does not logically entail a substantial subject of thought.",
+            "corePrinciple": "That thinking is happening doesn't by itself prove there's a thing doing the thinking.",
             "sceneAnalysis": "EXPERIENCE names the bare event and holds off on claims about its owner.",
-            "strongestObjection": "Descartes can argue that first-person avowal is not an ordinary inference to a substance."
+            "strongestObjection": "Descartes could answer that knowing \"I think\" from the inside isn't an ordinary inference."
           },
           "hiddenPremise": "Thinking can happen without proving there's a lasting thinker.",
           "consequence": "The lantern shows that experience is happening. Whose it is stays open."
@@ -272,9 +272,9 @@
               "thinker": "David Hume",
               "work": "A Treatise of Human Nature, Book I, Part IV, section 6"
             },
-            "corePrinciple": "Introspection discovers successive perceptions rather than a permanent substantial self.",
+            "corePrinciple": "Looking inward, you find one experience after another, not a permanent self.",
             "sceneAnalysis": "It draws far more from one thought than the Cogito allows.",
-            "strongestObjection": "Unity and agency may demand an account deeper than a loose bundle of perceptions."
+            "strongestObjection": "Our sense of being one person who acts may need more than a loose bundle of experiences."
           },
           "hiddenPremise": "One thought right now proves a self that never changes.",
           "consequence": "The lantern lights up the present thought, and a drawing of a future you."
@@ -320,9 +320,9 @@
               "thinker": "Antoine Arnauld",
               "work": "Fourth Objections to Descartes’ Meditations"
             },
-            "corePrinciple": "A method must not rely on a guarantee whose proof already presupposes that method.",
+            "corePrinciple": "A method can't be backed by a guarantee whose proof already relies on that method.",
             "sceneAnalysis": "Checking the hidden premise exposes the circular reasoning.",
-            "strongestObjection": "Descartes distinguishes present clear perception from remembered proofs and offers replies."
+            "strongestObjection": "Descartes distinguishes what you perceive clearly right now from proofs you only remember, and he has replies."
           },
           "hiddenPremise": "A foundation can't borrow its support from conclusions built on top of it.",
           "consequence": "The circle in the diagram comes into view, and you can question it."
@@ -339,9 +339,9 @@
               "thinker": "René Descartes",
               "work": "Meditations on First Philosophy, Meditation II"
             },
-            "corePrinciple": "Some first-person certainty may survive doubt without establishing the external world.",
+            "corePrinciple": "Some certainty about yourself can survive doubt without proving the outside world exists.",
             "sceneAnalysis": "Starting at the Cogito avoids assuming certainty carries over automatically.",
-            "strongestObjection": "The foundation alone cannot settle whether external objects exist."
+            "strongestObjection": "That foundation alone can't settle whether outside objects exist."
           },
           "hiddenPremise": "The Cogito is a safe start, but more argument is still needed.",
           "consequence": "You make some progress, but the outside world isn't established yet."
@@ -358,9 +358,9 @@
               "thinker": "René Descartes",
               "work": "Meditations on First Philosophy, Meditation III"
             },
-            "corePrinciple": "Clarity of a perception needs justification before serving as a general truth test.",
+            "corePrinciple": "Before clarity can be a test of truth, you need a reason to trust it.",
             "sceneAnalysis": "Treating clarity as a guarantee skips the step that needs proving.",
-            "strongestObjection": "Descartes holds genuinely clear and distinct perception has a special epistemic force."
+            "strongestObjection": "Descartes holds that truly clear and distinct perception has special authority."
           },
           "hiddenPremise": "Feeling that something is clear guarantees it's true.",
           "consequence": "The diagram looks finished, but its key step is still unsupported."
@@ -399,9 +399,9 @@
               "thinker": "Bertrand Russell",
               "work": "The Problems of Philosophy, chapter 2"
             },
-            "corePrinciple": "An independent world can best explain coherent, persistent sense experiences.",
+            "corePrinciple": "A real outside world is the best explanation for experiences that stay consistent and keep coming.",
             "sceneAnalysis": "Evidence that agrees from many directions justifies careful belief in the world outside.",
-            "strongestObjection": "A powerful deceiver could produce the same apparent convergence."
+            "strongestObjection": "A powerful deceiver could make the evidence line up the same way."
           },
           "hiddenPremise": "The best explanation for consistent experience is a real world out there.",
           "consequence": "You cross on evidence that points the same way, with some doubt still possible."
@@ -418,9 +418,9 @@
               "thinker": "René Descartes",
               "work": "Meditations on First Philosophy, Meditation VI"
             },
-            "corePrinciple": "A nondeceptive God underwrites appropriately used faculties and bodily perception.",
+            "corePrinciple": "A God who doesn't deceive backs up your senses when you use them carefully.",
             "sceneAnalysis": "It tests Descartes' ambitious route without sneaking its premises in as proven.",
-            "strongestObjection": "The argument depends on disputed proofs of God and the reliability of clear perception."
+            "strongestObjection": "This depends on disputed proofs of God and on trusting clear perception."
           },
           "hiddenPremise": "Descartes' proof of a God who doesn't deceive works, and it makes the senses trustworthy.",
           "consequence": "You follow Descartes' route, with its disputed premise about God in plain view."
@@ -437,9 +437,9 @@
               "thinker": "René Descartes",
               "work": "Meditations on First Philosophy, Meditation I"
             },
-            "corePrinciple": "The conceivability of deception undermines certainty but does not show reality absent.",
+            "corePrinciple": "Being able to imagine deception undercuts certainty, but it doesn't show the world isn't there.",
             "sceneAnalysis": "It concludes there's no world outside just because there might not be.",
-            "strongestObjection": "A skeptic may still doubt whether the evidence reaches the threshold of knowledge."
+            "strongestObjection": "A skeptic can still doubt whether the evidence is strong enough to count as knowledge."
           },
           "hiddenPremise": "If the world could be simulated, it isn't real.",
           "consequence": "You stay behind the window while the sounds of the city go on outside."

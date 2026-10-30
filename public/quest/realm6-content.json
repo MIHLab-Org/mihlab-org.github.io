@@ -24,9 +24,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974), Experience Machine"
             },
-            "corePrinciple": "Many people value doing and being, not just having pleasant experiences.",
+            "corePrinciple": "Many people want to actually do things and be someone, not just have pleasant experiences.",
             "sceneAnalysis": "Real relationships and achievements matter apart from how they feel.",
-            "strongestObjection": "Some simulated relationships may still support authentic care or agency."
+            "strongestObjection": "Some relationships in a simulation might still involve real care or real choices."
           },
           "hiddenPremise": "Real relationships are worth something even when they feel worse.",
           "consequence": "The town gate opens onto an imperfect, unscripted future."
@@ -43,9 +43,9 @@
               "thinker": "John Stuart Mill",
               "work": "Utilitarianism (1861)"
             },
-            "corePrinciple": "Evidence about well-being matters when judging practices.",
+            "corePrinciple": "Evidence about how people's lives actually go matters when you judge a practice.",
             "sceneAnalysis": "A careful comparison leaves room for the chance that simulation helps some people.",
-            "strongestObjection": "The experiment might never reveal what authenticity itself is worth."
+            "strongestObjection": "An experiment might never show how much being real is worth."
           },
           "hiddenPremise": "How satisfied people say they are shows some of what matters, but not all of it.",
           "consequence": "The trial delays the choice but gathers useful testimony."
@@ -62,9 +62,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "Pleasure is one candidate for intrinsic value, not an unquestionable exhaustive list.",
+            "corePrinciple": "Pleasure is one candidate for what makes life good, not the whole list.",
             "sceneAnalysis": "It takes for granted that a good life is just a life that feels good.",
-            "strongestObjection": "If happiness is the only ultimate end, the offer looks attractive."
+            "strongestObjection": "If happiness is the only thing that ultimately matters, the offer looks good."
           },
           "hiddenPremise": "How a life feels is what decides how good it is.",
           "consequence": "The residents smile, but none of them can tell whether they built what they remember."
@@ -102,9 +102,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "Being a person in relationship is not reducible to a pleasing impression of closeness.",
+            "corePrinciple": "A real relationship is more than a pleasant feeling of being close.",
             "sceneAnalysis": "The diary grounds care in real history without hiding the deception.",
-            "strongestObjection": "A genuine relationship might also develop inside an artificial environment."
+            "strongestObjection": "A real relationship might also grow inside an artificial world."
           },
           "hiddenPremise": "A friendship can be built from honest responses to a shared past.",
           "consequence": "Your friend helps you recover the town's original records."
@@ -121,9 +121,9 @@
               "thinker": "Nel Noddings",
               "work": "Caring (1984)"
             },
-            "corePrinciple": "Relational concern can justify acting gently while evidence remains incomplete.",
+            "corePrinciple": "Caring about someone can justify going gently while you're still unsure of the facts.",
             "sceneAnalysis": "With dated evidence in hand, repairing the memories together joins honesty and care.",
-            "strongestObjection": "Postponing the truth may itself be a harmful deception."
+            "strongestObjection": "Putting off the truth can itself be a harmful deception."
           },
           "hiddenPremise": "Working through the evidence together can protect the friendship while you learn the truth.",
           "consequence": "Using the diary, you both correct your memories and start a real shared history."
@@ -140,9 +140,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "Qualitatively similar experience does not automatically confer identical relationships.",
+            "corePrinciple": "Feeling the same doesn't make a relationship the same.",
             "sceneAnalysis": "It mistakes feeling loved for actually keeping a friendship going.",
-            "strongestObjection": "Artificial persons could potentially form relationships with real moral standing."
+            "strongestObjection": "Artificial people might be able to have relationships that really matter morally."
           },
           "hiddenPremise": "Feeling the same things would give the two of you the same history.",
           "consequence": "The diary vanishes, and neither of you can check the story anymore."
@@ -188,9 +188,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "People may care about becoming certain kinds of persons through free action.",
+            "corePrinciple": "People can care about who they become through their own free choices.",
             "sceneAnalysis": "Keeping it reversible preserves agency rather than forcing satisfaction.",
-            "strongestObjection": "Preferences themselves may be shaped by manipulation and unequal options."
+            "strongestObjection": "People's preferences can be shaped by manipulation and unfair options."
           },
           "hiddenPremise": "People's freedom to choose matters even when it leads to disappointment.",
           "consequence": "The exit stays unlocked and residents can reconsider."
@@ -207,9 +207,9 @@
               "thinker": "John Dewey",
               "work": "The Public and Its Problems (1927)"
             },
-            "corePrinciple": "Inquiry can test institutions while preserving public participation.",
+            "corePrinciple": "You can test a way of living while still letting everyone have a say.",
             "sceneAnalysis": "A reversible trial treats neither side as settled.",
-            "strongestObjection": "A trial may not reveal how life-long commitments are altered."
+            "strongestObjection": "A short trial may not show how a lifelong commitment changes people."
           },
           "hiddenPremise": "A trial you can leave gathers evidence while keeping choice.",
           "consequence": "Residents get some experience of the garden without being locked in."
@@ -226,9 +226,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "Pleasure cannot simply replace agency without argument.",
+            "corePrinciple": "You'd need an argument before letting pleasure replace people's freedom to choose.",
             "sceneAnalysis": "It assumes people really only want to feel good.",
-            "strongestObjection": "Severe suffering may make a secure simulated refuge worthwhile."
+            "strongestObjection": "When suffering is severe, a safe simulated refuge might be worth it."
           },
           "hiddenPremise": "Making people happy justifies taking away choices that might make them unhappy.",
           "consequence": "The garden goes quiet, and no one inside can leave."
@@ -267,9 +267,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "Actually doing things is distinct from merely experiencing success.",
+            "corePrinciple": "Actually doing something is different from just feeling that you succeeded.",
             "sceneAnalysis": "It makes the difference between remembered triumph and finished work plain.",
-            "strongestObjection": "Constructed experiences may still cultivate genuine skills or moral change."
+            "strongestObjection": "Made-up experiences can still build real skills or change people for the better."
           },
           "hiddenPremise": "Being credited with an achievement requires actually achieving something.",
           "consequence": "The worker opens the real repair shop."
@@ -286,9 +286,9 @@
               "thinker": "John Dewey",
               "work": "Logic: The Theory of Inquiry (1938)"
             },
-            "corePrinciple": "Responsible action uses evidence to correct assumptions.",
+            "corePrinciple": "Acting responsibly means using evidence to correct your assumptions.",
             "sceneAnalysis": "Investigating could improve the plan without assuming the tower is real.",
-            "strongestObjection": "Excessive verification may delay urgently needed aid."
+            "strongestObjection": "Too much checking can delay help that's urgently needed."
           },
           "hiddenPremise": "Records and tests can guide what to do next.",
           "consequence": "You get an accurate picture of the city, but the repairs wait."
@@ -305,9 +305,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "Feeling successful is not always the same as having succeeded.",
+            "corePrinciple": "Feeling successful isn't always the same as having succeeded.",
             "sceneAnalysis": "A generated tower can't repair a real city.",
-            "strongestObjection": "Symbolic and virtual labor can sometimes have real consequences."
+            "strongestObjection": "Symbolic or virtual work can sometimes have real effects."
           },
           "hiddenPremise": "Feeling that you accomplished something shows that you did.",
           "consequence": "The city stays broken while the celebration goes on."
@@ -346,9 +346,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "The value of a life can include its activity and relation to reality.",
+            "corePrinciple": "A good life can include what you actually do and your contact with what's real.",
             "sceneAnalysis": "It refuses manufactured satisfaction while admitting uncertainty about the world outside.",
-            "strongestObjection": "Some agents may reasonably prefer simulation under oppressive real conditions."
+            "strongestObjection": "Someone living in terrible real conditions might reasonably prefer a simulation."
           },
           "hiddenPremise": "Living freely isn't the same as having perfect impressions.",
           "consequence": "You reach the exit room with your judgment still your own."
@@ -365,9 +365,9 @@
               "thinker": "Virginia Held",
               "work": "The Ethics of Care (2006)"
             },
-            "corePrinciple": "Relationships and responsibilities are central components of a good life.",
+            "corePrinciple": "Relationships and responsibilities are central to a good life.",
             "sceneAnalysis": "Care gives a real reason to choose without one answer for everyone.",
-            "strongestObjection": "Relationships may themselves be possible within simulations."
+            "strongestObjection": "Relationships might be possible inside a simulation too."
           },
           "hiddenPremise": "Caring about others can guide choices when you're uncertain.",
           "consequence": "You leave room for different reasons in the final vote."
@@ -384,9 +384,9 @@
               "thinker": "Robert Nozick",
               "work": "Anarchy, State, and Utopia (1974)"
             },
-            "corePrinciple": "Knowledge and autonomy need not be traded for imposed assurance.",
+            "corePrinciple": "You don't have to trade knowledge and freedom for answers someone else hands you.",
             "sceneAnalysis": "It assumes certainty matters more than anything else.",
-            "strongestObjection": "In high-risk circumstances dependable answers can be deeply valuable."
+            "strongestObjection": "When the risks are high, answers you can count on can be very valuable."
           },
           "hiddenPremise": "Avoiding mistakes is worth giving up your own judgment.",
           "consequence": "The Machine keeps you certain but takes away your choice."
