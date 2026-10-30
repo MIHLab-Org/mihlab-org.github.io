@@ -345,6 +345,10 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     const {room,code}=getContext(),g=room?.game;
     if(!g || !['reading','choice','debate','rolling','result','epilogue-reading','epilogue-vote'].includes(g.phase))return;
     // Process class methods during READING too; do not defer the reveal until CHOOSING.
+    // A request that arrives after its round has ended (e.g. a reroll tapped as the host advances)
+    // would otherwise block that player's methods for the rest of the campaign. Clear it.
+    const stale=Object.entries(room.abilities||{}).find(([,r])=>r&&r.roundId!==g.roundId);
+    if(stale){await set(ref(db,`rooms/${code}/abilities/${stale[0]}`),null);return;}
     const pending=Object.entries(room.abilities||{}).filter(([,r])=>r?.roundId===g.roundId);
     if(pending.length){
       const [playerUid,request]=pending[0];
@@ -618,6 +622,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         addText(dice,'div','roll-outcome',g.success?'PASS':'FAIL');
         const learning=g.learningBonus??3*(g.attempt||0);
         rollDisplay.textContent=`d20 ${g.die} + party average ${g.modifier} + Insight ${g.rollBonus||0} + weakness ${g.weaknessBonus||0} + Second Look ${learning} = ${g.total}`;
+        if(!g.success&&g.total>=g.dc)addText(dice,'p','gate-note','The total was high enough, but nobody gave a strong or defensible answer, so only a natural 20 passes.');
         rollDisplay.hidden=false;
       }
     }
