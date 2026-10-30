@@ -464,6 +464,34 @@ try{
    assert.equal(ui.get('game-next').hidden,true);
    assert.equal(ui.get('game-next').disabled,true);
  });
+ run('AA weak-answer gate needs at least half strong or defensible answers',()=>{
+   const pass=tags=>resolveCheck({tags,dc:10,die:15}).success;
+   assert.equal(pass(['STRONG','WEAK']),true,'1 of 2 good should pass the gate');
+   assert.equal(pass(['STRONG','WEAK','WEAK']),false,'1 of 3 good should be gated');
+   assert.equal(pass(['DEFENSIBLE','STRONG','WEAK','WEAK']),true,'2 of 4 good should pass the gate');
+   assert.equal(pass(['WEAK']),false,'a lone weak answer is gated');
+   assert.equal(resolveCheck({tags:['WEAK','WEAK','STRONG'],dc:10,die:20}).success,true,'natural 20 still passes');
+ });
+ await runAsync('AB party size: +1 DC for five or six players; one Test reroll per realm for the party',async()=>{
+   for(const [size,boss,enc] of [[2,16,10],[4,16,10],[5,17,11],[6,17,11]]){
+     const e=setup(size);await e.begin();
+     time=room.game.readingDeadline+1;await sync();
+     for(const p of Object.keys(room.players))await cast(e,p,0);
+     time=room.game.deadline+1;await sync();
+     assert.equal(room.game.phase,'ready-to-roll');
+     assert.equal(room.game.dc,enc,`encounter DC for ${size} players`);
+     uid='p0';e.render(room);
+     assert.equal(textAll(ui.get('game-instructions')).includes('party of'),size>=5,`party note for ${size} players`);
+     void boss;
+   }
+   const e=setup(8);await e.begin();
+   room.game.phase='result';room.game.success=false;room.game.votes={p0:0};room.game.die=2;room.game.total=5;room.game.dc=16;
+   room.game.rerollUses={p3:{r1:true}};
+   uid='p7';e.render(room);
+   assert(!textAll(ui.get('game-abilities')).includes('reroll'),'second Pragmatist offered a reroll after the party used one');
+   room.game.rerollUses={};uid='p7';e.render(room);
+   assert(textAll(ui.get('game-abilities')).includes('reroll'),'Pragmatist not offered the party reroll');
+ });
  run('Z release lobby: only Short Quest selectable; Full Campaign labeled coming soon',()=>{
    const html=file('index.html'),js=file('app.js');
    const selector=html.match(/<select[^>]*id=["']campaign["'][^>]*>([\s\S]*?)<\/select>/);
