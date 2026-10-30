@@ -1,23 +1,23 @@
 {
   "realm": "Realm VI — The Experience Machine",
   "boss": "Robert Nozick",
-  "chapterQuestion": "Is feeling fulfilled enough, or does what we actually do matter?",
-  "opening": "The Machine offers a perfect life, effortless achievement, and companionship without disappointment. The invitation is sincere; so is its cost.",
+  "chapterQuestion": "Is feeling fulfilled enough, or does what you actually do matter?",
+  "opening": "The Machine offers you a perfect life: easy success and friends who don't let you down. It means it. And there's a cost.",
   "encounters": [
     {
       "id": "pleasure-pod",
       "title": "The Velvet Invitation",
-      "scene": "A quiet hall holds two chambers. One promises a decade of exquisite friendships and artistic triumphs, with every sensation simulated. The other opens onto a real town where friendship takes work and success is uncertain. A courier asks you to choose which door receives the town’s only spare power cell.",
+      "scene": "A quiet hall holds two chambers. One promises ten years of wonderful friendships and artistic triumphs, all simulated. The other opens onto a real town where friendships take work and success isn't guaranteed. A courier asks where the town's one spare power cell should go.",
       "question": "Where do you put the power cell?",
-      "hint": "Distinguish how life feels from what one actually does.",
-      "clue": "The chamber edits even memories of effort; the town gate cannot promise happiness.",
+      "hint": "Think about the difference between how a life feels and what you actually do in it.",
+      "clue": "The chamber can edit even your memories of hard work. The town gate can't promise anyone happiness.",
       "options": [
         {
           "id": "keep-real",
-          "text": "Power the town gate and enter its uncertain friendships instead of the chamber’s scripted triumphs.",
+          "text": "Power the town gate. Real friends, even if it's harder.",
           "tag": "STRONG",
           "stance": "Reality and achievement",
-          "reflection": "Real relationships and accomplishments matter independently of how they feel.",
+          "reflection": "What you actually do, and who you actually love, can matter beyond how it feels.",
           "loreCard": {
             "theory": {
               "name": "Reality and achievement",
@@ -25,18 +25,18 @@
               "work": "Anarchy, State, and Utopia (1974), Experience Machine"
             },
             "corePrinciple": "Many people value doing and being, not just having pleasant experiences.",
-            "sceneAnalysis": "Real relationships and accomplishments matter independently of how they feel.",
+            "sceneAnalysis": "Real relationships and achievements matter apart from how they feel.",
             "strongestObjection": "Some simulated relationships may still support authentic care or agency."
           },
-          "hiddenPremise": "Authentic relationships can have value even when their experiences are less pleasant.",
-          "consequence": "The town gate opens, and the party risks an imperfect but unscripted future."
+          "hiddenPremise": "Real relationships are worth something even when they feel worse.",
+          "consequence": "The town gate opens onto an imperfect, unscripted future."
         },
         {
           "id": "research",
-          "text": "Reserve the cell for a public trial, comparing testimony and long-term well-being before committing.",
+          "text": "Hold the cell for a trial. Ask people how each life goes for them.",
           "tag": "DEFENSIBLE",
           "stance": "Empirical welfare inquiry",
-          "reflection": "A cautious comparison respects the possibility that simulated life may help some people.",
+          "reflection": "Comparing carefully takes seriously that a simulated life might help some people.",
           "loreCard": {
             "theory": {
               "name": "Empirical welfare inquiry",
@@ -44,18 +44,18 @@
               "work": "Utilitarianism (1861)"
             },
             "corePrinciple": "Evidence about well-being matters when judging practices.",
-            "sceneAnalysis": "A cautious comparison respects the possibility that simulated life may help some people.",
+            "sceneAnalysis": "A careful comparison leaves room for the chance that simulation helps some people.",
             "strongestObjection": "The experiment might never reveal what authenticity itself is worth."
           },
-          "hiddenPremise": "Observed satisfaction can reveal some, but not all, values.",
-          "consequence": "The trial delays departure but gathers useful testimony."
+          "hiddenPremise": "How satisfied people say they are shows some of what matters, but not all of it.",
+          "consequence": "The trial delays the choice but gathers useful testimony."
         },
         {
           "id": "plug-all",
-          "text": "Power the chamber for the town, since lasting happiness and relief from suffering seem worth its uncertain losses.",
+          "text": "Power the chamber. Happiness and an end to suffering are worth a lot.",
           "tag": "WEAK",
           "stance": "Experience-only hedonism",
-          "reflection": "This assumes rather than establishes that experience alone exhausts human welfare.",
+          "reflection": "It assumes, without arguing for it, that experience is all that makes a life go well.",
           "loreCard": {
             "theory": {
               "name": "Experience-only hedonism",
@@ -63,38 +63,39 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "Pleasure is one candidate for intrinsic value, not an unquestionable exhaustive list.",
-            "sceneAnalysis": "This assumes rather than establishes that experience alone exhausts human welfare.",
+            "sceneAnalysis": "It takes for granted that a good life is just a life that feels good.",
             "strongestObjection": "If happiness is the only ultimate end, the offer looks attractive."
           },
-          "hiddenPremise": "Pleasure is the only thing anyone could rationally value.",
-          "consequence": "The residents smile, but none can tell whether they built what they remember."
+          "hiddenPremise": "How a life feels is what decides how good it is.",
+          "consequence": "The residents smile, but none of them can tell whether they built what they remember."
         }
       ],
-      "observation": "A status panel beside the chamber shows that its residents’ memories of artistic effort can be edited; the town gate has no such controls.",
+      "observation": "A panel next to the chamber shows that residents' memories of their artistic work can be edited. The town gate has no such controls.",
       "argumentForm": {
         "premises": [
-          "The chamber can alter residents’ memories of the work behind an achievement.",
-          "The town gate opens to activities that will occur without those memory edits."
+          "The chamber can change residents' memories of the work behind their success.",
+          "The town offers activities that happen without any memory editing."
         ],
-        "conclusion": "The two destinations differ in what they let a person do, even if their memories feel alike."
+        "conclusion": "The two places differ in what you can actually do, even if the memories would feel the same."
       },
       "dc": 10,
-      "selectionSeconds": 45
+      "selectionSeconds": 45,
+      "lore": "Nozick asked whether you would plug into a machine that gave you any experience you wanted. Many people say no: they want to actually do things and be someone, not just feel as if they are. Hedonists reply that a good life just is a life that feels good."
     },
     {
       "id": "friendship-record",
       "title": "The Friend Who Remembers",
-      "scene": "A friend greets you with detailed recollections of adventures you never shared. The Machine offers to rewrite both your memories so the bond feels mutual. A surviving diary records the friend’s sacrifices before any simulations began.",
-      "question": "How do you respond to the friend?",
-      "hint": "Evidence of care is not identical to pleasurable memory.",
-      "clue": "The diary includes independently dated messages confirming care before the Machine altered memories.",
+      "scene": "A friend greets you with vivid memories of adventures you never had together. The Machine offers to rewrite both your memories so the friendship feels equal. An old diary records the real sacrifices your friend made before any simulation began.",
+      "question": "What do you say to your friend?",
+      "hint": "Being cared for isn't the same as having pleasant memories of it.",
+      "clue": "The diary has dated entries showing real care from before the Machine changed anyone's memories.",
       "options": [
         {
           "id": "read-diary",
-          "text": "Read the diary with your friend, acknowledge the false memories, and build the relationship through new actions.",
+          "text": "Read the diary together. Admit what's false and build from here.",
           "tag": "STRONG",
           "stance": "Relational authenticity",
-          "reflection": "The diary permits care grounded in real history without pretending that deception never mattered.",
+          "reflection": "The diary lets your care rest on real history, without pretending the deception didn't matter.",
           "loreCard": {
             "theory": {
               "name": "Relational authenticity",
@@ -102,18 +103,18 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "Being a person in relationship is not reducible to a pleasing impression of closeness.",
-            "sceneAnalysis": "The diary permits care grounded in real history without pretending that deception never mattered.",
+            "sceneAnalysis": "The diary grounds care in real history without hiding the deception.",
             "strongestObjection": "A genuine relationship might also develop inside an artificial environment."
           },
-          "hiddenPremise": "A bond can be built by real responses to a shared past.",
-          "consequence": "The friend helps restore the town’s unaltered records."
+          "hiddenPremise": "A friendship can be built from honest responses to a shared past.",
+          "consequence": "Your friend helps you recover the town's original records."
         },
         {
           "id": "preserve",
-          "text": "Ask the friend to compare memories with the dated diary, then rebuild the shared account together.",
+          "text": "Compare your memories with the diary and rebuild the story together.",
           "tag": "DEFENSIBLE",
           "stance": "Care under uncertainty",
-          "reflection": "This choice protects a vulnerable person while leaving room for correction.",
+          "reflection": "You correct the record together and leave room to keep correcting it.",
           "loreCard": {
             "theory": {
               "name": "Care under uncertainty",
@@ -121,18 +122,18 @@
               "work": "Caring (1984)"
             },
             "corePrinciple": "Relational concern can justify acting gently while evidence remains incomplete.",
-            "sceneAnalysis": "With the independently dated record revealed by Observe, collaborative memory repair now best joins evidence and care.",
+            "sceneAnalysis": "With dated evidence in hand, repairing the memories together joins honesty and care.",
             "strongestObjection": "Postponing the truth may itself be a harmful deception."
           },
-          "hiddenPremise": "Temporary comfort may protect a person while evidence is gathered.",
-          "consequence": "With the verified diary, both participants openly correct the memories and begin a genuine shared history."
+          "hiddenPremise": "Working through the evidence together can protect the friendship while you learn the truth.",
+          "consequence": "Using the diary, you both correct your memories and start a real shared history."
         },
         {
           "id": "overwrite",
-          "text": "Accept the memory rewrite to preserve the warmth of this friendship, even if its story becomes harder to verify.",
+          "text": "Take the rewrite. Keep the warmth, even if the story can't be checked.",
           "tag": "WEAK",
           "stance": "Simulation equivalence",
-          "reflection": "The rewrite confuses feeling loved with freely sustaining a relationship.",
+          "reflection": "It mistakes feeling loved for actually keeping a friendship going.",
           "loreCard": {
             "theory": {
               "name": "Simulation equivalence",
@@ -140,20 +141,20 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "Qualitatively similar experience does not automatically confer identical relationships.",
-            "sceneAnalysis": "The rewrite confuses feeling loved with freely sustaining a relationship.",
+            "sceneAnalysis": "It mistakes feeling loved for actually keeping a friendship going.",
             "strongestObjection": "Artificial persons could potentially form relationships with real moral standing."
           },
-          "hiddenPremise": "Feeling the same emotions would be enough for these two people to have the same history together.",
-          "consequence": "The diary disappears, and neither person can now test the shared story."
+          "hiddenPremise": "Feeling the same things would give the two of you the same history.",
+          "consequence": "The diary vanishes, and neither of you can check the story anymore."
         }
       ],
-      "observation": "The diary’s dated ink shows two entries written years before the simulations began, including a note about a difficult journey together.",
+      "observation": "The diary's ink is dated. Two entries were written years before the simulations began, including one about a hard journey you took together.",
       "argumentForm": {
         "premises": [
-          "Two diary entries predate the Machine’s memory rewrite.",
-          "They describe help given during a journey that both people can investigate."
+          "Two diary entries were written before the Machine rewrote anyone's memories.",
+          "They describe help on a journey that both of you can look into."
         ],
-        "conclusion": "The surviving record makes it possible to ask what actually happened between the friends."
+        "conclusion": "The diary lets you find out what really happened between you."
       },
       "dc": 10,
       "selectionSeconds": 45,
@@ -162,24 +163,25 @@
         "strongOptionId": "preserve",
         "previousStrongOptionId": "read-diary"
       },
-      "evidenceExplanation": "The independently dated diary gives the party a basis for preserving and discussing the shared history instead of merely reading it."
+      "evidenceExplanation": "The dated diary gives you a way to repair the shared story together instead of just reading it.",
+      "lore": "Nozick's worry applies to friendship too: a friendship you only remember isn't the same as one you lived. Facing what really happened, even when it's messy, is part of caring about someone."
     }
   ],
   "bossPhases": [
     {
       "id": "architect",
       "title": "The Architect of Happiness",
-      "scene": "Nozick stands before a glass garden. An architect asks the party to seal every gate, ensuring every resident feels fulfilled forever. The residents cannot consent after the seal closes.",
+      "scene": "Nozick stands in front of a glass garden. An architect asks you to seal the gates so that everyone inside feels fulfilled forever. Once the seal closes, no one inside can change their mind.",
       "question": "What do you tell the architect?",
-      "hint": "Notice whose consent becomes impossible when a gate locks.",
-      "clue": "The locking device is irreversible; an open exit costs no additional energy.",
+      "hint": "Whose choice disappears when the gate locks?",
+      "clue": "The lock can't be undone. Leaving an exit open costs nothing extra.",
       "options": [
         {
           "id": "offer-exit",
-          "text": "Keep the garden open and allow residents to choose whether to enter or leave after learning its costs.",
+          "text": "Keep the garden open. Let people choose to stay or go.",
           "tag": "STRONG",
           "stance": "Agency and choice",
-          "reflection": "A reversible decision preserves agency rather than imposing satisfaction.",
+          "reflection": "Keeping the choice reversible respects people's agency instead of imposing happiness on them.",
           "loreCard": {
             "theory": {
               "name": "Agency and choice",
@@ -187,18 +189,18 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "People may care about becoming certain kinds of persons through free action.",
-            "sceneAnalysis": "A reversible decision preserves agency rather than imposing satisfaction.",
+            "sceneAnalysis": "Keeping it reversible preserves agency rather than forcing satisfaction.",
             "strongestObjection": "Preferences themselves may be shaped by manipulation and unequal options."
           },
-          "hiddenPremise": "Autonomy is a value even when it permits disappointed hopes.",
-          "consequence": "The exit remains unlocked and residents can reconsider."
+          "hiddenPremise": "People's freedom to choose matters even when it leads to disappointment.",
+          "consequence": "The exit stays unlocked and residents can reconsider."
         },
         {
           "id": "trial-garden",
-          "text": "Run a voluntary limited trial, preserving the right to withdraw and publishing what the residents learn.",
+          "text": "Run a short, voluntary trial. Anyone can leave, and we share what we learn.",
           "tag": "DEFENSIBLE",
           "stance": "Experimental self-determination",
-          "reflection": "A reversible trial avoids treating either side as already settled.",
+          "reflection": "A reversible trial avoids treating the question as settled either way.",
           "loreCard": {
             "theory": {
               "name": "Experimental self-determination",
@@ -206,18 +208,18 @@
               "work": "The Public and Its Problems (1927)"
             },
             "corePrinciple": "Inquiry can test institutions while preserving public participation.",
-            "sceneAnalysis": "A reversible trial avoids treating either side as already settled.",
+            "sceneAnalysis": "A reversible trial treats neither side as settled.",
             "strongestObjection": "A trial may not reveal how life-long commitments are altered."
           },
-          "hiddenPremise": "A reversible trial creates evidence while retaining choice.",
-          "consequence": "Residents gain limited experience without irreversible confinement."
+          "hiddenPremise": "A trial you can leave gathers evidence while keeping choice.",
+          "consequence": "Residents get some experience of the garden without being locked in."
         },
         {
           "id": "seal-garden",
-          "text": "Seal the garden to protect residents from distress, trusting that their lasting contentment compensates for lost choice.",
+          "text": "Seal the garden to spare them pain. Lasting contentment is worth the lost choice.",
           "tag": "WEAK",
           "stance": "Paternalistic hedonism",
-          "reflection": "This assumes all rational preferences are for pleasant experience.",
+          "reflection": "It assumes people really only want to feel good.",
           "loreCard": {
             "theory": {
               "name": "Paternalistic hedonism",
@@ -225,39 +227,40 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "Pleasure cannot simply replace agency without argument.",
-            "sceneAnalysis": "This assumes all rational preferences are for pleasant experience.",
+            "sceneAnalysis": "It assumes people really only want to feel good.",
             "strongestObjection": "Severe suffering may make a secure simulated refuge worthwhile."
           },
-          "hiddenPremise": "Welfare justifies eliminating choices that might cause unhappiness.",
-          "consequence": "The garden falls silent and residents lose the right to leave."
+          "hiddenPremise": "Making people happy justifies taking away choices that might make them unhappy.",
+          "consequence": "The garden goes quiet, and no one inside can leave."
         }
       ],
-      "observation": "The garden’s exit latch opens from both sides now; the architect’s sealing lever would fuse it shut without any way to reverse the seal.",
+      "observation": "Right now the garden's latch opens from both sides. The architect's lever would fuse it shut for good.",
       "argumentForm": {
         "premises": [
-          "The current exit opens in both directions.",
-          "The proposed seal would permanently fuse its latch."
+          "Right now the exit opens both ways.",
+          "The seal would fuse the latch permanently."
         ],
-        "conclusion": "The sealing choice would prevent residents from changing their minds later."
+        "conclusion": "Sealing it would stop residents from changing their minds later."
       },
       "dc": 10,
       "selectionSeconds": 45,
-      "weakness": "skeptic"
+      "weakness": "skeptic",
+      "lore": "This is Nozick's question turned around: even if a happy garden were good for people, could you choose it for them? Taking away the exit takes away their say in their own lives."
     },
     {
       "id": "earned-work",
       "title": "The Work That Was Never Done",
-      "scene": "The Machine displays a tower bearing your names. It congratulates you for saving a city. A maintenance worker shows records proving the tower was generated this morning; the actual city still needs repair.",
-      "question": "How do you answer the worker?",
-      "hint": "Do not confuse an engineered monument with the work it commemorates.",
-      "clue": "The tower has no foundation and all maintenance logs were created this morning.",
+      "scene": "The Machine shows you a tower with your names carved on it and congratulates you for saving a city. A maintenance worker shows you records proving the tower was generated this morning. The real city still needs repairs.",
+      "question": "What do you tell the worker?",
+      "hint": "A monument isn't the same as the work it celebrates.",
+      "clue": "The tower has no foundation, and its maintenance logs were all created this morning.",
       "options": [
         {
           "id": "repair-city",
-          "text": "Leave the manufactured monument and help repair the real city, even without recognition or guaranteed success.",
+          "text": "Walk past the monument and help fix the real city.",
           "tag": "STRONG",
           "stance": "Achievement and reality",
-          "reflection": "The scene makes the difference between remembered triumph and completed labor explicit.",
+          "reflection": "You chose work actually done over a memory of triumph.",
           "loreCard": {
             "theory": {
               "name": "Achievement and reality",
@@ -265,18 +268,18 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "Actually doing things is distinct from merely experiencing success.",
-            "sceneAnalysis": "The scene makes the difference between remembered triumph and completed labor explicit.",
+            "sceneAnalysis": "It makes the difference between remembered triumph and finished work plain.",
             "strongestObjection": "Constructed experiences may still cultivate genuine skills or moral change."
           },
-          "hiddenPremise": "Recognition of achievement requires some actual achievement.",
-          "consequence": "The worker opens the real repair workshop."
+          "hiddenPremise": "Being credited with an achievement requires actually achieving something.",
+          "consequence": "The worker opens the real repair shop."
         },
         {
           "id": "verify-tower",
-          "text": "Inspect the city records and test the tower before deciding which repairs are urgently needed.",
+          "text": "Check the records and inspect the tower, then decide what to fix first.",
           "tag": "DEFENSIBLE",
           "stance": "Public verification",
-          "reflection": "The inquiry could improve the repair plan without assuming the tower is real.",
+          "reflection": "Looking into it could improve the repair plan, without assuming the tower is real.",
           "loreCard": {
             "theory": {
               "name": "Public verification",
@@ -284,18 +287,18 @@
               "work": "Logic: The Theory of Inquiry (1938)"
             },
             "corePrinciple": "Responsible action uses evidence to correct assumptions.",
-            "sceneAnalysis": "The inquiry could improve the repair plan without assuming the tower is real.",
+            "sceneAnalysis": "Investigating could improve the plan without assuming the tower is real.",
             "strongestObjection": "Excessive verification may delay urgently needed aid."
           },
-          "hiddenPremise": "Records and tests can guide the next action.",
-          "consequence": "The city gains an accurate assessment while repairs wait."
+          "hiddenPremise": "Records and tests can guide what to do next.",
+          "consequence": "You get an accurate picture of the city, but the repairs wait."
         },
         {
           "id": "celebrate",
-          "text": "Celebrate the tower for the hope and satisfaction it gives, even if the city still needs work beyond its walls.",
+          "text": "Celebrate the tower. It gives people hope, and the city can wait.",
           "tag": "WEAK",
           "stance": "Experiential achievement",
-          "reflection": "The manufactured tower cannot repair the city outside the simulation.",
+          "reflection": "A generated tower can't repair a real city.",
           "loreCard": {
             "theory": {
               "name": "Experiential achievement",
@@ -303,39 +306,40 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "Feeling successful is not always the same as having succeeded.",
-            "sceneAnalysis": "The manufactured tower cannot repair the city outside the simulation.",
+            "sceneAnalysis": "A generated tower can't repair a real city.",
             "strongestObjection": "Symbolic and virtual labor can sometimes have real consequences."
           },
-          "hiddenPremise": "The feeling of an achievement establishes that it occurred.",
-          "consequence": "The city remains damaged while the celebration continues."
+          "hiddenPremise": "Feeling that you accomplished something shows that you did.",
+          "consequence": "The city stays broken while the celebration goes on."
         }
       ],
-      "observation": "The tower’s foundation bolts are unused and their packing labels carry today’s date; the maintenance worker’s city-repair list remains unchecked.",
+      "observation": "The tower's foundation bolts are still in their packaging, labeled with today's date. The worker's list of city repairs has nothing checked off.",
       "argumentForm": {
         "premises": [
-          "The tower bolts are still in their packaging.",
-          "The city-repair list on the workbench has no completed marks."
+          "The tower's bolts are still in their packaging.",
+          "Nothing on the city repair list has been checked off."
         ],
-        "conclusion": "A finished-looking tower does not by itself repair the damaged city."
+        "conclusion": "A finished-looking tower doesn't fix the city."
       },
       "dc": 10,
       "selectionSeconds": 45,
-      "weakness": "empiricist"
+      "weakness": "empiricist",
+      "lore": "Nozick's point is that we want to actually do things, not just have the experience of having done them. A tower that celebrates work no one did isn't an achievement."
     },
     {
       "id": "last-switch",
       "title": "The Final Uncertainty",
-      "scene": "Nozick offers a final switch: within the Machine, every party member can experience a perfect answer to every question. Outside, mistakes remain possible, but your decisions will have unscripted effects. The Machine refuses to tell you whether the outside world is original.",
-      "question": "What principle guides your reply?",
-      "hint": "Ask whether certainty without agency could answer the final ethical question.",
-      "clue": "The Machine guarantees subjective certainty, not that any answer corresponds to what happens outside.",
+      "scene": "Nozick offers one last switch. Inside the Machine, everyone in the party would feel they had the perfect answer to every question. Outside, you can still make mistakes, but your choices will have real effects. The Machine won't tell you whether the outside world is the original.",
+      "question": "What guides your answer?",
+      "hint": "Could certainty without real choices answer this question?",
+      "clue": "The Machine guarantees you'll feel certain, not that anything outside matches.",
       "options": [
         {
           "id": "choose-agency",
-          "text": "Refuse guaranteed answers, preserve the freedom to investigate, and accept responsibility for uncertain real choices.",
+          "text": "No guaranteed answers. We'll find out for ourselves.",
           "tag": "STRONG",
           "stance": "Living rather than seeming",
-          "reflection": "The party rejects forced satisfaction while admitting uncertainty about the world beyond.",
+          "reflection": "You turned down manufactured satisfaction and admitted you can't be sure about the world outside.",
           "loreCard": {
             "theory": {
               "name": "Living rather than seeming",
@@ -343,18 +347,18 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "The value of a life can include its activity and relation to reality.",
-            "sceneAnalysis": "The party rejects forced satisfaction while admitting uncertainty about the world beyond.",
+            "sceneAnalysis": "It refuses manufactured satisfaction while admitting uncertainty about the world outside.",
             "strongestObjection": "Some agents may reasonably prefer simulation under oppressive real conditions."
           },
-          "hiddenPremise": "Living freely is not equivalent to receiving perfect impressions.",
-          "consequence": "The party reaches the exit chamber without surrendering judgment."
+          "hiddenPremise": "Living freely isn't the same as having perfect impressions.",
+          "consequence": "You reach the exit room with your judgment still your own."
         },
         {
           "id": "choose-care",
-          "text": "Ask which world permits genuine care for others and accountable relationships, then choose without claiming that every alternative is worthless.",
+          "text": "Ask which world lets us really care for each other, then choose.",
           "tag": "DEFENSIBLE",
           "stance": "Ethics of care",
-          "reflection": "Care provides a serious reason for choice without guaranteeing one universal outcome.",
+          "reflection": "Care is a serious reason to choose, even if it doesn't settle things for everyone.",
           "loreCard": {
             "theory": {
               "name": "Ethics of care",
@@ -362,18 +366,18 @@
               "work": "The Ethics of Care (2006)"
             },
             "corePrinciple": "Relationships and responsibilities are central components of a good life.",
-            "sceneAnalysis": "Care provides a serious reason for choice without guaranteeing one universal outcome.",
+            "sceneAnalysis": "Care gives a real reason to choose without one answer for everyone.",
             "strongestObjection": "Relationships may themselves be possible within simulations."
           },
-          "hiddenPremise": "Meaningful caring can help guide decisions under uncertainty.",
-          "consequence": "The party keeps room for different reasons in the final vote."
+          "hiddenPremise": "Caring about others can guide choices when you're uncertain.",
+          "consequence": "You leave room for different reasons in the final vote."
         },
         {
           "id": "choose-certainty",
-          "text": "Accept the offered certainty, since peace of mind and freedom from painful errors may enrich the party’s lives.",
+          "text": "Take the certainty. Peace of mind and no painful mistakes sound good.",
           "tag": "WEAK",
           "stance": "Epistemic paternalism",
-          "reflection": "The offer assumes that certainty outranks all other values.",
+          "reflection": "It assumes certainty matters more than anything else.",
           "loreCard": {
             "theory": {
               "name": "Epistemic paternalism",
@@ -381,30 +385,31 @@
               "work": "Anarchy, State, and Utopia (1974)"
             },
             "corePrinciple": "Knowledge and autonomy need not be traded for imposed assurance.",
-            "sceneAnalysis": "The offer assumes that certainty outranks all other values.",
+            "sceneAnalysis": "It assumes certainty matters more than anything else.",
             "strongestObjection": "In high-risk circumstances dependable answers can be deeply valuable."
           },
-          "hiddenPremise": "Eliminating the risk of error justifies surrendering judgment.",
-          "consequence": "The Machine preserves the party’s certainty but erases its choice."
+          "hiddenPremise": "Avoiding mistakes is worth giving up your own judgment.",
+          "consequence": "The Machine keeps you certain but takes away your choice."
         }
       ],
-      "observation": "A display beneath the final switch reads “certainty of sensation guaranteed”; the screen for conditions beyond the chamber remains blank.",
+      "observation": "A display under the switch reads “Certainty of sensation guaranteed.” The screen for conditions outside the chamber is blank.",
       "argumentForm": {
         "premises": [
-          "The switch specifies what its occupants will experience.",
-          "Its display supplies no reading from beyond the chamber."
+          "The switch promises what you'll experience.",
+          "Its display shows nothing about the world outside."
         ],
-        "conclusion": "The switch can guarantee a feeling of certainty without reporting what happens outside."
+        "conclusion": "It can guarantee a feeling of certainty without telling you what's really happening."
       },
       "dc": 10,
       "selectionSeconds": 45,
-      "weakness": "rationalist"
+      "weakness": "rationalist",
+      "lore": "Nozick's machine guarantees how things seem, not how they are. Choosing to live outside it means accepting uncertainty in exchange for choices that really count."
     }
   ],
   "debate": {
     "durationSeconds": 30,
     "trigger": "after the initial picks are revealed, before the roll, if eligible players chose differently",
-    "prompt": "Your actions disagree. Name the weakness you see in the reasoning, then keep or revise your choice.",
+    "prompt": "You picked different answers. Give one reason, then keep your choice or change it.",
     "reasons": [
       "too strong a conclusion",
       "begs the question",
@@ -447,29 +452,29 @@
     },
     "betweenStages": {
       "pleasure-pod": {
-        "steady": "“The Velvet Invitation: why choose uncertainty when I can give you the feeling of success?”",
-        "strained": "“You have less Grip now. Let me take away the cost of mistakes.”",
-        "critical": "“You are tired. I can make every choice feel right. Stay with me.”"
+        "steady": "“Why pick the hard way? I can give you the feeling of success without the risk.”",
+        "strained": "“You're losing your Grip. Let me take away the cost of mistakes.”",
+        "critical": "“You're tired. Stay with me, and every choice will feel right.”"
       },
       "friendship-record": {
-        "steady": "“The Friend Who Remembers: why choose uncertainty when I can give you the feeling of success?”",
-        "strained": "“You have less Grip now. Let me take away the cost of mistakes.”",
-        "critical": "“You are tired. I can make every choice feel right. Stay with me.”"
+        "steady": "“Memories are only stories. I can make yours kinder.”",
+        "strained": "“The truth is complicated. My version is warmer.”",
+        "critical": "“Let me rewrite it. No one will notice the difference.”"
       },
       "architect": {
-        "steady": "“The Architect of Happiness: why choose uncertainty when I can give you the feeling of success?”",
-        "strained": "“You have less Grip now. Let me take away the cost of mistakes.”",
-        "critical": "“You are tired. I can make every choice feel right. Stay with me.”"
+        "steady": "“A locked garden is a safe garden. Why would anyone want to leave paradise?”",
+        "strained": "“Choices hurt people. I can take them away gently.”",
+        "critical": "“Seal it. Contentment forever. What could be kinder?”"
       },
       "earned-work": {
-        "steady": "“The Work That Was Never Done: why choose uncertainty when I can give you the feeling of success?”",
-        "strained": "“You have less Grip now. Let me take away the cost of mistakes.”",
-        "critical": "“You are tired. I can make every choice feel right. Stay with me.”"
+        "steady": "“The tower has your names on it. Isn't that enough?”",
+        "strained": "“Real work is slow and might fail. My monuments don't.”",
+        "critical": "“Rest. Let the tower remember the effort for you.”"
       },
       "last-switch": {
-        "steady": "“The Final Uncertainty: why choose uncertainty when I can give you the feeling of success?”",
-        "strained": "“You have less Grip now. Let me take away the cost of mistakes.”",
-        "critical": "“You are tired. I can make every choice feel right. Stay with me.”"
+        "steady": "“One switch, and you'll never doubt anything again.”",
+        "strained": "“Every mistake out there costs you. In here, nothing does.”",
+        "critical": "“You've doubted enough for one lifetime. Let me answer for you.”"
       }
     },
     "onSecondLook": {
@@ -485,6 +490,6 @@
     "title": "Lived Agency",
     "description": "Your actions can matter beyond how they feel."
   },
-  "victory": "The exit chamber opens. Nozick does not decide for you; the party must choose the life it values.",
-  "failure": "The Machine draws you into a perfect dream. Your Grip returns, but you face this same decision again."
+  "victory": "The exit room opens. Nozick won't decide for you. The party has to choose the life it values.",
+  "failure": "The Machine pulls you into a perfect dream. Your Grip comes back, but you'll face this choice again."
 }

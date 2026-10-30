@@ -164,7 +164,9 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
   const classNames={skeptic:'Interrogate',empiricist:'Observe',rationalist:'Deduce',pragmatist:'Test'};
   // Before the lore reveal, show only the player's action, never an internal id, tag or philosophical stance.
   const shortAction = (value, limit=84) => {
-    const text=String(value || '').trim();
+    let text=String(value || '').trim();
+    const lead=text.match(/^(.{12,}?)([.:!?])\s/);
+    if(lead)text=lead[1]+(lead[2]===':'?'':lead[2]);
     if(text.length<=limit)return text;
     const cut=text.slice(0,limit-1).lastIndexOf(' ');
     return text.slice(0,cut>35?cut:limit-1).trimEnd()+'…';
@@ -454,11 +456,10 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     el('game-timer').textContent=reading?`READING ${Math.max(0,Math.ceil((g.readingDeadline-Date.now())/1000))}s`:voting?`CHOOSING ${Math.max(0,Math.ceil((g.epilogue.deadline-Date.now())/1000))}s`:'—';
     el('game-scene').textContent=ep.opening;
     el('game-question').textContent=done?ep.endings[g.epilogue.ending]?.title||'The last choice':ep.question;
-    el('game-instructions').textContent=reading?'READING: review both possible endings. Tap Ready when you have considered them; voting unlocks next.':voting?(myVote===null?ep.votingNote:'Your vote is saved. The party’s decision will be revealed together.'):
-      tie?ep.tiePrompt:'The party has decided. Both endings are philosophically defensible.';
+    el('game-instructions').textContent=reading?'Read both endings. Tap Ready when you’re done, and voting opens.':voting?(myVote===null?ep.votingNote:'Your vote is saved. The party’s decision will be revealed together.'):
+      tie?ep.tiePrompt:'The party has chosen. Either ending can be defended.';
     const choices=el('game-choices');
     if(voting||reading){
-      if(reading)addText(choices,'p','debate-note','READING: review both options; voting unlocks when ready or when the reading timer ends.');
       for(const [i,option] of ep.options.entries()){
         const b=addText(choices,'button','choice',`${option.label} — ${option.text}`);
         if(myVote===i)b.classList.add('selected');
@@ -567,8 +568,8 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         choices.append(button);
       }
     }
-    el('game-instructions').textContent=g.phase==='reading'?'READING: review the situation and use a method. Tap Ready when finished; choices unlock next.':complete?(nextRealm(g.realm)?`The host can open ${realms[realmNumbers.indexOf(nextRealm(g.realm))].realm}.`:'The last challenge is behind you. The host can open the Epilogue.'):plugged?'Host: restart this challenge with Grip 6.':
-      lore?'Review each stance and the consequence. The host advances.':
+    el('game-instructions').textContent=g.phase==='reading'?'Read the scene and use a method if you want. Tap Ready when you’re done, and the choices open.':complete?(nextRealm(g.realm)?`The host can open ${realms[realmNumbers.indexOf(nextRealm(g.realm))].realm}.`:'The last challenge is behind you. The host can open the Epilogue.'):plugged?'Host: restart this challenge with Grip 6.':
+      lore?'Look over each answer and what it led to. The host moves the game on.':
       result?(!Object.values(g.votes||{}).some(choice=>Number.isInteger(choice)&&choice>=0)?'No answers submitted — the check fails automatically.':`The check ${g.success?'passed':'failed'}. The host advances after any reroll.`):
       rolling?`Difficulty Class ${g.dc}. The d20 is tumbling…`:
       ready?`DC ${g.dc} is set. The host may now roll the d20.`:

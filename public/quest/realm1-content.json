@@ -5,17 +5,17 @@
     {
       "id": "butterfly",
       "title": "The Butterfly Dream",
-      "scene": "The glass dome splits into two doors. Behind one, you wake in a familiar bedroom. Behind the other, you flutter over a garden as a butterfly. Both doors feel as real as the floor beneath you. The dome is sealing; your party must choose a way through.",
-      "question": "The doors are closing. What do you do?",
-      "hint": "You can act on evidence without pretending that familiar feelings provide certainty.",
-      "clue": "Both sides of the doorway have memories, textures, and a convincing sense of being awake.",
+      "scene": "The glass dome splits into two doors. Through one, you're waking up in a familiar bedroom. Through the other, you're a butterfly drifting over a garden. Both feel completely real. The dome is closing.",
+      "question": "Which way do you go?",
+      "hint": "You can act on evidence without being certain.",
+      "clue": "Both doors feel equally real: the textures, the memories, the sense of being awake.",
       "options": [
         {
           "id": "test-both",
-          "text": "Mark both thresholds, compare their clues, and cross one while admitting the test may mislead.",
+          "text": "Check both doors for clues, then pick one. We could still be wrong.",
           "tag": "STRONG",
           "stance": "Fallibilist inquiry",
-          "reflection": "You investigate and act without mistaking a convincing experience for an infallible test.",
+          "reflection": "You looked for evidence and acted, without pretending your test was foolproof.",
           "loreCard": {
             "theory": {
               "name": "Peircean fallibilism",
@@ -23,18 +23,18 @@
               "work": "The Fixation of Belief"
             },
             "corePrinciple": "Inquiry should expose beliefs to correction rather than demand absolute certainty.",
-            "sceneAnalysis": "Testing both doors while choosing makes inquiry compatible with practical action.",
+            "sceneAnalysis": "Testing both doors lets you act without waiting for certainty.",
             "strongestObjection": "A skeptic may argue that every test could itself be part of the dream."
           },
-          "hiddenPremise": "The physical markings left by tests remain useful even if the experience is dreamlike.",
-          "consequence": "The party leaves a trace at each threshold and chooses a passage while retaining the option to correct course."
+          "hiddenPremise": "Marks you make on the doors still count as evidence, even in a dream.",
+          "consequence": "You mark each door, pick one, and keep the option to turn back."
         },
         {
           "id": "shared-memory",
-          "text": "Follow the door that best fits the party’s shared memories, but leave a way to return.",
+          "text": "Go with the door that matches what we all remember. Leave a way back.",
           "tag": "DEFENSIBLE",
           "stance": "Intersubjective evidence",
-          "reflection": "Shared memories give you practical reasons to choose, though agreement does not prove you are awake.",
+          "reflection": "Shared memories are a decent reason to choose, but a whole group can share a dream.",
           "loreCard": {
             "theory": {
               "name": "Intersubjective corroboration",
@@ -42,18 +42,18 @@
               "work": "Logic: The Theory of Inquiry"
             },
             "corePrinciple": "Shared and revisable checks can justify action under uncertainty.",
-            "sceneAnalysis": "Common memories offer reasonable evidence, though the shared memory could be fabricated.",
+            "sceneAnalysis": "Shared memory is reasonable evidence, though it could be fabricated too.",
             "strongestObjection": "Agreement among multiple dreamers does not establish an independent reality."
           },
-          "hiddenPremise": "Independent companions can supply at least partly reliable memories of the same world.",
-          "consequence": "The group enters the familiar route but retains a return path if shared recollections fail."
+          "hiddenPremise": "Your companions' memories are at least partly reliable.",
+          "consequence": "You take the familiar route, with a way back if your memories turn out wrong."
         },
         {
           "id": "familiar-is-real",
-          "text": "Enter the familiar bedroom at once; its recognizable details settle which world is waking.",
+          "text": "The bedroom looks like home. That settles it. Go in.",
           "tag": "WEAK",
           "stance": "Familiarity as proof",
-          "reflection": "A vivid dream can feel familiar too. Recognition alone cannot settle the issue.",
+          "reflection": "Dreams feel familiar too. Recognizing a place doesn't prove you're awake.",
           "loreCard": {
             "theory": {
               "name": "Naive realism under challenge",
@@ -61,18 +61,18 @@
               "work": "Meditations on First Philosophy, Meditation I"
             },
             "corePrinciple": "Familiar sensory appearances are not infallible warrants of reality.",
-            "sceneAnalysis": "Taking recognition as proof overlooks that dreams can mimic the familiar.",
+            "sceneAnalysis": "Treating \"it looks familiar\" as proof ignores that dreams copy the familiar.",
             "strongestObjection": "In ordinary contexts perception can be prima facie justified without Cartesian certainty."
           },
-          "hiddenPremise": "Familiar feelings would not arise in a deceptive dream or simulation.",
-          "consequence": "The bedroom door opens onto a familiar room; the party finds no immediate way to check the setting."
+          "hiddenPremise": "A dream couldn't feel this familiar.",
+          "consequence": "You step into the bedroom with no way to check where you are."
         },
         {
           "id": "refuse-uncertainty",
-          "text": "Barricade both doors until you find a test that rules out the possibility of dreaming.",
+          "text": "Block both doors until someone proves we're not dreaming.",
           "tag": "WEAK",
           "stance": "Skeptical paralysis",
-          "reflection": "A demand for absolute certainty turns reasonable doubt into a reason never to act.",
+          "reflection": "Waiting for a proof that can't exist turns reasonable doubt into a reason not to act.",
           "loreCard": {
             "theory": {
               "name": "Infallibilism",
@@ -80,38 +80,38 @@
               "work": "Meditations on First Philosophy, Meditation I"
             },
             "corePrinciple": "On an infallibilist conception, knowledge excludes every possibility of error.",
-            "sceneAnalysis": "Demanding an impossible guarantee prevents choosing either door despite relevant evidence.",
+            "sceneAnalysis": "Demanding an impossible guarantee keeps you from using the evidence you have.",
             "strongestObjection": "Where stakes are extraordinary, demanding stronger assurance may be reasonable."
           },
-          "hiddenPremise": "There is a possible test capable of excluding every dream before the doors close.",
-          "consequence": "The doors seal while the party demands a guarantee no offered test can provide."
+          "hiddenPremise": "Somewhere there's a test that could rule out dreaming before the doors close.",
+          "consequence": "The doors seal while you wait for a proof that doesn't come."
         }
       ],
-      "lore": "The butterfly dream challenges certainty about which perspective is waking. It does not show that nothing is real. Compare how the party acted: evidence can guide a choice even when experience cannot certify its own status.",
-      "observation": "A thin scratch across the floor continues into both doorways, but the bedroom side carries the scratch backward in its mirror.",
+      "lore": "Zhuangzi's dream doesn't prove that nothing is real. It shows that how real something feels can't settle whether you're awake. You can still choose based on evidence, just not with certainty.",
+      "observation": "A thin scratch on the floor runs into both doorways. In the bedroom's mirror, it runs the wrong way.",
       "argumentForm": {
         "premises": [
-          "The same scratch appears on both thresholds, even though the bedroom mirror reverses its direction.",
-          "A single familiar sight cannot independently establish which doorway leads to waking."
+          "The same scratch runs into both doorways, but the bedroom mirror shows it backward.",
+          "How familiar a room feels can't tell you which door leads to waking."
         ],
-        "conclusion": "Comparing the marks supplies an additional check before choosing a doorway."
+        "conclusion": "Compare the marks before you choose."
       },
       "dc": 10
     },
     {
       "id": "fish",
       "title": "The Joy of the Fish",
-      "scene": "Under a clear bridge, fish thrash against a narrowing gate. A companion says their leaps mean joy; a guardian insists no one can know what a fish feels. The current is rising. If you open the gate recklessly, the fish may be swept away; if you wait, they may be trapped.",
-      "question": "The gate is beginning to close. How do you respond?",
-      "hint": "Another creature’s feelings may be hidden, but its behavior and surroundings still count as evidence.",
-      "clue": "The fish keep turning against the blocked current; there is a sheltered channel beside the gate.",
+      "scene": "Under a glass bridge, fish are thrashing against a gate that's closing. A friend says they're leaping for joy. A guardian says no one can know what a fish feels. The water is rising. Open the gate too fast and the current could sweep them away. Wait, and they're trapped.",
+      "question": "The gate is closing. What do you do?",
+      "hint": "You can't feel what a fish feels, but its behavior still tells you something.",
+      "clue": "The fish keep turning away from the current. There's a sheltered side channel next to the gate.",
       "options": [
         {
           "id": "observe-release",
-          "text": "Watch their movement and the current, then open the sheltered channel while monitoring the fish.",
+          "text": "Watch the fish and the water, then open the side channel carefully.",
           "tag": "STRONG",
           "stance": "Careful inference about other minds",
-          "reflection": "Behavior and context offer fallible evidence. You act with care rather than claiming direct access to their feelings.",
+          "reflection": "You treated their behavior as evidence and acted carefully, without claiming to know what they feel.",
           "loreCard": {
             "theory": {
               "name": "Inference to the best explanation",
@@ -119,18 +119,18 @@
               "work": "An Examination of Sir William Hamilton’s Philosophy"
             },
             "corePrinciple": "Observed behavior and analogy can justify fallible claims about other minds.",
-            "sceneAnalysis": "Watching the fish and water supports a careful intervention without mind reading.",
+            "sceneAnalysis": "Watching the fish and the water supports careful help without mind-reading.",
             "strongestObjection": "Similar behavior might have different causes in creatures unlike us."
           },
-          "hiddenPremise": "Visible fish behavior and local currents are sufficient to choose a safe release point.",
-          "consequence": "The channel begins to open, but an unseen undertow could make a sudden release dangerous."
+          "hiddenPremise": "What the fish do and how the water moves are enough to pick a safe opening.",
+          "consequence": "The side channel starts to open, but a hidden undertow could make a fast release dangerous."
         },
         {
           "id": "consult-then-help",
-          "text": "Ask your companions to compare what they see, then ease the gate open slowly and reassess the fish.",
+          "text": "Ask everyone what they see, then ease the gate open bit by bit.",
           "tag": "DEFENSIBLE",
           "stance": "Shared interpretation",
-          "reflection": "Comparing observations improves judgment, though agreement cannot replace attention to what happens next.",
+          "reflection": "Comparing notes helps, but you still have to watch what actually happens.",
           "loreCard": {
             "theory": {
               "name": "Communal experimental inquiry",
@@ -138,18 +138,18 @@
               "work": "How We Think"
             },
             "corePrinciple": "Comparison, action, and feedback can improve practical judgment.",
-            "sceneAnalysis": "Consulting companions and opening slowly tests the interpretation cautiously.",
+            "sceneAnalysis": "Checking with others and opening slowly tests your reading of the fish.",
             "strongestObjection": "Shared observational habits can reinforce a common mistake."
           },
-          "hiddenPremise": "Slow release and collective observation can reveal danger before the gate is fully open.",
-          "consequence": "Opening in stages allows the party to stop if the fish are swept toward a hazard."
+          "hiddenPremise": "Opening slowly with everyone watching will show the danger before it's too late.",
+          "consequence": "You open in stages, so you can stop if the fish get pulled toward danger."
         },
         {
           "id": "deny-fish-minds",
-          "text": "Leave the gate shut because you cannot feel their distress and therefore have no grounds to help.",
+          "text": "Leave it shut. We can't feel what they feel, so we can't say they need help.",
           "tag": "WEAK",
           "stance": "Other-minds skepticism as denial",
-          "reflection": "Lacking direct access to suffering does not erase evidence that a creature may need help.",
+          "reflection": "Not being able to feel their distress doesn't erase the evidence that they're struggling.",
           "loreCard": {
             "theory": {
               "name": "Overextended other-minds skepticism",
@@ -157,18 +157,18 @@
               "work": "Zhuangzi, chapter 17, Autumn Floods"
             },
             "corePrinciple": "Not being another creature limits firsthand verification but not all inference.",
-            "sceneAnalysis": "From lack of direct access the refusal wrongly infers there are no grounds to help.",
+            "sceneAnalysis": "It jumps from \"we can't feel it\" to \"there's no reason to help.\"",
             "strongestObjection": "Anthropomorphic overconfidence remains a genuine risk in attributing feelings."
           },
-          "hiddenPremise": "If an observer cannot feel an animal’s mental state, there is no evidence of its distress.",
-          "consequence": "The gate remains shut while the fish continue to struggle against the narrowing passage."
+          "hiddenPremise": "If you can't feel an animal's state, you have no evidence about it.",
+          "consequence": "The gate stays shut and the fish keep struggling."
         },
         {
           "id": "joy-means-safe",
-          "text": "Throw the gate fully open because their excited leaps show they will surely enjoy the current ahead.",
+          "text": "They're leaping for joy. Throw the gate wide open.",
           "tag": "WEAK",
           "stance": "Projection and overconfidence",
-          "reflection": "You infer a definite feeling from ambiguous behavior and ignore a foreseeable danger.",
+          "reflection": "You read a definite feeling into ambiguous behavior and missed a real danger.",
           "loreCard": {
             "theory": {
               "name": "Anthropomorphic projection",
@@ -176,21 +176,21 @@
               "work": "An Examination of Sir William Hamilton’s Philosophy"
             },
             "corePrinciple": "Analogical inference is defeasible rather than a license to assume identity of feeling.",
-            "sceneAnalysis": "Treating jumps as proof of enjoyment overlooks threatening currents.",
+            "sceneAnalysis": "Treating jumping as proof of joy ignores the dangerous current.",
             "strongestObjection": "Rapid behavior can be evidence of pleasure in an appropriate context."
           },
-          "hiddenPremise": "Excited movement is reliable proof that the fish are enjoying the dangerous current.",
-          "consequence": "The gate opens all at once and the fish move into the fast current."
+          "hiddenPremise": "Leaping shows the fish are enjoying themselves.",
+          "consequence": "The gate swings wide and the fish are carried into the fast current."
         }
       ],
-      "lore": "The joy-of-the-fish puzzle asks how we understand another being without living its experience. The strongest action respects uncertainty while using observation, context, and care; neither mind-reading nor complete ignorance follows.",
-      "observation": "As the fish turn toward the side channel, bubbles beneath its clear surface suddenly reverse direction; the current there is pulling downward.",
+      "lore": "Zhuangzi and his friend Huizi argued about whether anyone can know a fish is happy. You can't get inside another creature's head, but that doesn't leave you knowing nothing. Behavior, context, and care can still guide what you do.",
+      "observation": "As the fish turn toward the side channel, the bubbles under its surface suddenly reverse. Something down there is pulling.",
       "argumentForm": {
         "premises": [
-          "The fish repeatedly turn away from the gate as the channel bubbles reverse direction.",
-          "A sudden full opening would put the fish directly into that current."
+          "The fish keep turning away from the gate, and the bubbles in the side channel just reversed.",
+          "Throwing the gate open would push the fish straight into that current."
         ],
-        "conclusion": "Opening the gate in small stages allows the party to track where the fish move."
+        "conclusion": "Open it a little at a time and watch where the fish go."
       },
       "dc": 10,
       "conditional": {
@@ -199,24 +199,24 @@
         "strongOptionId": "consult-then-help",
         "previousStrongOptionId": "observe-release"
       },
-      "evidenceExplanation": "The undertow makes a gradual gate opening with group observation safer than opening the sheltered channel immediately."
+      "evidenceExplanation": "The undertow makes a slow, watched opening safer than opening the side channel right away."
     }
   ],
   "bossPhases": [
     {
       "id": "reconstruct",
       "title": "Reconstruct",
-      "scene": "Zhuangzi removes the names from your cloaks and hangs them on the wrong bodies. Even your class crests seem to belong to someone else. A pair of masks appears: DREAMER and BUTTERFLY. The exit opens only when the party places the masks on a balance without claiming more than the dream reveals.",
-      "question": "Zhuangzi waits by the balance. What do you place upon it?",
-      "hint": "Show why experience can mislead without declaring that all experience is false.",
-      "clue": "Each mask feels natural to its wearer, and each carries a convincing memory of waking.",
+      "scene": "Zhuangzi pulls the names off your cloaks and hangs them on the wrong people. Even your class crests look like someone else's. Two masks appear: DREAMER and BUTTERFLY. The way out opens only if you set the masks on a scale without claiming more than the dream can tell you.",
+      "question": "Zhuangzi is waiting by the scale. What do you put on it?",
+      "hint": "Show how experience can fool you, without claiming all experience is false.",
+      "clue": "Each mask feels natural to whoever wears it, and each comes with a convincing memory of waking up.",
       "options": [
         {
           "id": "weigh-both",
-          "text": "Set both masks on the balance and demonstrate how either identity could feel entirely settled.",
+          "text": "Put both masks on the scale. Show how either could feel like you.",
           "tag": "STRONG",
           "stance": "Reconstructed skeptical challenge",
-          "reflection": "You capture the puzzle: felt certainty may fail to distinguish dreaming from waking.",
+          "reflection": "You captured the puzzle: feeling sure can't tell dreaming from waking.",
           "loreCard": {
             "theory": {
               "name": "Dream skepticism",
@@ -224,18 +224,18 @@
               "work": "Zhuangzi, chapter 2; Meditations, Meditation I"
             },
             "corePrinciple": "A vivid experience can fail to determine whether one is waking or dreaming.",
-            "sceneAnalysis": "Balancing the masks demonstrates symmetrical appearances without asserting both are false.",
+            "sceneAnalysis": "Balancing the masks shows the two seem equal, without saying both are false.",
             "strongestObjection": "Ordinary experience may still warrant beliefs despite this possibility."
           },
-          "hiddenPremise": "Either identity could be represented through equally convincing appearances.",
-          "consequence": "Both masks rest in balance; the illusion loses its power to force a single unwarranted identity."
+          "hiddenPremise": "Either identity could come with equally convincing experiences.",
+          "consequence": "The masks balance, and the illusion can't force a single answer on you."
         },
         {
           "id": "seek-cross-checks",
-          "text": "Compare each mask with memory and testimony, then admit that both checks could be mistaken.",
+          "text": "Check each mask against memory and testimony. Both could still be wrong.",
           "tag": "DEFENSIBLE",
           "stance": "Qualified empirical testing",
-          "reflection": "Cross-checks help you navigate the puzzle but do not remove its deepest uncertainty.",
+          "reflection": "Cross-checking helps, but it doesn't remove the deepest doubt.",
           "loreCard": {
             "theory": {
               "name": "Critical empiricism",
@@ -243,18 +243,18 @@
               "work": "An Enquiry Concerning Human Understanding"
             },
             "corePrinciple": "Evidence can guide belief without securing an infallible identity test.",
-            "sceneAnalysis": "Comparing memory and testimony is useful while recognizing dependence on fallible sources.",
+            "sceneAnalysis": "Memory and testimony help, as long as you remember they can fail.",
             "strongestObjection": "Memory and testimony may both be corrupted by the same deception."
           },
-          "hiddenPremise": "Memory and testimony remain informative despite the possibility of coordinated error.",
-          "consequence": "The party weighs the evidence, though Zhuangzi can still ask where its trust comes from."
+          "hiddenPremise": "Memory and testimony still tell you something, even if they could be faked together.",
+          "consequence": "You weigh the evidence, but Zhuangzi can still ask why you trust it."
         },
         {
           "id": "trust-recognition",
-          "text": "Crown the mask that feels most familiar; your certainty about recognition proves it is yours.",
+          "text": "Crown the mask that feels most like you. That feeling is proof enough.",
           "tag": "WEAK",
           "stance": "Dogmatism about self-knowledge",
-          "reflection": "This assumes the reliability of the very feeling the butterfly dream puts in question.",
+          "reflection": "That's the very feeling the dream calls into question.",
           "loreCard": {
             "theory": {
               "name": "Dogmatic self-recognition",
@@ -262,21 +262,21 @@
               "work": "Meditations, Meditation I"
             },
             "corePrinciple": "Felt familiarity does not independently verify what is real.",
-            "sceneAnalysis": "The crown infers an identity from precisely the sensation that may be simulated.",
+            "sceneAnalysis": "It relies on exactly the feeling that might be simulated.",
             "strongestObjection": "Immediate self-awareness may have a different standing from sensory identification."
           },
-          "hiddenPremise": "A feeling of recognizing yourself authenticates the mask on its own.",
-          "consequence": "The familiar crown seems convincing, but the false identification may trap the party."
+          "hiddenPremise": "Feeling like yourself is enough to prove which mask is yours.",
+          "consequence": "The crown feels right, but a wrong identity could trap the party."
         }
       ],
-      "lore": "Zhuangzi’s challenge is about the limits of certainty, not proof that identity is fake. You win Reconstruct by showing why both dream and waking may feel authoritative without pretending to resolve the puzzle by decree.",
-      "observation": "Each cloak bears a stitched crest that matches a different person’s mask; none of the crests matches the name hanging above it.",
+      "lore": "Zhuangzi isn't saying your identity is fake. He's showing that dreaming and waking can both feel like the real thing. You beat him by laying out the puzzle honestly, not by declaring an answer.",
+      "observation": "Each cloak has a stitched crest that matches someone else's mask. None of the crests match the names hanging above them.",
       "argumentForm": {
         "premises": [
-          "The cloak crests and hanging names no longer line up.",
-          "A convincing label can be reassigned without changing the person underneath it."
+          "The crests and the names no longer match.",
+          "A label can be moved without changing the person underneath."
         ],
-        "conclusion": "A name alone cannot settle the identity of the person wearing the cloak."
+        "conclusion": "A name alone can't tell you who is wearing the cloak."
       },
       "weakness": "skeptic",
       "dc": 16
@@ -284,17 +284,17 @@
     {
       "id": "spotlight",
       "title": "Spotlight",
-      "scene": "One adventurer stands in a circle of lantern light. Beyond a thin curtain, a familiar voice calls their name and asks them to follow. The others can send one whispered reason, but only the chosen adventurer can answer. Zhuangzi watches to see whether doubt becomes inquiry or despair.",
+      "scene": "One player stands alone in a circle of lantern light. Behind a thin curtain, a familiar voice calls their name and asks them to follow. The others can each whisper once, but only the chosen player can answer. Zhuangzi watches to see whether doubt turns into curiosity or despair.",
       "question": "The voice reaches for your hand. What do you do?",
-      "hint": "A reason to doubt certainty is not the same as a reason to deny every appearance.",
-      "clue": "The voice sounds familiar, but there are other signs you could investigate before following.",
+      "hint": "A reason to doubt isn't a reason to reject everything you see.",
+      "clue": "The voice sounds familiar, but there are other things you could check before following it.",
       "options": [
         {
           "id": "ask-for-evidence",
-          "text": "Ask the voice for another sign, then choose whether to follow without demanding perfect certainty.",
+          "text": "Ask the voice for another sign, then decide. Don't wait for certainty.",
           "tag": "STRONG",
           "stance": "Skeptical humility",
-          "reflection": "You refuse to treat immediate conviction as proof, yet remain open to evidence and action.",
+          "reflection": "You didn't treat a gut feeling as proof, but you stayed open to evidence.",
           "loreCard": {
             "theory": {
               "name": "Relevant-alternatives epistemology",
@@ -302,18 +302,18 @@
               "work": "Epistemic Operators"
             },
             "corePrinciple": "Possibilities need evidence of relevance before overturning ordinary claims.",
-            "sceneAnalysis": "Seeking another sign tests the particular voice without demanding certainty.",
+            "sceneAnalysis": "Asking for another sign tests this voice without demanding certainty.",
             "strongestObjection": "Relevant alternatives can be hard to identify under adversarial deception."
           },
-          "hiddenPremise": "A specific test could reveal whether this particular voice deserves trust.",
-          "consequence": "The voice must answer a new question before the selected player risks following it."
+          "hiddenPremise": "The right question could show whether this voice can be trusted.",
+          "consequence": "The voice has to answer a new question before the player follows."
         },
         {
           "id": "compare-signs",
-          "text": "Compare the voice with what your companions observed, then approach cautiously if it fits.",
+          "text": "Check the voice against what the others noticed. Approach slowly if it fits.",
           "tag": "DEFENSIBLE",
           "stance": "Practical corroboration",
-          "reflection": "Shared signs can justify a measured response, though they might still be mistaken.",
+          "reflection": "Shared signs justify a careful step, though they could still mislead you.",
           "loreCard": {
             "theory": {
               "name": "Practical corroboration",
@@ -321,18 +321,18 @@
               "work": "Logic: The Theory of Inquiry"
             },
             "corePrinciple": "Inquiry coordinates multiple fallible indicators before acting.",
-            "sceneAnalysis": "Companions’ observations warrant cautious approach without promising certainty.",
+            "sceneAnalysis": "Your friends' observations justify a careful approach, not certainty.",
             "strongestObjection": "A deceptive system can generate matching signals for the whole party."
           },
-          "hiddenPremise": "Companions are more likely to supply uncorrupted evidence than the isolated voice.",
-          "consequence": "The player approaches cautiously using corroboration, but false signals remain possible."
+          "hiddenPremise": "Your companions are less likely to be fooled than a lone voice.",
+          "consequence": "The player moves closer carefully, though false signals are still possible."
         },
         {
           "id": "declare-all-false",
-          "text": "Reject the voice as unreal because one possible dream makes seeming encounters deceptive.",
+          "text": "Turn away. We might be dreaming, so this voice is probably fake.",
           "tag": "WEAK",
           "stance": "Doubt confused with denial",
-          "reflection": "The possibility of error does not establish that this voice—or every voice—is false.",
+          "reflection": "That this voice could be false doesn't make it false.",
           "loreCard": {
             "theory": {
               "name": "Skeptical overreach",
@@ -340,21 +340,21 @@
               "work": "Meditations, Meditation I"
             },
             "corePrinciple": "The possibility of error differs from proof of falsity.",
-            "sceneAnalysis": "Concluding every seeming encounter unreal commits the very overreach doubt warns against.",
+            "sceneAnalysis": "Calling every encounter unreal is the overreach that doubt warns against.",
             "strongestObjection": "The deceiver possibility genuinely pressures some claims of knowledge."
           },
-          "hiddenPremise": "If any voice might be illusory, this voice must be illusory.",
-          "consequence": "The figure remains behind the curtain as the player turns away without another exchange."
+          "hiddenPremise": "If a voice might be an illusion, this one is an illusion.",
+          "consequence": "The player turns away, and the figure stays behind the curtain."
         }
       ],
-      "lore": "The spotlight tests a logical boundary: a possibility of deception is not a proof of universal deception. The party can question the apparent world without withdrawing from every human—or nonhuman—claim upon it.",
-      "observation": "The voice behind the curtain repeats the adventurer’s name exactly, but its shadow does not move when the lantern sways.",
+      "lore": "The possibility that you're being fooled isn't proof that you're always being fooled. You can question the world without walking away from everyone in it.",
+      "observation": "The voice says the player's name perfectly, but its shadow doesn't move when the lantern swings.",
       "argumentForm": {
         "premises": [
-          "The voice knows a name that companions also know.",
-          "Its motionless shadow does not match the swinging lantern."
+          "The voice knows a name your companions also know.",
+          "Its shadow stays still while the lantern swings."
         ],
-        "conclusion": "A further question could distinguish the voice from an ordinary speaker."
+        "conclusion": "One more question could tell this voice apart from an ordinary person."
       },
       "weakness": "empiricist",
       "dc": 16
@@ -362,17 +362,17 @@
     {
       "id": "reply",
       "title": "Reply",
-      "scene": "The Machine folds the room into a flawless imitation of home. A cord hangs beside an uncertain doorway. “Stay,” it says, “and you need never mistake a dream for waking again.” Zhuangzi holds the door open, but refuses to guarantee what lies outside. The party must make its reply through an action.",
+      "scene": "The Machine turns the room into a perfect copy of home. A cord hangs next to a doorway. “Stay,” it says, “and you'll never mistake a dream for waking again.” Zhuangzi holds the door open but won't promise what's outside.",
       "question": "The Machine offers certainty. What do you do?",
-      "hint": "Ask whether justified action really requires a guarantee that you cannot be mistaken.",
-      "clue": "The Machine promises perfect assurance, but only if you let it choose what counts as real.",
+      "hint": "Do you really need a guarantee before you can act well?",
+      "clue": "The Machine promises perfect certainty, but only if it gets to decide what's real.",
       "options": [
         {
           "id": "leave-with-reasons",
-          "text": "Release the cord, gather your companions, and step out guided by revisable reasons and trust.",
+          "text": "Let go of the cord. Leave with your friends and your reasons.",
           "tag": "STRONG",
           "stance": "Fallibilist response to skepticism",
-          "reflection": "You distinguish reasonable belief from impossible guarantees, and reclaim responsibility for living.",
+          "reflection": "You told reasonable belief apart from impossible guarantees, and took your life back.",
           "loreCard": {
             "theory": {
               "name": "Peircean fallibilism",
@@ -380,18 +380,18 @@
               "work": "The Fixation of Belief"
             },
             "corePrinciple": "Rational action may rely on corrigible reasons rather than guarantees.",
-            "sceneAnalysis": "Unplugging uses judgment and trust while retaining willingness to revise.",
+            "sceneAnalysis": "Leaving relies on judgment and trust while staying open to correction.",
             "strongestObjection": "A good simulated life might still satisfy many genuine values."
           },
-          "hiddenPremise": "Responsible agency can proceed on substantial but revisable reasons rather than certainty.",
-          "consequence": "The party steps through the doorway while retaining judgment and uncertainty."
+          "hiddenPremise": "You can act responsibly on good reasons you might later revise.",
+          "consequence": "The party walks out, still thinking for itself and still unsure."
         },
         {
           "id": "leave-carefully",
-          "text": "Open the doorway but test each step with your companions, accepting that you may have to revise.",
+          "text": "Open the door, but test each step together. Be ready to turn back.",
           "tag": "DEFENSIBLE",
           "stance": "Practical response to uncertainty",
-          "reflection": "You keep acting and checking. Your caution helps, provided testing never becomes endless delay.",
+          "reflection": "Careful checking helps, as long as it doesn't turn into never leaving.",
           "loreCard": {
             "theory": {
               "name": "Deweyan pragmatism",
@@ -399,18 +399,18 @@
               "work": "The Quest for Certainty"
             },
             "corePrinciple": "Inquiry evaluates consequences while remaining answerable to new experience.",
-            "sceneAnalysis": "Testing each step gives action accountability, though it delays the group.",
+            "sceneAnalysis": "Testing each step keeps you accountable, at the cost of time.",
             "strongestObjection": "Testing may be impossible in a deliberately deceptive environment."
           },
-          "hiddenPremise": "Incremental tests make exit safer without converting them into infallible guarantees.",
-          "consequence": "The party moves slowly through the exit, with opportunities to revise its course."
+          "hiddenPremise": "Testing each step makes leaving safer without making it certain.",
+          "consequence": "The party edges out slowly, ready to change course."
         },
         {
           "id": "demand-perfect-proof",
-          "text": "Remain plugged in until the Machine can guarantee that none of your future judgments will be wrong.",
+          "text": "Stay plugged in until the Machine can guarantee our judgments.",
           "tag": "WEAK",
           "stance": "Certainty as a trap",
-          "reflection": "You trade the freedom to judge for a promise of infallibility that may itself be deceptive.",
+          "reflection": "You'd trade your own judgment for a promise of certainty that could itself be a trick.",
           "loreCard": {
             "theory": {
               "name": "Infallibilist paralysis",
@@ -418,21 +418,21 @@
               "work": "Meditations, Meditation I"
             },
             "corePrinciple": "Demanding certainty about every judgment sets an unattainable standard.",
-            "sceneAnalysis": "The Machine gains control by holding action hostage to perfect knowledge.",
+            "sceneAnalysis": "Holding out for perfect knowledge hands the Machine control.",
             "strongestObjection": "Some irreversible choices justify demanding exceptionally strong evidence."
           },
-          "hiddenPremise": "The Machine could furnish perfectly justified beliefs if entrusted with all future decisions.",
-          "consequence": "The cord stays connected and the Machine gains control of what counts as knowledge."
+          "hiddenPremise": "The Machine could give you perfectly reliable beliefs if you let it decide.",
+          "consequence": "The cord stays in, and the Machine decides what counts as knowledge."
         }
       ],
-      "lore": "Zhuangzi need not be silenced for the party to leave. A reply can accept the possibility of error while rejecting the claim that action requires absolute certainty. The Machine exploits the desire to eliminate doubt; the party answers by choosing how to live with it.",
-      "observation": "The cord leading to the Machine is warm and vibrating; the doorway beside it admits a cold, irregular draft.",
+      "lore": "You don't have to defeat Zhuangzi to leave. You can admit you might be wrong and still reject the idea that acting requires certainty. The Machine feeds on the wish to stop doubting. You answer by choosing how to live with doubt.",
+      "observation": "The cord to the Machine is warm and humming. A cold, uneven draft comes through the doorway.",
       "argumentForm": {
         "premises": [
-          "The connected cord carries a steady pulse while the open door lets in an irregular draft.",
-          "Neither sensation by itself identifies which world is original."
+          "The cord hums steadily, while the doorway lets in an uneven draft.",
+          "Neither feeling tells you which world is the original."
         ],
-        "conclusion": "The party must decide what to do without treating either sensation as a guarantee."
+        "conclusion": "You'll have to decide without treating either one as a guarantee."
       },
       "weakness": "pragmatist",
       "dc": 16
@@ -441,7 +441,7 @@
   "debate": {
     "durationSeconds": 30,
     "trigger": "after the initial picks are revealed, before the roll, if two or more eligible participants chose different options",
-    "prompt": "You chose differently. Give one reason, then decide whether to keep or revise your action.",
+    "prompt": "You picked different answers. Give one reason, then keep your choice or change it.",
     "reasons": [
       "too strong a conclusion",
       "begs the question",
@@ -517,6 +517,6 @@
     "description": "Once per campaign, add +3 to a party roll by questioning an assumption.",
     "bonus": 3
   },
-  "victory": "Zhuangzi bows, amused rather than defeated. You have taken the puzzle seriously without mistaking it for a proof. The first doorway opens.",
-  "failure": "The machine's glow fills every corner of the realm. Your party is Fully Plugged In—but this is a lesson, not an ending. You return to the realm's first challenge with Grip restored to 6."
+  "victory": "Zhuangzi bows, more amused than beaten. You took his puzzle seriously without treating it as proof. The first door opens.",
+  "failure": "The Machine's glow fills the realm. You're Fully Plugged In, but it's a lesson, not the end. You'll try this challenge again with Grip restored to 6."
 }
