@@ -8,9 +8,11 @@ export function resolveCheck({tags, dc, attempt=0, die=1+Math.floor(Math.random(
   const modifier=tags.length?Math.floor(tags.reduce((sum,t)=>sum+score[t],0)/tags.length):0;
   const learningBonus=3*attempt;
   const total=die+modifier+learningBonus+rollBonus+weaknessBonus;
-  // A unanimously weak argument cannot succeed on luck alone except a natural 20.
   // The arithmetic modifier remains the party average, regardless of party size.
-  const reasoningGate=tags.length>0&&(tags.some(tag=>tag==='STRONG'||tag==='DEFENSIBLE')||die===20);
+  // At least half of the submitted answers must be strong or defensible, so a large
+  // party can't be carried by one good answer. A natural 20 still passes the gate.
+  const good=tags.filter(tag=>tag==='STRONG'||tag==='DEFENSIBLE').length;
+  const reasoningGate=tags.length>0&&(good*2>=tags.length||die===20);
   return {die,modifier,learningBonus,weaknessBonus,total,dc,success:total>=dc&&reasoningGate};
 }
 export function effectiveTag(stage,option,game) {
@@ -39,6 +41,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
   const roll = () => 1 + rand(20);
   const path = (suffix = '') => ref(db, `rooms/${getContext().code}/game${suffix ? '/' + suffix : ''}`);
   const isHost = () => {const c = getContext(); return !!c.room && c.room.hostUid === c.uid;};
+  const partyRerolled = (g, realmKey) => Object.values(g?.rerollUses || {}).some(r => r?.[realmKey]);
   const getMembers = () => Object.entries(getContext().room?.players || {}).filter(([,p]) => p.connected).map(([uid]) => uid);
   const stageFor = g => stages[g?.stageIndex] || null;
   const shuffle = arr => {
@@ -183,7 +186,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     if(room.abilities?.[uid]?.roundId===g.roundId)return reject('Your previous request is still pending.');
     const klass=room.players?.[uid]?.class;
     if(intent==='reroll'){
-      if(klass!=='pragmatist'||g.rerollUsed||g.rerollUses?.[uid]?.['r'+g.realm])return reject('Your Test reroll is unavailable or already used in this realm.');
+      if(klass!=='pragmatist'||g.rerollUsed||partyRerolled(g,'r'+g.realm))return reject('The party’s Test reroll is unavailable or already used in this realm.');
     }else if(type==='insight'){
       if(g.insightUses?.[uid])return reject('Your one campaign Insight use is already spent.');
       if(!cardId||!g.insightCards?.[cardId]||g.usedCards?.[cardId])return reject('This Insight card is not available.');
@@ -255,14 +258,16 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
       'epilogue/ending':choice,'epilogue/decisionMode':'host-tiebreak',
       'epilogue/decidedAt':Date.now()});
   }
+  const baseDc=stage=>stage.kind==='boss'?16:(stage.dc||10);
+  const partyDcBonus=()=>getMembers().length>=5?1:0;
   function prepareRoll(room,g){
     const stage=stageFor(g);
-    return {phase:'ready-to-roll', votes:stageVotes(room,g), dc:stage.kind==='boss'?16:(stage.dc||10)};
+    return {phase:'ready-to-roll', votes:stageVotes(room,g), dc:baseDc(stage)+partyDcBonus()};
   }
   function makeRoll(room,g){
     const stage=stageFor(g),votes=stageVotes(room,g);
     const tags=Object.values(votes).map(choice=>stage.options[choice]&&effectiveTag(stage,stage.options[choice],g)).filter(Boolean);
-    const dc=g.dc||(stage.kind==='boss'?16:(stage.dc||10));
+    const dc=g.dc||(baseDc(stage)+partyDcBonus());
     const weaknessBonus=stage.kind==='boss'&&g.weaknessStages?.['s'+g.stageIndex]?5:0;
     const result=resolveCheck({tags,dc,attempt:g.attempt||0,rollBonus:g.rollBonus||0,weaknessBonus});
     return {phase:'rolling',votes,...result,
@@ -281,7 +286,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
     if(g.abilityFeedback?.[uid]?.requestId===request.requestId){return;}
     if(!room.players?.[uid]?.connected)message='Ability rejected: your player is disconnected.';
     else if(request.intent==='reroll'){
-      if(klass!=='pragmatist'||phase!=='result'||g.success||g.rerollUsed||g.rerollUses?.[uid]?.[realmKey])
+      if(klass!=='pragmatist'||phase!=='result'||g.success||g.rerollUsed||partyRerolled(g,realmKey))
         message='Test reroll rejected: no failed check or reroll already spent this realm.';
       else{
         const votes=g.votes||{},tags=Object.values(votes).map(i=>stage.options[i]&&effectiveTag(stage,stage.options[i],g)).filter(Boolean);
@@ -576,7 +581,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
       lore?'Look over each answer and what it led to. The host moves the game on.':
       result?(!Object.values(g.votes||{}).some(choice=>Number.isInteger(choice)&&choice>=0)?'No answers submitted — the check fails automatically.':`The check ${g.success?'passed':'failed'}. The host advances after any reroll.`):
       rolling?`Difficulty Class ${g.dc}. The d20 is tumbling…`:
-      ready?`DC ${g.dc} is set. The host may now roll the d20.`:
+      ready?`DC ${g.dc}${g.dc>baseDc(stage)?` (+1 for a party of ${getMembers().length})`:''} is set. The host may now roll the d20.`:
       debating?chapter.debate.prompt:
       isSpotlight(stage)&&!eligible?`Spotlight: ${realName(room,g.spotlightUid)} answers. Send one whisper.`:
       already?'Your action is locked until the party reveal.':'Choose what your adventurer does.';
@@ -622,7 +627,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         addText(dice,'div','roll-outcome',g.success?'PASS':'FAIL');
         const learning=g.learningBonus??3*(g.attempt||0);
         rollDisplay.textContent=`d20 ${g.die} + party average ${g.modifier} + Insight ${g.rollBonus||0} + weakness ${g.weaknessBonus||0} + Second Look ${learning} = ${g.total}`;
-        if(!g.success&&g.total>=g.dc)addText(dice,'p','gate-note','The total was high enough, but nobody gave a strong or defensible answer, so only a natural 20 passes.');
+        if(!g.success&&g.total>=g.dc)addText(dice,'p','gate-note','The total was high enough, but fewer than half the answers were strong or defensible, so only a natural 20 passes.');
         rollDisplay.hidden=false;
       }
     }
@@ -676,7 +681,7 @@ export function makeEngine({ db, api, getContext, content, realm2Content, realm6
         b.addEventListener('click',()=>useCard().catch(e=>notice('Insight failed: '+e.message,'error')));
       }
     }
-    if(result&&!g.success&&!g.rerollUsed&&klass==='pragmatist'&&!g.rerollUses?.[uid]?.['r'+g.realm]){
+    if(result&&!g.success&&!g.rerollUsed&&klass==='pragmatist'&&!partyRerolled(g,'r'+g.realm)){
       const b=addText(abilities,'button','quiet','Pragmatist: reroll failed check');
       b.addEventListener('click',()=>requestReroll().catch(e=>notice('Reroll failed: '+e.message,'error')));
     }
