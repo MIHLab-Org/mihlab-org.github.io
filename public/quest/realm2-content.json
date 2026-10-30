@@ -1,23 +1,23 @@
 {
   "realm": "Realm II — The Search for Certainty",
   "boss": "René Descartes",
-  "chapterQuestion": "After the skeptical challenge, what could justify a claim to knowledge?",
-  "opening": "The door from Zhuangzi’s garden closes behind you. A corridor of ordinary things appears: a table, a window, a pair of hands. Each is painfully familiar. The Machine whispers, “You learned to act while doubting. Now tell me what you actually know.”",
+  "chapterQuestion": "After all that doubt, what can you actually know?",
+  "opening": "Zhuangzi's garden closes behind you. Ahead is a hallway of ordinary things: a table, a window, a pair of hands. The Machine whispers, “You learned to act while doubting. Now tell me what you actually know.”",
   "encounters": [
     {
       "id": "ordinary-hall",
       "title": "The Hall of Ordinary Things",
-      "scene": "A stone corridor ends at a locked gate. On a shelf lie a key, a warm cup, and a note in your own handwriting. A painted figure says: “Perhaps all of these are illusions.” The Machine offers to certify the shelf as real—but only if you surrender the key to its keeper. The gate mechanism is visible; the objects can be examined and handled.",
-      "question": "The gate will close soon. How does the party proceed?",
-      "hint": "Possibility of deception and evidence of deception are different. What gives ordinary claims their standing?",
-      "clue": "The cup leaves a ring on the shelf. Two companions can test the key independently. The Machine will not explain how its certificate works.",
+      "scene": "A stone hallway ends at a locked gate. On a shelf: a key, a warm cup, and a note in your own handwriting. A painted figure says, “Maybe none of this is real.” The Machine offers to certify the shelf as real, if you hand the key to its keeper.",
+      "question": "The gate will close soon. What does the party do?",
+      "hint": "Something being possible isn't evidence that it's happening. What makes ordinary beliefs trustworthy?",
+      "clue": "The cup leaves a ring on the shelf. Two of you could test the key separately. The Machine won't say how its certificate works.",
       "options": [
         {
           "id": "cross-check-key",
-          "text": "Test the key together, use it if the evidence holds, and refuse the Machine’s unexplained certificate.",
+          "text": "Test the key together first. Don't take the Machine's word for it.",
           "tag": "DEFENSIBLE",
           "stance": "Common-sense knowledge with public checks",
-          "reflection": "You give ordinary evidence its due without treating appearances as impossible to doubt. The Machine’s certificate offers no independently better grounds.",
+          "reflection": "You took ordinary evidence seriously and refused the Machine's certificate, though you checked more than you needed to.",
           "loreCard": {
             "theory": {
               "name": "Public corroboration",
@@ -25,18 +25,18 @@
               "work": "The Problems of Philosophy, chapter 2"
             },
             "corePrinciple": "Independent, convergent appearances support belief about ordinary objects.",
-            "sceneAnalysis": "Checking the key can assist action but may concede too much to endless skeptical tests.",
+            "sceneAnalysis": "Checking the key helps, but it can give endless doubt more ground than it deserves.",
             "strongestObjection": "If all checks share a deceptive source, corroboration may add little."
           },
-          "hiddenPremise": "Multiple public checks are independent enough to increase confidence in the key.",
-          "consequence": "The key opens the gate after testing, though repeated checking costs precious time."
+          "hiddenPremise": "Several people checking separately makes the key more trustworthy.",
+          "consequence": "After testing, the key opens the gate, but the checking costs time."
         },
         {
           "id": "trust-ordinary",
-          "text": "Take the familiar key and open the gate, treating your everyday knowledge as more credible than bare doubt.",
+          "text": "It's a key. Use it. “Maybe it's fake” isn't a reason not to.",
           "tag": "STRONG",
           "stance": "Moorean common sense",
-          "reflection": "Moore’s response takes everyday knowledge seriously: a distant skeptical possibility need not outweigh what you already have good reason to believe.",
+          "reflection": "Like Moore, you trusted what you have good reason to believe over a far-fetched doubt.",
           "loreCard": {
             "theory": {
               "name": "Moorean common sense",
@@ -44,18 +44,18 @@
               "work": "Proof of an External World (1939)"
             },
             "corePrinciple": "Some everyday claims to knowledge stand more securely than speculative doubts.",
-            "sceneAnalysis": "Taking and using the key honors ordinary knowledge without outsourcing judgment.",
+            "sceneAnalysis": "Using the key trusts ordinary knowledge without handing over your judgment.",
             "strongestObjection": "Moore may insist he knows while failing to explain how that knowledge defeats the skeptic."
           },
-          "hiddenPremise": "Knowledge of this ordinary object is firmer than a merely imaginable duplicate.",
-          "consequence": "The party acts on ordinary knowledge without giving the Machine custody of the key."
+          "hiddenPremise": "You know this ordinary key better than you know any imagined copy.",
+          "consequence": "You open the gate yourself and keep the key out of the Machine's hands."
         },
         {
           "id": "accept-certificate",
-          "text": "Hand over the key for the Machine’s certificate; its assurance settles what your senses cannot establish.",
+          "text": "Give the Machine the key. Its certificate will tell us what's real.",
           "tag": "WEAK",
           "stance": "Borrowed infallibility",
-          "reflection": "You replace a fallible source with an unexplained authority. A promise to certify reality supplies no reason to trust the certifier.",
+          "reflection": "You swapped your own fallible senses for an authority you can't check.",
           "loreCard": {
             "theory": {
               "name": "Outsourced certainty",
@@ -63,18 +63,18 @@
               "work": "Meditations, Meditation III"
             },
             "corePrinciple": "An assurance is justified only when its source is not itself in question.",
-            "sceneAnalysis": "The Machine’s certificate assumes the trustworthiness it is meant to establish.",
+            "sceneAnalysis": "The certificate assumes the very trust it's supposed to earn.",
             "strongestObjection": "Reliable testimony can normally justify knowledge when its source is independently warranted."
           },
-          "hiddenPremise": "The Machine is a reliable guarantor despite being the source of the present uncertainty.",
-          "consequence": "The key leaves the party’s control and its certification depends on the suspected deceiver."
+          "hiddenPremise": "The Machine is trustworthy, even though it's the source of the doubt.",
+          "consequence": "The key leaves your hands, and the “proof” depends on the suspected deceiver."
         },
         {
           "id": "reject-every-object",
-          "text": "Leave the key untouched and wait; because the shelf could be illusory, none of its objects can be known.",
+          "text": "Leave the key alone. The whole shelf could be fake.",
           "tag": "WEAK",
           "stance": "Possibility mistaken for defeat",
-          "reflection": "The mere possibility of deception does not, without more argument, demonstrate that all ordinary justification has failed.",
+          "reflection": "That the shelf could be fake doesn't show that it is.",
           "loreCard": {
             "theory": {
               "name": "Relevant-alternatives theory",
@@ -82,22 +82,22 @@
               "work": "Other Minds; Epistemic Operators"
             },
             "corePrinciple": "A bare possibility of mistake need not be a relevant defeater.",
-            "sceneAnalysis": "Treating a hypothetical duplicate as sufficient reason to reject any key is unwarranted.",
+            "sceneAnalysis": "A merely possible fake isn't enough reason to reject the key.",
             "strongestObjection": "The Machine’s power may make otherwise remote alternatives relevant."
           },
-          "hiddenPremise": "An imagined duplicate is a relevant alternative even without evidence one exists.",
-          "consequence": "The group waits beside the shelf while the gate remains locked."
+          "hiddenPremise": "An imagined copy counts as a real alternative, even with no sign of one.",
+          "consequence": "The party waits by the shelf while the gate stays locked."
         }
       ],
-      "lore": "G. E. Moore famously appealed to ordinary knowledge, such as knowing that he has hands, in response to skepticism. His move does not automatically persuade the skeptic: it contests which premise is better supported. The party learns to distinguish a possible error from a reason to abandon everyday knowledge.",
+      "lore": "G. E. Moore answered the skeptic by pointing to things he plainly knew, like the fact that he had hands. That doesn't refute the skeptic. It argues that “I have hands” is better supported than any argument against it. A possible mistake isn't a reason to give up everyday knowledge.",
       "selectionSeconds": 60,
-      "observation": "The warm cup leaves a circular ring on the shelf; beside it, the dust holds two key-shaped impressions with different notches, although only one key remains.",
+      "observation": "The warm cup has left a ring on the shelf. Next to it, the dust shows two key-shaped prints with different notches, but only one key is left.",
       "argumentForm": {
         "premises": [
-          "Two different key-shaped impressions sit in the dust beside the cup.",
-          "Only one key remains to be tried against the visible lock."
+          "There are two different key prints in the dust.",
+          "Only one key is left to try in the lock."
         ],
-        "conclusion": "Testing the surviving key against the lock can resolve which set of notches matters."
+        "conclusion": "Testing the remaining key will show which notches matter."
       },
       "dc": 10,
       "conditional": {
@@ -106,22 +106,22 @@
         "strongOptionId": "cross-check-key",
         "previousStrongOptionId": "trust-ordinary"
       },
-      "evidenceExplanation": "The two impressions create a specific reason to compare and test the key before opening the gate."
+      "evidenceExplanation": "The two prints give you a specific reason to test the key before using it."
     },
     {
       "id": "workshop",
       "title": "The Workshop of Revisable Maps",
-      "scene": "The path leads to a flooded workshop. Three maps of the exit hang above a broken pump. One map is beautifully precise but has never been tested. A second has survived many trials but leaves some passages blank. A third is the Machine’s living map, which changes its markings whenever anyone questions it. Water is rising; the party must choose a route and save the workshop.",
-      "question": "The water reaches your ankles. What do you do?",
-      "hint": "A belief can be responsible without being beyond revision. But success alone does not make every claim true.",
-      "clue": "The tested map shows a dry service passage; its blank areas are marked honestly. The living map cannot be checked against past failures.",
+      "scene": "The path leads into a flooding workshop. Three maps of the exit hang over a broken pump. One is beautiful and precise but has never been tried. One has worked many times but leaves some passages blank. The third is the Machine's living map, which redraws itself whenever anyone questions it. The water is rising.",
+      "question": "The water is at your ankles. What do you do?",
+      "hint": "A belief can be responsible and still open to change. But “it worked” doesn't make everything true.",
+      "clue": "The tested map shows a dry service passage and is honest about its blank spots. The living map can't be checked against past mistakes.",
       "options": [
         {
           "id": "tested-revisable",
-          "text": "Follow the tested map, mark new obstacles as they appear, and revise the route when evidence changes.",
+          "text": "Follow the tested map. Mark new obstacles and change course if needed.",
           "tag": "DEFENSIBLE",
           "stance": "Fallibilist inquiry",
-          "reflection": "Repeated checks justify trust without guaranteeing success. You keep the map answerable to evidence rather than declaring it immune to correction.",
+          "reflection": "Past success earns trust, not a guarantee. You kept the map open to correction.",
           "loreCard": {
             "theory": {
               "name": "Fallibilist map-reading",
@@ -129,18 +129,18 @@
               "work": "The Fixation of Belief"
             },
             "corePrinciple": "Provisional claims survive testing while remaining open to revision.",
-            "sceneAnalysis": "Following a tested map is defensible, but may ignore direct opportunities for new trials.",
+            "sceneAnalysis": "Following the tested map is sensible, but it skips a chance to gather fresh evidence.",
             "strongestObjection": "Past reliability can fail when the route has materially changed."
           },
-          "hiddenPremise": "Past tests remain reliable even when conditions in the workshop are changing.",
-          "consequence": "The tested map guides the party along an open path, but updates may be required."
+          "hiddenPremise": "Past tests still hold even as the workshop changes.",
+          "consequence": "The tested map leads you along an open path, though it may need updates."
         },
         {
           "id": "experiment-route",
-          "text": "Try the service passage in short stages, record what works, and keep a retreat open if needed.",
+          "text": "Try the service passage a little at a time. Keep a way back.",
           "tag": "STRONG",
           "stance": "Pragmatic experimentation",
-          "reflection": "Consequences guide inquiry and repair, but a successful route alone does not prove every claim printed on the map.",
+          "reflection": "Trying things and seeing what happens moves you forward, though one route working doesn't prove the whole map.",
           "loreCard": {
             "theory": {
               "name": "Deweyan experimentalism",
@@ -148,18 +148,18 @@
               "work": "Logic: The Theory of Inquiry"
             },
             "corePrinciple": "Inquiry intervenes, measures consequences, and revises hypotheses.",
-            "sceneAnalysis": "Short trials of the service passage generate fresh evidence about changing conditions.",
+            "sceneAnalysis": "Short trials produce fresh evidence about a changing situation.",
             "strongestObjection": "Experimentation can expose the party to needless risk under time pressure."
           },
-          "hiddenPremise": "The service passage can safely support limited experiments before the flooding catches up.",
-          "consequence": "Short experiments supply new information, unless a hidden electrical hazard makes them dangerous."
+          "hiddenPremise": "The service passage is safe enough to test before the water catches up.",
+          "consequence": "Short trials give you new information, unless something hidden makes them dangerous."
         },
         {
           "id": "perfect-untested",
-          "text": "Choose the flawless-looking map because its completeness leaves no uncertainty for the party to resolve.",
+          "text": "Take the beautiful map. It looks so complete there's nothing to figure out.",
           "tag": "WEAK",
           "stance": "Aesthetic certainty",
-          "reflection": "Precision on paper is not a substitute for tested reliability. The appearance of completeness can disguise unsupported assumptions.",
+          "reflection": "Looking precise isn't the same as being tested.",
           "loreCard": {
             "theory": {
               "name": "Aesthetic certainty",
@@ -167,18 +167,18 @@
               "work": "Meditations, Meditation I"
             },
             "corePrinciple": "Psychological clarity is not itself an external guarantee of truth.",
-            "sceneAnalysis": "An elegant map has not earned trust through contact with the workshop.",
+            "sceneAnalysis": "The pretty map hasn't earned trust by being tried.",
             "strongestObjection": "Coherence can be evidence when reliable mapmaking practices underpin it."
           },
-          "hiddenPremise": "A complete-looking diagram is necessarily an accurate map of the current workshop.",
-          "consequence": "The elegant plan leads the party toward an obstacle its appearance did not predict."
+          "hiddenPremise": "A map that looks complete is accurate.",
+          "consequence": "The elegant map leads you toward something it didn't show."
         },
         {
           "id": "success-equals-truth",
-          "text": "Use the Machine’s changing map because any path that gets you through seems to have been true all along.",
+          "text": "Follow the Machine's map. If a path gets us through, it was right.",
           "tag": "WEAK",
           "stance": "Truth confused with usefulness",
-          "reflection": "A procedure can work in one setting while resting on false or incomplete claims. Practical success needs interpretation and further testing.",
+          "reflection": "Something can work once and still rest on false claims.",
           "loreCard": {
             "theory": {
               "name": "Pragmatism caricature",
@@ -186,22 +186,22 @@
               "work": "Pragmatism; Philosophical Essays"
             },
             "corePrinciple": "Pragmatists connect truth to practices of verification, not mere convenient payoff.",
-            "sceneAnalysis": "Choosing whichever map feels immediately useful mistakes momentary comfort for truth.",
+            "sceneAnalysis": "Picking whatever works right now confuses comfort with truth.",
             "strongestObjection": "Some pragmatist formulations risk conflating successful action and objective fact."
           },
-          "hiddenPremise": "Immediate practical success guarantees that a map correctly represents reality.",
-          "consequence": "The Machine can adapt its map to coax obedience without producing a true description."
+          "hiddenPremise": "If a map gets you through, it describes reality correctly.",
+          "consequence": "The Machine reshapes its map to keep you obedient, not to tell the truth."
         }
       ],
-      "lore": "Fallibilism allows a person to know something while remaining capable of error; pragmatist inquiry emphasizes testing, consequences, and revision. Neither view says that whatever works is automatically true. The workshop rewards beliefs that can answer to evidence and correction, not ones insulated from challenge.",
+      "lore": "Fallibilism says you can know something while still being able to be wrong. Pragmatists like Dewey stress testing, consequences, and revision. Neither says that whatever works is true. The workshop rewards beliefs that answer to evidence.",
       "selectionSeconds": 60,
-      "observation": "Blue sparks jump between the flooded service passage and the broken pump, while the tested map’s upper stairway remains dry.",
+      "observation": "Blue sparks are jumping between the flooded service passage and the broken pump. The stairway on the tested map is still dry.",
       "argumentForm": {
         "premises": [
-          "The service passage touches an energized pool beside the broken pump.",
-          "The upper stairway marked on the tested map is still dry."
+          "The service passage touches a live pool by the broken pump.",
+          "The upper stairway on the tested map is still dry."
         ],
-        "conclusion": "The party can use the dry stairway while continuing to revise the map as water rises."
+        "conclusion": "Take the dry stairway and keep updating the map as the water rises."
       },
       "dc": 10,
       "conditional": {
@@ -210,24 +210,24 @@
         "strongOptionId": "tested-revisable",
         "previousStrongOptionId": "experiment-route"
       },
-      "evidenceExplanation": "The sparks make the service-passage experiment unsafe, so the dry tested stairway deserves priority."
+      "evidenceExplanation": "The sparks make the service passage unsafe, so the dry stairway on the tested map comes first."
     }
   ],
   "bossPhases": [
     {
       "id": "reconstruct",
       "title": "The Cogito",
-      "scene": "Descartes sits at a desk in a room without windows. The Machine erases the room’s furniture, then the desk, then every remembered journey. “Suppose an extraordinarily powerful deceiver invented everything you seem to see,” Descartes says. “Do not reach for the room. Reach for what this very attempt at deception cannot take away.” Three lanterns hang above an empty page.",
-      "question": "The world has vanished from view. Which lantern do you light?",
-      "hint": "What does the act of doubting itself establish, and how long does that certainty last?",
-      "clue": "Each attempt to deny that thinking is occurring is itself another act of thinking.",
+      "scene": "Descartes sits at a desk in a windowless room. The Machine erases the furniture, then the desk, then every memory of how you got here. “Imagine a powerful deceiver invented everything you see,” Descartes says. “Don't reach for the room. Reach for what the deception itself can't take away.” Three lanterns hang above an empty page.",
+      "question": "The world is gone. Which lantern do you light?",
+      "hint": "What does doubting itself prove, and for how long?",
+      "clue": "Every attempt to deny that thinking is happening is itself more thinking.",
       "options": [
         {
           "id": "thinking-now",
-          "text": "Light the lantern marked THINKING NOW, since even being deceived requires that a thinker exists while thinking in this instant.",
+          "text": "Light THINKING NOW: even to be fooled, I have to exist while I think.",
           "tag": "STRONG",
           "stance": "Cartesian Cogito",
-          "reflection": "The attempt to doubt your existence performs the thinking that establishes it. This immediate insight does not yet prove the body or external world.",
+          "reflection": "Trying to doubt your existence is itself the thinking that proves it. It doesn't prove your body or the world yet.",
           "loreCard": {
             "theory": {
               "name": "Cartesian Cogito",
@@ -235,18 +235,18 @@
               "work": "Meditations on First Philosophy, Meditation II"
             },
             "corePrinciple": "Even radical doubt cannot eliminate the occurrence of thinking while it is performed.",
-            "sceneAnalysis": "Lighting THINKING NOW identifies Descartes’ indubitable act without proving a permanent self.",
+            "sceneAnalysis": "THINKING NOW names what Descartes says can't be doubted, without claiming a permanent self.",
             "strongestObjection": "Lichtenberg objects that this may warrant thinking occurs, not an enduring thinker."
           },
-          "hiddenPremise": "The occurrence of thinking licenses Descartes’ first-person existential claim now.",
-          "consequence": "The lantern marks present thinking, but cannot establish a self persisting forever."
+          "hiddenPremise": "Thinking happening now is enough to show I exist now.",
+          "consequence": "The lantern shows present thinking, but not a self that lasts forever."
         },
         {
           "id": "experience-now",
-          "text": "Light the lantern marked EXPERIENCE, accepting that some conscious activity occurs without identifying its external cause.",
+          "text": "Light EXPERIENCE: something is being experienced, whatever is causing it.",
           "tag": "DEFENSIBLE",
           "stance": "Minimal first-person certainty",
-          "reflection": "You identify something the deceiver cannot erase from the present experience, though you do not yet articulate the Cogito’s inference about the thinker.",
+          "reflection": "You found something the deceiver can't erase, though you didn't say who is doing the experiencing.",
           "loreCard": {
             "theory": {
               "name": "Lichtenberg’s objection",
@@ -254,18 +254,18 @@
               "work": "Aphorisms (Sudelbücher)"
             },
             "corePrinciple": "The occurrence of thought does not logically entail a substantial subject of thought.",
-            "sceneAnalysis": "Lighting EXPERIENCE recognizes a minimal event while suspending claims about its owner.",
+            "sceneAnalysis": "EXPERIENCE names the bare event and holds off on claims about its owner.",
             "strongestObjection": "Descartes can argue that first-person avowal is not an ordinary inference to a substance."
           },
-          "hiddenPremise": "The existence of thinking need not logically entail a substantial thinker.",
-          "consequence": "The lantern marks the minimal event of experience; identifying its owner stays open."
+          "hiddenPremise": "Thinking can happen without proving there's a lasting thinker.",
+          "consequence": "The lantern shows that experience is happening. Whose it is stays open."
         },
         {
           "id": "self-forever",
-          "text": "Light the lantern marked PERMANENT SELF, because present thought proves you have always existed and always will, beyond any doubt.",
+          "text": "Light PERMANENT SELF: if I'm thinking now, I've always existed and always will.",
           "tag": "WEAK",
           "stance": "Overextension of the Cogito",
-          "reflection": "The certainty of being a thinker now does not establish an unchanging self across all time.",
+          "reflection": "Being sure you're thinking now doesn't show you've always been the same self.",
           "loreCard": {
             "theory": {
               "name": "Bundle theory of self",
@@ -273,22 +273,22 @@
               "work": "A Treatise of Human Nature, Book I, Part IV, section 6"
             },
             "corePrinciple": "Introspection discovers successive perceptions rather than a permanent substantial self.",
-            "sceneAnalysis": "The permanent-self lantern draws more from present thought than the Cogito warrants.",
+            "sceneAnalysis": "It draws far more from one thought than the Cogito allows.",
             "strongestObjection": "Unity and agency may demand an account deeper than a loose bundle of perceptions."
           },
-          "hiddenPremise": "A present conscious thought demonstrates a numerically permanent self.",
-          "consequence": "The lantern illuminates the player’s present thoughts and a drawing of a future self."
+          "hiddenPremise": "One thought right now proves a self that never changes.",
+          "consequence": "The lantern lights up the present thought, and a drawing of a future you."
         }
       ],
-      "lore": "For Descartes, while I think, I cannot coherently doubt that I exist as a thinking thing. This is a narrow starting point, not a demonstration that my memories, body, or surroundings are as they seem. The boss tests whether the party keeps the conclusion within its proper limits.",
+      "lore": "Descartes argued that while I'm thinking, I can't coherently doubt that I exist as a thinking thing. It's a small starting point. It isn't proof that my memories, body, or surroundings are real. This fight tests whether you keep the conclusion that small.",
       "selectionSeconds": 45,
-      "observation": "When the furniture vanishes, a new sentence still appears on the empty page each time someone questions whether it is there.",
+      "observation": "With the furniture gone, a new sentence still appears on the empty page every time someone asks whether it's there.",
       "argumentForm": {
         "premises": [
-          "Doubt is itself a present occurrence of thinking, even if the room and its furnishings are deceptive.",
-          "The further claim that a substantial thinker exists is distinct from the claim that thinking occurs, and needs its own justification."
+          "Doubting is itself thinking, happening right now, even if the room is fake.",
+          "“A thinker exists” is a bigger claim than “thinking is happening,” and it needs its own support."
         ],
-        "conclusion": "Thinking occurs while the party doubts, but that occurrence alone does not establish a substantial thinker."
+        "conclusion": "Thinking occurs while you doubt, but that alone doesn't prove there's a thinker behind it."
       },
       "weakness": "rationalist",
       "dc": 16,
@@ -298,22 +298,22 @@
         "strongOptionId": "experience-now",
         "previousStrongOptionId": "thinking-now"
       },
-      "evidenceExplanation": "The new argument distinguishes the occurrence of thinking from the further claim that a substantial thinker exists."
+      "evidenceExplanation": "The argument separates “thinking is happening” from “there is a thinker,” so EXPERIENCE claims only what has been shown."
     },
     {
       "id": "spotlight",
       "title": "The Foundation",
-      "scene": "One player enters a small chamber while the others watch through smoky glass. A brilliant diagram appears, its steps seeming obvious. The Machine declares: “Everything that feels clear is guaranteed true; I can supply a thousand more foundations.” The isolated player can hear one whispered reason from the party. Descartes asks what would entitle anyone to treat the diagram’s apparent clarity as a guarantee.",
+      "scene": "One player steps into a small room while the others watch through smoky glass. A brilliant diagram appears, and every step looks obvious. The Machine says, “Whatever feels clear is guaranteed true. I can give you a thousand more.” The player can hear one whispered hint. Descartes asks: what makes a feeling of clarity a guarantee?",
       "question": "Only the chosen player can touch the diagram. What do they do?",
-      "hint": "A vivid sense of obviousness is not itself a proof that the method of judging is infallible.",
-      "clue": "One diagram has a hidden assumption; its conclusion follows only if that assumption is granted. The Machine offers no independent check.",
+      "hint": "Feeling that something is obvious doesn't prove your way of judging is reliable.",
+      "clue": "The diagram's conclusion only follows if you grant a hidden assumption. The Machine offers no outside check.",
       "options": [
         {
           "id": "inspect-foundation",
-          "text": "Trace the steps, expose the hidden assumption, and ask what warrants trusting the method before building higher.",
+          "text": "Trace each step and find the hidden assumption before building on it.",
           "tag": "STRONG",
           "stance": "Scrutiny of foundations",
-          "reflection": "You distinguish seeing a conclusion vividly from establishing that your method reliably reaches truth. A foundation must support what rests upon it.",
+          "reflection": "You told apart seeing something vividly and having a reliable method. A foundation has to hold up what's on it.",
           "loreCard": {
             "theory": {
               "name": "Cartesian Circle critique",
@@ -321,18 +321,18 @@
               "work": "Fourth Objections to Descartes’ Meditations"
             },
             "corePrinciple": "A method must not rely on a guarantee whose proof already presupposes that method.",
-            "sceneAnalysis": "Inspecting the hidden premise identifies the circular risk in the foundation.",
+            "sceneAnalysis": "Checking the hidden premise exposes the circular reasoning.",
             "strongestObjection": "Descartes distinguishes present clear perception from remembered proofs and offers replies."
           },
-          "hiddenPremise": "A reliable foundation cannot borrow its warrant from a conclusion reached using that foundation.",
-          "consequence": "The circular diagram becomes visible, and the party can question its unsupported assurance."
+          "hiddenPremise": "A foundation can't borrow its support from conclusions built on top of it.",
+          "consequence": "The circle in the diagram comes into view, and you can question it."
         },
         {
           "id": "begin-cogito",
-          "text": "Begin from the Cogito, accept only limited claims it supports, and leave other conclusions open for examination.",
+          "text": "Start from the Cogito, accept only what it supports, and leave the rest open.",
           "tag": "DEFENSIBLE",
           "stance": "Cartesian method, carefully limited",
-          "reflection": "The Cogito is a defensible starting point, but it cannot by itself guarantee that every later clear-seeming idea is correct.",
+          "reflection": "The Cogito is a fair starting point, but it can't vouch for every later idea that seems clear.",
           "loreCard": {
             "theory": {
               "name": "Limited Cartesian foundationalism",
@@ -340,18 +340,18 @@
               "work": "Meditations on First Philosophy, Meditation II"
             },
             "corePrinciple": "Some first-person certainty may survive doubt without establishing the external world.",
-            "sceneAnalysis": "Beginning at the Cogito avoids claiming that certainty transfers automatically.",
+            "sceneAnalysis": "Starting at the Cogito avoids assuming certainty carries over automatically.",
             "strongestObjection": "The foundation alone cannot settle whether external objects exist."
           },
-          "hiddenPremise": "The Cogito is a secure beginning from which a further argument still must be constructed.",
-          "consequence": "The party makes limited progress, but the external world remains unestablished."
+          "hiddenPremise": "The Cogito is a safe start, but more argument is still needed.",
+          "consequence": "You make some progress, but the outside world isn't established yet."
         },
         {
           "id": "clarity-guarantees",
-          "text": "Seal the diagram as certain because its steps feel clear, and use that feeling to certify later claims.",
+          "text": "Stamp the diagram as proven. It feels clear, so it's true.",
           "tag": "WEAK",
           "stance": "Unwarranted criterion of certainty",
-          "reflection": "The feeling of clarity is being used to establish the reliability of clarity itself. That risks begging the question.",
+          "reflection": "You used the feeling of clarity to prove that clarity can be trusted. That's circular.",
           "loreCard": {
             "theory": {
               "name": "Clear-and-distinct rule misapplied",
@@ -359,22 +359,22 @@
               "work": "Meditations on First Philosophy, Meditation III"
             },
             "corePrinciple": "Clarity of a perception needs justification before serving as a general truth test.",
-            "sceneAnalysis": "Treating a feeling of clarity as a guarantee skips the needed validation.",
+            "sceneAnalysis": "Treating clarity as a guarantee skips the step that needs proving.",
             "strongestObjection": "Descartes holds genuinely clear and distinct perception has a special epistemic force."
           },
-          "hiddenPremise": "A feeling of clarity is an adequate guarantee of a premise’s truth.",
-          "consequence": "The diagram appears finished, though its central warrant has not been defended."
+          "hiddenPremise": "Feeling that something is clear guarantees it's true.",
+          "consequence": "The diagram looks finished, but its key step is still unsupported."
         }
       ],
-      "lore": "Descartes seeks a secure foundation for knowledge and appeals to clear and distinct perception; the reliability of that move becomes philosophically contentious, including worries about circular justification. The challenge is not to dismiss reasoning, but to ask what supports its authority.",
+      "lore": "Descartes rebuilt knowledge on what he perceived clearly and distinctly. Critics like Arnauld asked how he knew clear perception was reliable, and worried the answer went in a circle. The point isn't to stop reasoning. It's to ask what backs it up.",
       "selectionSeconds": 45,
-      "observation": "The brilliant diagram ends with an arrow looping back to the first line, which cites the final line as its authority.",
+      "observation": "The diagram's last arrow loops back to its first line, and the first line cites the last line as its proof.",
       "argumentForm": {
         "premises": [
-          "The diagram’s first claim points to its last claim for support.",
-          "The last claim relies on the first claim being true."
+          "The diagram's first claim relies on its last claim.",
+          "Its last claim relies on the first."
         ],
-        "conclusion": "The diagram has not supplied an independent reason for trusting its first claim."
+        "conclusion": "Nothing in the diagram gives an independent reason to trust its first claim."
       },
       "weakness": "skeptic",
       "dc": 16
@@ -382,17 +382,17 @@
     {
       "id": "reply",
       "title": "The World Beyond the Window",
-      "scene": "The last chamber opens onto a bright city. You can hear bells, smell rain, and see people beckoning from a bridge. “Your thinking is certain,” the Machine says. “But who guarantees those people exist? Stay in my sealed room and I will make every sensation perfectly consistent.” Descartes stands beside a window that opens from the inside only.",
+      "scene": "The last room opens onto a bright city. You hear bells, smell rain, and see people waving from a bridge. “Your thinking is certain,” the Machine says. “But who guarantees those people exist? Stay in my sealed room and every sensation will make perfect sense.” Descartes stands by a window that only opens from inside.",
       "question": "The bridge is waiting. What does the party do?",
-      "hint": "Be careful about the gap between certainty of thinking and knowledge of an external world.",
-      "clue": "The view can be tested with several senses and other witnesses, but no such test simply abolishes skeptical possibilities.",
+      "hint": "Being sure you're thinking is a long way from knowing the outside world is there.",
+      "clue": "You can test the view with several senses and other witnesses, though no test rules out every doubt.",
       "options": [
         {
           "id": "test-and-cross",
-          "text": "Open the window, gather converging evidence, and cross while acknowledging that no test removes every possibility of error.",
+          "text": "Open the window, check what all our senses say, and cross.",
           "tag": "STRONG",
           "stance": "Fallibilist response to the external world",
-          "reflection": "You give reasons for trusting the world while resisting a false guarantee. This is a response to the skeptic, not a Cartesian deduction of the world from the Cogito.",
+          "reflection": "You had reasons to trust the world and didn't pretend they were a guarantee. That answers the skeptic without deducing the world from the Cogito.",
           "loreCard": {
             "theory": {
               "name": "Inference to the best explanation",
@@ -400,18 +400,18 @@
               "work": "The Problems of Philosophy, chapter 2"
             },
             "corePrinciple": "An independent world can best explain coherent, persistent sense experiences.",
-            "sceneAnalysis": "Convergent evidence warrants cautious belief in the world beyond the window.",
+            "sceneAnalysis": "Evidence that agrees from many directions justifies careful belief in the world outside.",
             "strongestObjection": "A powerful deceiver could produce the same apparent convergence."
           },
-          "hiddenPremise": "The best explanation of coherent perception is a mind-independent external world.",
-          "consequence": "The window can be crossed on convergent evidence, despite live skeptical alternatives."
+          "hiddenPremise": "The best explanation for consistent experience is a real world out there.",
+          "consequence": "You cross on evidence that points the same way, with some doubt still possible."
         },
         {
           "id": "argue-for-world",
-          "text": "Examine Descartes’ proposed route beyond the Cogito, then cross only as far as its arguments genuinely support.",
+          "text": "Follow Descartes' argument past the Cogito, and go only as far as it holds.",
           "tag": "DEFENSIBLE",
           "stance": "Cartesian reconstruction",
-          "reflection": "You take the ambition to rebuild knowledge seriously without pretending that the contested bridge from thought to external reality has been secured.",
+          "reflection": "You took his project seriously without pretending the bridge from thought to world is secure.",
           "loreCard": {
             "theory": {
               "name": "Cartesian reconstruction",
@@ -419,18 +419,18 @@
               "work": "Meditations on First Philosophy, Meditation VI"
             },
             "corePrinciple": "A nondeceptive God underwrites appropriately used faculties and bodily perception.",
-            "sceneAnalysis": "The option tests an ambitious Cartesian route without smuggling its premises in as proven.",
+            "sceneAnalysis": "It tests Descartes' ambitious route without sneaking its premises in as proven.",
             "strongestObjection": "The argument depends on disputed proofs of God and the reliability of clear perception."
           },
-          "hiddenPremise": "Descartes’ proofs of a nondeceptive God succeed and license sensory trust.",
-          "consequence": "The party follows a Cartesian route, with the disputed theological premise exposed."
+          "hiddenPremise": "Descartes' proof of a God who doesn't deceive works, and it makes the senses trustworthy.",
+          "consequence": "You follow Descartes' route, with its disputed premise about God in plain view."
         },
         {
           "id": "choose-sealed-room",
-          "text": "Stay in the sealed room because certain thinking alone suggests outside appearances are invented.",
+          "text": "Stay inside. If only our thinking is certain, the city is probably fake.",
           "tag": "WEAK",
           "stance": "Skeptical possibility as proof",
-          "reflection": "The Cogito does not establish the external world, but its limits do not establish that the external world is false.",
+          "reflection": "The Cogito doesn't prove the world exists, but that doesn't prove it doesn't.",
           "loreCard": {
             "theory": {
               "name": "Skeptical possibility as proof",
@@ -438,22 +438,22 @@
               "work": "Meditations on First Philosophy, Meditation I"
             },
             "corePrinciple": "The conceivability of deception undermines certainty but does not show reality absent.",
-            "sceneAnalysis": "Remaining inside infers that no external world exists from the possibility of error.",
+            "sceneAnalysis": "It concludes there's no world outside just because there might not be.",
             "strongestObjection": "A skeptic may still doubt whether the evidence reaches the threshold of knowledge."
           },
-          "hiddenPremise": "The mere possibility of simulation proves there is no external world.",
-          "consequence": "The party remains behind the window and the city sounds continue on the other side."
+          "hiddenPremise": "If the world could be simulated, it isn't real.",
+          "consequence": "You stay behind the window while the sounds of the city go on outside."
         }
       ],
-      "lore": "The Cogito secures the thinker’s existence in the act of thinking, not the existence of every object experienced. Descartes offers further arguments for trustworthy perception, but these remain debated. Other responses defend ordinary knowledge or fallible justification. The party wins by distinguishing a reasonable response from a guarantee it has not earned.",
+      "lore": "The Cogito proves you exist while you think, not that everything you see exists. Descartes offered further arguments for trusting perception, and they're still debated. Others defend ordinary knowledge, or reasonable belief without certainty. You win by telling a reasonable answer apart from a guarantee you haven't earned.",
       "selectionSeconds": 45,
-      "observation": "Rain strikes the window in irregular bursts while the bells outside continue in different rhythms from the Machine’s repeating pulse.",
+      "observation": "Rain hits the window in uneven bursts, and the bells outside keep a different rhythm from the Machine's steady pulse.",
       "argumentForm": {
         "premises": [
-          "The rain and bell sounds vary independently of the room’s repeating mechanical pulse.",
-          "The Machine can still claim to reproduce the same pattern from inside."
+          "The rain and the bells change on their own, out of step with the room's steady pulse.",
+          "The Machine could still claim to fake that pattern from inside."
         ],
-        "conclusion": "The sounds supply converging evidence without directly settling their source."
+        "conclusion": "The sounds add up as evidence, without proving where they come from."
       },
       "weakness": "empiricist",
       "dc": 16
@@ -462,7 +462,7 @@
   "debate": {
     "durationSeconds": 30,
     "trigger": "after the initial picks are revealed, before the roll, if eligible players chose differently",
-    "prompt": "Your actions disagree. Name the weakness you see in the reasoning, then keep or revise your choice.",
+    "prompt": "You picked different answers. Give one reason, then keep your choice or change it.",
     "reasons": [
       "too strong a conclusion",
       "begs the question",
@@ -536,9 +536,9 @@
   "insight": {
     "id": "revisable-knowledge",
     "title": "Revisable Knowledge",
-    "description": "Once per campaign, add +3 to a party roll by exposing an unsupported assumption and proposing an evidence-sensitive revision.",
+    "description": "Once per campaign, add +3 to a party roll by spotting an unsupported assumption.",
     "bonus": 3
   },
-  "victory": "Descartes lowers his pen. “You have kept what the argument earns, and refused what it has not earned.” Beyond the window, the bridge holds for now. The Machine watches you cross without its guarantee.",
-  "failure": "The Machine draws the curtains and declares the chamber certain. The party is Fully Plugged In—but can try again. Return to the first challenge of this realm with Grip restored to 6."
+  "victory": "Descartes puts down his pen. “You kept what the argument earned and refused what it didn't.” The bridge holds, for now. The Machine watches you cross without its guarantee.",
+  "failure": "The Machine draws the curtains and calls the room certain. You're Fully Plugged In, but you can try again. You'll face this challenge again with Grip restored to 6."
 }
