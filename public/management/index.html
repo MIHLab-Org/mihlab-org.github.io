@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>MIHLab · Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f2ea; --card:#fffdf8; --ink:#1f1c17; --muted:#6f685c; --line:#e4ddcf;
+  --accent:#2f5d50; --accent-soft:#dfeae4;
+  --a-mihlab:#2f5d50; --a-teaching:#8a5a1f; --a-research:#4b4a8c; --a-home:#9a3f3f;
+  --s-active:#2f7d4f; --s-paused:#b07a16; --s-idea:#6c6bb0; --s-done:#8b8578;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#16150f; --card:#201e18; --ink:#efe9dc; --muted:#a39b8c; --line:#353128;
+    --accent:#7fb8a4; --accent-soft:#24332d;
+    --a-mihlab:#7fb8a4; --a-teaching:#d7a868; --a-research:#a3a2e0; --a-home:#e08f8f;
+    --s-active:#6fca93; --s-paused:#e2b04f; --s-idea:#a6a5e6; --s-done:#8b8578; }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 96px)}
+header h1{font-family:Fraunces,Georgia,serif;font-weight:650;font-size:28px;margin:4px 0 2px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px}
+.statusline{font-size:12px;color:var(--muted);min-height:16px;margin-top:4px}
+.search{width:100%;margin:14px 0 10px;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);outline:none}
+.search:focus{border-color:var(--accent)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--muted)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.row2{margin-top:6px}
+h2{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:17px;margin:22px 0 8px;display:flex;align-items:center;gap:8px}
+h2 .dot{width:9px;height:9px;border-radius:50%}
+h2 .n{color:var(--muted);font-family:Inter;font-size:12px;font-weight:500}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:block;width:100%;text-align:left;position:relative;border-left:4px solid var(--areac)}
+.card .top{display:flex;align-items:center;gap:8px}
+.card .name{font-weight:600;flex:1;min-width:0}
+.card .next{color:var(--muted);font-size:13.5px;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .next b{color:var(--ink);font-weight:500}
+.meta{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted)}
+.bar{flex:1;max-width:120px;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.pill{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:999px;color:#fff;background:var(--sc)}
+.star{font-size:16px;line-height:1;color:#d49a1f}
+.empty{color:var(--muted);text-align:center;padding:40px 10px}
+.fab{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom) + 18px);width:58px;height:58px;border-radius:50%;border:0;background:var(--accent);color:var(--bg);font-size:30px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:94vh;overflow-y:auto;background:var(--bg);border-radius:20px 20px 0 0;transform:translateY(102%);transition:transform .25s ease;padding:10px 16px calc(env(safe-area-inset-bottom) + 24px)}
+.sheet.on{transform:none}
+.sheet .inner{max-width:640px;margin:0 auto}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 10px}
+.sheethead{display:flex;align-items:center;gap:8px}
+.titlein{flex:1;font-family:Fraunces,Georgia,serif;font-size:22px;font-weight:650;border:0;background:transparent;outline:none;padding:4px 0;min-width:0}
+.iconbtn{border:0;background:transparent;font-size:22px;padding:6px;color:var(--muted)}
+label.lbl{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:16px 0 6px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 12px;font-size:13px}
+.seg button.on{background:var(--sc,var(--ink));border-color:var(--sc,var(--ink));color:#fff}
+textarea,.txt{width:100%;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;outline:none;resize:vertical}
+textarea:focus,.txt:focus{border-color:var(--accent)}
+.task{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.task input[type=checkbox]{width:20px;height:20px;margin-top:1px;accent-color:var(--accent);flex:none}
+.task span{flex:1}
+.task.done span{color:var(--muted);text-decoration:line-through}
+.task .x{border:0;background:none;color:var(--muted);font-size:18px;padding:0 4px}
+.addrow{display:flex;gap:8px;margin-top:8px}
+.addrow .txt{flex:1}
+.btn{border:0;border-radius:12px;padding:10px 14px;background:var(--accent);color:var(--bg);font-weight:600}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:#b23b3b;color:#fff}
+.log{font-size:13.5px}
+.log div{padding:7px 0;border-bottom:1px dashed var(--line)}
+.log time{color:var(--muted);font-size:12px;margin-right:6px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 90px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}
+.toast.on{opacity:1}
+.confirm{display:none;margin-top:10px;padding:12px;border:1px solid #b23b3b;border-radius:12px}
+.confirm.on{display:block}
+.date{max-width:180px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Projects</h1>
+    <div class="sub" id="summary">Loading…</div>
+    <div class="statusline" id="statusline">Saved only in this browser on this device.</div>
+    <div class="actions" style="margin-top:10px">
+      <button class="btn ghost" id="exportBtn" style="padding:7px 12px;font-size:13px">Export backup</button>
+      <button class="btn ghost" id="importBtn" style="padding:7px 12px;font-size:13px">Import</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+  </header>
+  <input class="search" id="q" type="search" placeholder="Search projects, tasks, notes">
+  <div class="chips" id="areaChips"></div>
+  <div class="chips row2" id="statusChips"></div>
+  <main id="list"></main>
+</div>
+<button class="fab" id="fab" aria-label="New project">+</button>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" aria-modal="true" role="dialog">
+  <div class="inner">
+    <div class="grab"></div>
+    <div class="sheethead">
+      <button class="iconbtn star" id="dStar" aria-label="Toggle focus">☆</button>
+      <input class="titlein" id="dName" placeholder="Project name">
+      <button class="iconbtn" id="dClose" aria-label="Close">✕</button>
+    </div>
+    <label class="lbl">Area</label>
+    <div class="seg" id="dArea"></div>
+    <label class="lbl">Status</label>
+    <div class="seg" id="dStatus"></div>
+    <label class="lbl">Next action</label>
+    <textarea id="dNext" rows="2" placeholder="The one concrete next step"></textarea>
+    <label class="lbl">Target date</label>
+    <input class="txt date" id="dDue" type="date">
+    <label class="lbl">Tasks <span id="dTaskCount" style="text-transform:none;letter-spacing:0;font-weight:500"></span></label>
+    <div id="dTasks"></div>
+    <form class="addrow" id="taskForm"><input class="txt" id="taskIn" placeholder="Add a task"><button class="btn" type="submit">Add</button></form>
+    <label class="lbl">Notes</label>
+    <textarea id="dNotes" rows="4" placeholder="Context, links, decisions"></textarea>
+    <label class="lbl">Progress log</label>
+    <form class="addrow" id="logForm"><input class="txt" id="logIn" placeholder="What happened today?"><button class="btn" type="submit">Log</button></form>
+    <div class="log" id="dLog"></div>
+    <div class="actions">
+      <button class="btn ghost" id="copyBrief">Copy brief for Claude</button>
+      <button class="btn ghost" id="delBtn" style="color:#b23b3b">Delete</button>
+    </div>
+    <div class="confirm" id="confirm">
+      Delete this project for good?
+      <div class="actions" style="margin-top:10px"><button class="btn danger" id="delYes">Delete</button><button class="btn ghost" id="delNo">Cancel</button></div>
+    </div>
+  </div>
+</section>
+<div class="toast" id="toast"></div>
+
+<script>
+const AREAS=[["mihlab","MIHLab"],["teaching","Teaching"],["research","Research"],["home","Home & family"]];
+const STATUSES=[["active","Active"],["paused","Paused"],["idea","Idea"],["done","Done"]];
+const AREA_C={mihlab:"var(--a-mihlab)",teaching:"var(--a-teaching)",research:"var(--a-research)",home:"var(--a-home)"};
+const STAT_C={active:"var(--s-active)",paused:"var(--s-paused)",idea:"var(--s-idea)",done:"var(--s-done)"};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const KEY="mihlab.management.v1";
+let projects=[], canWrite=true, col=true;
+let areaF="all", statusF="open", query="";
+let openId=null;
+
+/* ---------- local storage ---------- */
+function persist(){
+  try{ localStorage.setItem(KEY, JSON.stringify(projects)); }
+  catch(e){ canWrite=false; toast("This browser won't save — use Export to keep a copy"); }
+}
+function load(){
+  try{ const raw=localStorage.getItem(KEY); const v=raw?JSON.parse(raw):[]; return Array.isArray(v)?v:[]; }
+  catch{ return []; }
+}
+function save(p){ p.updated=Date.now(); persist(); }
+function del(id){ persist(); }
+window.addEventListener("storage",e=>{ if(e.key===KEY){ projects=load(); render(); } });
+
+/* ---------- export / import ---------- */
+$("exportBtn").onclick=()=>{
+  flushText();
+  const blob=new Blob([JSON.stringify({app:"mihlab-management",version:1,exported:new Date().toISOString(),projects},null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`mihlab-projects-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  toast("Backup downloaded");
+};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  try{
+    const data=JSON.parse(await f.text());
+    const list=Array.isArray(data)?data:data.projects;
+    if(!Array.isArray(list)) throw 0;
+    const byId=new Map(projects.map(p=>[p.id,p]));
+    let added=0, updated=0;
+    for(const raw of list){
+      if(!raw||typeof raw!=="object"||!raw.id) continue;
+      const p={name:"",area:"mihlab",status:"active",focus:false,next:"",notes:"",due:"",tasks:[],log:[],updated:Date.now(),...raw};
+      const old=byId.get(p.id);
+      if(!old){ byId.set(p.id,p); added++; }
+      else if((p.updated||0)>(old.updated||0)){ byId.set(p.id,p); updated++; }
+    }
+    projects=[...byId.values()]; persist(); render();
+    toast(`Imported: ${added} new, ${updated} updated`);
+  }catch{ toast("That file isn't a projects backup"); }
+};
+
+/* ---------- toast ---------- */
+let tt; function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),1800); }
+
+/* ---------- chips ---------- */
+function renderChips(){
+  const counts={}; projects.forEach(p=>counts[p.area]=(counts[p.area]||0)+1);
+  $("areaChips").innerHTML=[["all","All"],["focus","★ Focus"],...AREAS].map(([k,l])=>
+    `<button class="chip ${areaF===k?"on":""}" data-a="${k}">${l}</button>`).join("");
+  $("statusChips").innerHTML=[["open","Open"],...STATUSES,["any","Everything"]].map(([k,l])=>
+    `<button class="chip ${statusF===k?"on":""}" data-s="${k}">${l}</button>`).join("");
+}
+$("areaChips").onclick=e=>{const b=e.target.closest("[data-a]"); if(!b)return; areaF=b.dataset.a; render();};
+$("statusChips").onclick=e=>{const b=e.target.closest("[data-s]"); if(!b)return; statusF=b.dataset.s; render();};
+$("q").oninput=e=>{query=e.target.value.trim().toLowerCase(); render();};
+
+/* ---------- list ---------- */
+function matches(p){
+  if(areaF==="focus"&&!p.focus) return false;
+  if(areaF!=="all"&&areaF!=="focus"&&p.area!==areaF) return false;
+  if(statusF==="open"&&(p.status==="done")) return false;
+  if(!["open","any"].includes(statusF)&&p.status!==statusF) return false;
+  if(query){
+    const hay=[p.name,p.next,p.notes,...(p.tasks||[]).map(t=>t.text)].join(" ").toLowerCase();
+    if(!hay.includes(query)) return false;
+  }
+  return true;
+}
+const SORD={active:0,idea:1,paused:2,done:3};
+function cardHTML(p){
+  const tasks=p.tasks||[], done=tasks.filter(t=>t.done).length;
+  const pct=tasks.length?Math.round(done/tasks.length*100):0;
+  const due=p.due?`<span>📅 ${esc(fmtDate(p.due))}</span>`:"";
+  return `<button class="card" data-id="${esc(p.id)}" style="--areac:${AREA_C[p.area]||"var(--line)"}">
+    <div class="top">${p.focus?'<span class="star">★</span>':""}<span class="name">${esc(p.name||"Untitled")}</span>
+    <span class="pill" style="--sc:${STAT_C[p.status]||"var(--s-done)"}">${esc(p.status||"")}</span></div>
+    ${p.next?`<div class="next"><b>Next:</b> ${esc(p.next)}</div>`:""}
+    <div class="meta">${tasks.length?`<div class="bar"><i style="width:${pct}%"></i></div><span>${done}/${tasks.length}</span>`:""}${due}<span style="margin-left:auto">${ago(p.updated)}</span></div>
+  </button>`;
+}
+function render(){
+  renderChips();
+  const open=projects.filter(p=>p.status!=="done");
+  const act=projects.filter(p=>p.status==="active").length;
+  const foc=projects.filter(p=>p.focus&&p.status!=="done").length;
+  $("summary").textContent=projects.length?`${open.length} open · ${act} active · ${foc} in focus`:"No projects yet";
+  const shown=projects.filter(matches).sort((a,b)=>(b.focus-a.focus)||(SORD[a.status]-SORD[b.status])||((b.updated||0)-(a.updated||0)));
+  if(!shown.length){ $("list").innerHTML=`<div class="empty">${projects.length?"Nothing matches.":"Tap + to add your first project."}</div>`; return; }
+  let html="";
+  if(areaF==="all"||areaF==="focus"){
+    for(const [k,l] of AREAS){
+      const g=shown.filter(p=>p.area===k); if(!g.length) continue;
+      html+=`<h2><span class="dot" style="background:${AREA_C[k]}"></span>${l}<span class="n">${g.length}</span></h2>`+g.map(cardHTML).join("");
+    }
+    const other=shown.filter(p=>!AREA_C[p.area]); if(other.length) html+=`<h2>Other</h2>`+other.map(cardHTML).join("");
+  } else html=`<div style="height:12px"></div>`+shown.map(cardHTML).join("");
+  $("list").innerHTML=html;
+  if(openId) fillSheet();
+}
+$("list").onclick=e=>{const c=e.target.closest(".card"); if(c) openSheet(c.dataset.id);};
+
+function fmtDate(d){ try{ return new Date(d+"T12:00").toLocaleDateString(undefined,{month:"short",day:"numeric"}); }catch{ return d; } }
+function ago(t){ if(!t) return ""; const s=(Date.now()-t)/1000;
+  if(s<60) return "just now"; if(s<3600) return Math.floor(s/60)+"m ago"; if(s<86400) return Math.floor(s/3600)+"h ago";
+  const d=Math.floor(s/86400); return d<30? d+"d ago" : new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric"}); }
+
+/* ---------- sheet ---------- */
+const cur=()=>projects.find(p=>p.id===openId);
+function openSheet(id){ openId=id; $("confirm").classList.remove("on"); fillSheet(true); $("sheet").classList.add("on"); $("scrim").classList.add("on"); $("sheet").scrollTop=0; }
+function closeSheet(){ flushText(); openId=null; $("sheet").classList.remove("on"); $("scrim").classList.remove("on"); }
+$("dClose").onclick=closeSheet; $("scrim").onclick=closeSheet;
+
+function fillSheet(full){
+  const p=cur(); if(!p){ closeSheet(); return; }
+  const a=document.activeElement;
+  if(full||a!==$("dName")) $("dName").value=p.name||"";
+  if(full||a!==$("dNext")) $("dNext").value=p.next||"";
+  if(full||a!==$("dNotes")) $("dNotes").value=p.notes||"";
+  if(full||a!==$("dDue")) $("dDue").value=p.due||"";
+  $("dStar").textContent=p.focus?"★":"☆";
+  $("dArea").innerHTML=AREAS.map(([k,l])=>`<button data-k="${k}" class="${p.area===k?"on":""}" style="--sc:${AREA_C[k]}">${l}</button>`).join("");
+  $("dStatus").innerHTML=STATUSES.map(([k,l])=>`<button data-k="${k}" class="${p.status===k?"on":""}" style="--sc:${STAT_C[k]}">${l}</button>`).join("");
+  const tasks=p.tasks||[];
+  $("dTaskCount").textContent=tasks.length?`· ${tasks.filter(t=>t.done).length}/${tasks.length}`:"";
+  $("dTasks").innerHTML=tasks.map((t,i)=>`<div class="task ${t.done?"done":""}"><input type="checkbox" data-i="${i}" ${t.done?"checked":""}><span>${esc(t.text)}</span><button class="x" data-del="${i}" aria-label="Remove">×</button></div>`).join("");
+  $("dLog").innerHTML=(p.log||[]).slice().reverse().map(l=>`<div><time>${new Date(l.t).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</time>${esc(l.text)}</div>`).join("")||`<div style="color:var(--muted);border:0">No entries yet.</div>`;
+}
+function mutate(fn){ const p=cur(); if(!p) return; fn(p); save(p); render(); }
+
+$("dStar").onclick=()=>mutate(p=>p.focus=!p.focus);
+$("dArea").onclick=e=>{const b=e.target.closest("[data-k]"); if(b) mutate(p=>p.area=b.dataset.k);};
+$("dStatus").onclick=e=>{const b=e.target.closest("[data-k]"); if(b) mutate(p=>{ if(p.status!==b.dataset.k){ (p.log=p.log||[]).push({t:Date.now(),text:`Status → ${b.dataset.k}`}); } p.status=b.dataset.k; });};
+$("dTasks").onclick=e=>{
+  const cb=e.target.closest("input[data-i]"); if(cb){ mutate(p=>p.tasks[+cb.dataset.i].done=cb.checked); return; }
+  const x=e.target.closest("[data-del]"); if(x) mutate(p=>p.tasks.splice(+x.dataset.del,1));
+};
+$("taskForm").onsubmit=e=>{e.preventDefault(); const v=$("taskIn").value.trim(); if(!v) return; $("taskIn").value=""; mutate(p=>(p.tasks=p.tasks||[]).push({text:v,done:false}));};
+$("logForm").onsubmit=e=>{e.preventDefault(); const v=$("logIn").value.trim(); if(!v) return; $("logIn").value=""; mutate(p=>{ (p.log=p.log||[]).push({t:Date.now(),text:v}); if(p.log.length>60) p.log=p.log.slice(-60); });};
+
+/* text fields: save on pause / blur */
+let textTimer=null;
+const TEXT=[["dName","name"],["dNext","next"],["dNotes","notes"],["dDue","due"]];
+function flushText(){
+  clearTimeout(textTimer); const p=cur(); if(!p) return;
+  let changed=false;
+  for(const [id,f] of TEXT){ const v=$(id).value; if((p[f]||"")!==v){ p[f]=v; changed=true; } }
+  if(changed){ save(p); render(); }
+}
+for(const [id] of TEXT){ $(id).addEventListener("input",()=>{clearTimeout(textTimer); textTimer=setTimeout(flushText,900);}); $(id).addEventListener("blur",flushText); $(id).addEventListener("change",flushText); }
+
+$("delBtn").onclick=()=>$("confirm").classList.add("on");
+$("delNo").onclick=()=>$("confirm").classList.remove("on");
+$("delYes").onclick=()=>{ const id=openId; closeSheet(); projects=projects.filter(p=>p.id!==id); render(); del(id); toast("Deleted"); };
+
+$("copyBrief").onclick=async()=>{
+  flushText(); const p=cur(); if(!p) return;
+  const t=p.tasks||[];
+  const lines=[`Project: ${p.name}`,`Area: ${(AREAS.find(a=>a[0]===p.area)||[,p.area])[1]} · Status: ${p.status}${p.due?` · Target: ${p.due}`:""}`,
+    p.next?`Next action: ${p.next}`:"",
+    t.length?`Tasks:\n${t.map(x=>`- [${x.done?"x":" "}] ${x.text}`).join("\n")}`:"",
+    p.notes?`Notes:\n${p.notes}`:"",
+    (p.log||[]).length?`Recent log:\n${p.log.slice(-5).map(l=>`- ${new Date(l.t).toISOString().slice(0,10)}: ${l.text}`).join("\n")}`:""].filter(Boolean).join("\n\n");
+  let ok=false;
+  try{ await navigator.clipboard.writeText(lines); ok=true; }
+  catch{
+    const ta=document.createElement("textarea"); ta.value=lines; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); try{ ok=document.execCommand("copy"); }catch{} ta.remove();
+  }
+  toast(ok?"Copied — paste it into a chat":"Copy blocked in this browser");
+};
+
+$("fab").onclick=()=>{
+  const id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const p={id,name:"",area:areaF in AREA_C?areaF:"mihlab",status:"active",focus:areaF==="focus",next:"",notes:"",due:"",tasks:[],log:[{t:Date.now(),text:"Created"}],updated:Date.now()};
+  projects.push(p); save(p); render(); openSheet(id); setTimeout(()=>$("dName").focus(),250);
+};
+
+/* ---------- boot ---------- */
+projects=load();
+render();
+</script>
+</body>
+</html>
