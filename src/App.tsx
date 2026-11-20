@@ -13,6 +13,7 @@ import Media from '@/pages/Media';
 import Participate from '@/pages/Participate';
 import Contact from '@/pages/Contact';
 import CVPage from './pages/CVPage.tsx'
+import ProjectsPage from '@/pages/ProjectsPage';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
       <Route path="/participate" element={<Participate />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/cv" element={<CVPage />} />
+      <Route path="/projects" element={<ProjectsPage />} />
     </Routes>
   );
 }
