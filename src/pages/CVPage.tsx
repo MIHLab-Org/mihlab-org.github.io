@@ -535,6 +535,9 @@ export default function CVPage() {
             <a className="mihl-cv-btn mihl-cv-btn-primary" href={PDF_HREF} download>
               Download CV (PDF)
             </a>
+            <a className="mihl-cv-btn" href="/projects">
+              Projects
+            </a>
             <a className="mihl-cv-btn" href="mailto:montaque@mihlab.org">
               Email
             </a>
