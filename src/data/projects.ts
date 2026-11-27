@@ -87,6 +87,25 @@ export const PROJECTS: Project[] = [
     links: [{ label: "Play the quest", href: "/quest/" }],
   },
   {
+    id: "experience-machine-elite",
+    title: "The Experience Machine: Elite Dangerous",
+    tagline: "Philosophical missions in the Milky Way",
+    summary:
+      "A plugin that puts philosopher mission givers into Elite Dangerous. Their missions are thought experiments: fly to Sol, then ask whether you went anywhere.",
+    status: "In development",
+    role: "Designer & developer",
+    year: "2026",
+    why:
+      "The same motivation as the Experience Machine, in another world. Elite Dangerous already asks players to spend days crossing a galaxy that exists only on a screen. That makes it a natural place to ask what it means to travel, to be somewhere, or to have an experience at all.",
+    what:
+      "Another version of the Experience Machine, built inside Elite Dangerous. Players visit stations and settlements and meet mission givers, but the missions are not the usual cargo runs or bounties. Each one is a task meant to get the player thinking about a philosophical claim. One sends you to the Sol system. You are sitting at your computer the whole time, so did you travel anywhere? And if you didn't, why did it take so many days?",
+    how:
+      "A plugin for Elite Dangerous Market Connector (EDMC), the community tool that reads the game's official journal files. Mission givers are philosopher personas who reply in character, aloud and in on-screen subtitles. Missions are plain JSON files and course units are Markdown, so a new mission can be added without touching the code. It follows earlier Experience Machine prototypes for Skyrim and Fallout 4.",
+    links: [
+      { label: "View on GitHub", href: "https://github.com/MIHLab-Org/the-experience-machine-elite" },
+    ],
+  },
+  {
     id: "realitycraft",
     summary:
       "AI agents living on a Minecraft server, used to test whether the story an agent is told about itself changes what it does.",
@@ -135,5 +154,22 @@ export const PROJECTS: Project[] = [
     how:
       "Nick and I spoke over Zoom. A friend and I then walked the surface of Daymar, one of Star Citizen's moons, and set our conversation over that footage, so the interview unfolds as a walk across another world.",
     links: [],
+  },
+  {
+    id: "tolle-lege",
+    title: "Tolle Lege",
+    tagline: "Christian philosophers: a course bibliography",
+    summary:
+      "A searchable bibliography of historical and contemporary Christian philosophers, organized by course and subject, for teachers who want to bring them into the classroom.",
+    status: "Live",
+    role: "Creator",
+    year: "2026",
+    why:
+      "Evangelical Christian philosophers often want to draw on the long tradition of Christian thought in their teaching, but the older texts can be hard to find, hard to place and hard to read. Tolle Lege is meant to make those texts approachable, so historical Christian philosophers can become an ordinary part of the syllabus.",
+    what:
+      "A bibliography of 205 works, from the Church Fathers to today, sorted under the courses I teach: logic, philosophy of law, mind, personal identity, metaphysics, aesthetics and introduction to philosophy. Each entry says why the work belongs in that course. Courses have primers, subjects have pages on their authors, and many works have their own deep-dive pages.",
+    how:
+      "A lightweight web page that works well on a phone. You can search by thinker, title or topic, filter by course and by era, and show only texts that are free to read online. The name comes from Augustine's Confessions: \u201ctake up and read.\u201d",
+    links: [{ label: "Open Tolle Lege", href: "/tolle-lege/" }],
   },
 ];
