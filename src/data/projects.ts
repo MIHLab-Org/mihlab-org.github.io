@@ -100,7 +100,7 @@ export const PROJECTS: Project[] = [
     what:
       "Another version of the Experience Machine, built inside Elite Dangerous. Players visit stations and settlements and meet mission givers, but the missions are not the usual cargo runs or bounties. Each one is a task meant to get the player thinking about a philosophical claim. One sends you to the Sol system. You are sitting at your computer the whole time, so did you travel anywhere? And if you didn't, why did it take so many days?",
     how:
-      "A plugin for Elite Dangerous Market Connector (EDMC), the community tool that reads the game's official journal files. Mission givers are philosopher personas who reply in character, aloud and in on-screen subtitles. Missions are plain JSON files and course units are Markdown, so a new mission can be added without touching the code. It follows earlier Experience Machine prototypes for Skyrim and Fallout 4.",
+      "A plugin for Elite Dangerous Market Connector (EDMC), the community tool that reads the game's official journal files. Mission givers are philosopher personas who reply in character, aloud and in on-screen subtitles. Missions are plain JSON files and course units are Markdown, so a new mission can be added without touching the code. Versions for Skyrim and Fallout 4 are planned next.",
     links: [
       { label: "View on GitHub", href: "https://github.com/MIHLab-Org/the-experience-machine-elite" },
     ],
