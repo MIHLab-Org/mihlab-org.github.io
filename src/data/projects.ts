@@ -160,12 +160,12 @@ export const PROJECTS: Project[] = [
     title: "Tolle Lege",
     tagline: "Christian philosophers: a course bibliography",
     summary:
-      "A searchable bibliography of historical and contemporary Christian philosophers, organized by course and subject, for teachers who want to bring them into the classroom.",
+      "A searchable bibliography of historical and contemporary Christian philosophers, organized by course and subject, for philosophers, pastors and Bible study leaders who want to teach from them.",
     status: "Live",
     role: "Creator",
     year: "2026",
     why:
-      "Evangelical Christian philosophers often want to draw on the long tradition of Christian thought in their teaching, but the older texts can be hard to find, hard to place and hard to read. Tolle Lege is meant to make those texts approachable, so historical Christian philosophers can become an ordinary part of the syllabus.",
+      "Evangelical Christian philosophers, pastors, Bible study leaders and other teachers in the church often want to draw on the long tradition of Christian thought, but the older texts can be hard to find, hard to place and hard to read. Tolle Lege is meant to make those texts approachable, so historical Christian thinkers can become an ordinary part of a syllabus, a sermon series or a study group.",
     what:
       "A bibliography of 205 works, from the Church Fathers to today, sorted under the courses I teach: logic, philosophy of law, mind, personal identity, metaphysics, aesthetics and introduction to philosophy. Each entry says why the work belongs in that course. Courses have primers, subjects have pages on their authors, and many works have their own deep-dive pages.",
     how:
