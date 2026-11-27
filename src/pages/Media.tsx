@@ -2,7 +2,8 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { Layout } from '@/components/Layout';
 import { ArrowRight, ArrowUpRight, Heart } from 'lucide-react';
-import { PROJECTS, type Status } from '@/data/projects';
+// TIP_URL (the Ko-fi link) lives in src/data/projects.ts. Set it to '' to show "Tip link coming soon".
+import { PROJECTS, TIP_URL, type Status } from '@/data/projects';
 
 const STATUS_STYLE: Record<Status, string> = {
   'Live': 'bg-[#123f2f] text-[#7fe0b4]',
@@ -12,9 +13,6 @@ const STATUS_STYLE: Record<Status, string> = {
   'Completed': 'bg-[#1c2c38] text-[#9DC6D8]',
 };
 
-// Where the "Leave a tip" button goes (Ko-fi). Set to '' to show "Tip link coming soon" instead.
-// Subscriptions come later, once the business licensing is in place.
-const TIP_URL = 'https://ko-fi.com/redapemusic35';
 
 export default function Media() {
   // The Unity build (served from /play/) loads only when the visitor clicks the box:
