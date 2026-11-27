@@ -1,6 +1,16 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router';
 import { Layout } from '@/components/Layout';
-import { ArrowRight, Heart } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Heart } from 'lucide-react';
+import { PROJECTS, type Status } from '@/data/projects';
+
+const STATUS_STYLE: Record<Status, string> = {
+  'Live': 'bg-[#123f2f] text-[#7fe0b4]',
+  'Nearly complete': 'bg-[#13394a] text-[#7DD3E8]',
+  'In development': 'bg-[#3a3214] text-[#f0d27a]',
+  'Ongoing': 'bg-[#2a2448] text-[#c3b6f2]',
+  'Completed': 'bg-[#1c2c38] text-[#9DC6D8]',
+};
 
 // Where the "Leave a tip" button goes (Ko-fi). Set to '' to show "Tip link coming soon" instead.
 // Subscriptions come later, once the business licensing is in place.
@@ -84,6 +94,64 @@ export default function Media() {
             <a href="/play/" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#9DC6D8]">
               Open in a new tab
             </a>
+          </p>
+        </section>
+
+        {/* projects — cards built from src/data/projects.ts (same list as /projects) */}
+        <section id="projects" className="px-6 max-w-6xl w-full mx-auto flex flex-col gap-6 scroll-mt-24">
+          <div className="flex flex-col gap-2 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">Projects</h2>
+            <p className="text-[#9DC6D8] max-w-2xl mx-auto">
+              The Experience Machine is one piece of a larger body of work. Here is the rest of what
+              MIHLab is building and taking part in.
+            </p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {(PROJECTS ?? []).map((p) => {
+              const links = (p.links ?? []).filter((l) => l.href && l.href !== '/');
+              return (
+                <article
+                  key={p.id}
+                  className="flex flex-col gap-4 rounded-xl border border-[#1d4256] bg-gradient-to-b from-[#0e2433] to-[#081a26] p-6 transition-colors hover:border-[#2f6a86]"
+                >
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      <span className={`rounded-full px-2.5 py-0.5 font-medium ${STATUS_STYLE[p.status]}`}>{p.status}</span>
+                      {p.role && <span className="text-[#6B8A99]">{p.role}</span>}
+                    </div>
+                    <h3 className="text-xl font-bold text-white leading-snug">{p.title}</h3>
+                    {p.tagline && <p className="text-sm italic text-[#9DC6D8]">{p.tagline}</p>}
+                  </div>
+                  {p.summary && <p className="text-sm text-[#C2D9E4] leading-relaxed">{p.summary}</p>}
+                  <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-sm">
+                    {links.map((l) => {
+                      const external = /^https?:/.test(l.href);
+                      return (
+                        <a
+                          key={l.href}
+                          href={l.href}
+                          {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                          className="inline-flex items-center gap-1 rounded-lg bg-[#1c87a8] hover:bg-[#23a3c9] text-white font-medium px-3 py-1.5 transition-colors"
+                        >
+                          {l.label}
+                          {external && <ArrowUpRight className="w-4 h-4" />}
+                        </a>
+                      );
+                    })}
+                    <Link
+                      to={`/projects#${p.id}`}
+                      className="inline-flex items-center gap-1 text-[#7DD3E8] hover:text-white transition-colors"
+                    >
+                      Read more <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+          <p className="text-center text-sm text-[#6B8A99]">
+            Full write-ups (why, what and how) are on the{' '}
+            <Link to="/projects" className="underline hover:text-[#9DC6D8]">projects page</Link>.
           </p>
         </section>
 
