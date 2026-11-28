@@ -1,0 +1,28 @@
+# MIHLab: The Moral Imagination and Hope Laboratory
+
+> MIHLab is a philosophy laboratory founded by Montaque "Monty" Reynolds, PhD, Visiting Assistant Professor of Philosophy at Stetson University in DeLand, Florida. It teaches philosophical thinking about who a person is through narrative media: open-world video games, literature, music and video. Students read classic and biblical texts, then build or play game experiences where a choice is genuinely hard.
+
+MIHLab's work falls into three lines: curriculum (texts paired with open-world game labs in games such as Star Citizen, Elite Dangerous and Minecraft), research (how the beliefs an AI agent holds about itself shape its behavior), and media (games, videos and interviews that show the method at work).
+
+Contact: montaque@mihlab.org
+
+## Play and explore
+
+- [The Experience Machine](https://mihlab.org/media/): a free browser game where the player walks through a forest with Socrates and talks with philosophers about reality, knowledge and value. A Meta Quest version is planned.
+- [The Experience Machine Quest](https://mihlab.org/quest/): a free multiplayer philosophy campaign for 2 to 6 players in the browser. Players pick a class, vote, debate and roll to test their reasoning.
+- [Tolle Lege](https://mihlab.org/tolle-lege/): a searchable bibliography of 205 works by Christian philosophers, from the Church Fathers to today, organized by course and subject for philosophers, pastors and Bible study leaders.
+
+## Projects
+
+- [All projects, with the why, what and how of each](https://mihlab.org/projects/)
+- [The Experience Machine: Elite Dangerous](https://mihlab.org/projects/#experience-machine-elite): a plugin for Elite Dangerous Market Connector that adds philosopher mission givers whose missions are thought experiments. Skyrim and Fallout 4 versions are in development.
+- [RealityCraft](https://mihlab.org/projects/#realitycraft): AI agents on a Minecraft server, used to study whether the story an agent is told about itself changes what it does.
+- [Philosophers in the Verse](https://mihlab.org/projects/#philosophers-in-the-verse): interviews with philosophers recorded inside Star Citizen. The first features Nick Baima, co-author of Why It's OK to Be a Gamer.
+
+## About
+
+- [Research areas](https://mihlab.org/research/): ethical reflection in art, interactive ethics in games, music and moral identity, aesthetic sentimentalism.
+- [People](https://mihlab.org/people/)
+- [CV of Montaque Reynolds](https://mihlab.org/cv/)
+- [Participate](https://mihlab.org/participate/): opportunities for researchers, collaborators and study participants.
+- [Contact](https://mihlab.org/contact/)

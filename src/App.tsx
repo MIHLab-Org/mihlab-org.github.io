@@ -14,9 +14,12 @@ import Participate from '@/pages/Participate';
 import Contact from '@/pages/Contact';
 import CVPage from './pages/CVPage.tsx'
 import ProjectsPage from '@/pages/ProjectsPage';
+import { RouteMeta } from '@/lib/routeMeta';
 
 export default function App() {
   return (
+    <>
+    <RouteMeta />
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/research" element={<Research />} />
@@ -27,5 +30,6 @@ export default function App() {
       <Route path="/cv" element={<CVPage />} />
       <Route path="/projects" element={<ProjectsPage />} />
     </Routes>
+    </>
   );
 }

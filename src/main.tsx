@@ -6,11 +6,7 @@ import { AppProviders } from './providers';
 import './index.css';
 
 /**
-<<<<<<< HEAD
  * ⚠️ ROUTER LIVES HERE — Do NOT add <BrowserRouter>, <Router>, or <MemoryRouter> anywhere else.
-=======
- * ⚠️ ROUTER LIVES HERE — Do NOT add <BrowserRouter>, <Router>, or <MemoryRouter> anywhere else.
->>>>>>> refs/remotes/origin/main
  * All route definitions go in App.tsx using <Routes> and <Route>.
  */
 createRoot(document.getElementById('root')!).render(

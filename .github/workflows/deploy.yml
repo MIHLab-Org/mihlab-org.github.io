@@ -28,6 +28,9 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      # Save a fully rendered copy of each page so crawlers can read it.
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/prerender.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
